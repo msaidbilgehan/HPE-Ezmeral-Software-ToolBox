@@ -1,0 +1,13 @@
+Node_Installation/dependencies/mapr_devsandbox_container_setup.sh
+Node_Installation/dependencies/mapr-cldb_7.2.0.0.20230118195227.GA-1_amd64.deb
+Node_Installation/dependencies/mapr-client-7.2.0.0.20230118195227.GA-1.amd64.deb
+Node_Installation/dependencies/mapr-core_7.2.0.0.20230118195227.GA-1_amd64.deb
+Node_Installation/dependencies/mapr-core-internal-7.2.0.0.20230118195227.GA-1.x86_64.deb
+Node_Installation/dependencies/mapr-fileserver_7.2.0.0.20230118195227.GA-1_amd64.deb
+Node_Installation/dependencies/mapr-hadoop-util_3.3.4.200.202304060556_amd64.deb
+Node_Installation/dependencies/mapr-librdkafka_0.11.3.202201311452_amd64.deb
+Node_Installation/dependencies/mapr-nfs_7.2.0.0.20230118195227.GA-1_amd64.deb
+Node_Installation/dependencies/mapr-nfs4server_7.2.0.0.20230118195227.GA-1_amd64.deb
+Node_Installation/dependencies/mapr-nfsganesha_3.3.0.0.202111090944_all.deb
+Node_Installation/dependencies/mapr-zk-internal_7.2.0.0.20230118195227.GA-1_amd64.deb
+Node_Installation/dependencies/mapr-zookeeper_7.2.0.0.20230118195227.GA-1_amd64.deb

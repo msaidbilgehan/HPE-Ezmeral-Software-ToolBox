@@ -3,8 +3,14 @@ import os
 import platform
 import shutil, stat
 import urllib.request
+import subprocess
+
+
 
 dependency_path=os.path.abspath("./dependencies/")
+
+# Java Home Path
+java_home_command = "readlink -f $(which java) | sed 's:/bin/java::'"
 
 
 
@@ -120,6 +126,8 @@ def install_pre_dependency_packages(apt_apps):
     print("Dependency packages installed from apt successfully.")
     return True
 
+
+
 def download_dependency_packages():
     print(f"Downloading dependency packages to {dependency_path} ...")
     download_links = [
@@ -149,6 +157,8 @@ def download_dependency_packages():
     print("Dependency packages downloaded successfully.")
     return True
 
+
+
 def install_dependency_packages(deb_files):
     print("Installing dependency packages...")
     for package in deb_files:
@@ -159,6 +169,8 @@ def install_dependency_packages(deb_files):
     print("Dependency packages installed successfully.")
     return True
 
+
+
 def install_mapr_container(scripts):
     print("Installing mapr container...")
     for script in scripts:
@@ -168,12 +180,13 @@ def install_mapr_container(scripts):
     return True
 
 
+
 if __name__ == "__main__":
     initialize_message()
     health_check_os()
     download_dependency_packages()
     deb_files, script_files = health_check_dependency_packages()
-    install_pre_dependency_packages(["sdparm", "openjdk-11-jdk", "nfs-common", "keyutils", "libjemalloc-dev", "libjemalloc1", "libnfsidmap2", "libtirpc1", "liburcu-dev", "liburcu6", "rpcbind"])
+    install_pre_dependency_packages(["sdparm", "openjdk-11-jdk", "openjdk-11-jdk-headless", "nfs-common", "keyutils", "libjemalloc-dev", "libjemalloc1", "libnfsidmap2", "libtirpc1", "liburcu-dev", "liburcu6", "rpcbind"])
     install_dependency_packages(deb_files)
     install_mapr_container(script_files)
     

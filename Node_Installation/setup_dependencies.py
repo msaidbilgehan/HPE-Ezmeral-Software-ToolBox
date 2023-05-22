@@ -1,9 +1,8 @@
 from glob import glob
 import os
 import platform
-import shutil
+import shutil, stat
 import urllib.request
-
 
 dependency_path=os.path.abspath("./dependencies/")
 
@@ -43,6 +42,7 @@ def health_check_dependency_packages():
     missing_files = []
 
     deb_files = glob(dependency_path + '/*.deb')
+    
     if len(deb_files) == 0:
         print("No deb files found in the dependencies folder.")
         print("Please download the necessary deb files and put them in the dependencies folder.")
@@ -85,7 +85,8 @@ def health_check_dependency_packages():
         exit()
     else:
         print("[PASSED] All necessary files are present in the dependencies folder.")
-    
+        
+    ordered_deb_files = sorted(deb_files, key=lambda f: int(f.split('/')[-1].split('_')[0].split('_')[-1]))
     return ordered_deb_files, script_files
 
 
@@ -139,10 +140,11 @@ def download_dependency_packages():
     if os.path.exists(dependency_path):
         shutil.rmtree(dependency_path)
     os.mkdir(dependency_path)
+    os.chmod(dependency_path, stat.S_IRWXU| stat.S_IRWXG| stat.S_IRWXO) # 0777
     
-    for file_url in download_links:
+    for i, file_url in enumerate(download_links):
         print(f"Downloading {file_url} ...")
-        urllib.request.urlretrieve(file_url, dependency_path + "/" + file_url.split("/")[-1])
+        urllib.request.urlretrieve(file_url, dependency_path + "/" + str(i) + "_" + file_url.split("/")[-1])
 
     print("Dependency packages downloaded successfully.")
     return True

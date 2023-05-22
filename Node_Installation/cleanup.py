@@ -19,7 +19,7 @@ def cleanup():
     commands = [
         "sudo apt --fix-broken install",
         "sudo docker stop $(sudo docker ps -a -q)",
-        "sudo docker rmi $(sudo docker images -a -q) -f",
+        # "sudo docker rmi $(sudo docker images -a -q) -f",
         "sudo systemctl stop docker",
         "sudo apt-get remove -y docker docker-engine docker.io containerd runc",
         "sudo apt-get purge -y docker docker-engine docker.io containerd runc",
@@ -37,6 +37,14 @@ def cleanup():
         "sudo apt --fix-broken install",
         "sudo apt autoremove -y",
         "sudo dpkg --configure -a",
+        "echo Rebooting in 3 seconds...",
+        "sleep 1",
+        "echo .",
+        "sleep 1",
+        "echo .",
+        "sleep 1",
+        "echo .",
+        "sudo reboot -h now",
     ]
     for command in commands:
         os.system(command)
@@ -44,7 +52,7 @@ def cleanup():
 
 if __name__ == "__main__":
     initialize_message()
+    print("Be aware! This script will reboot your system. (sudo reboot -h now)")
     cleanup()
-    print("Highly Recommended to restart the system. (sudo reboot -h now)")
     print("Exiting...")
     exit()

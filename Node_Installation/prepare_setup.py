@@ -20,7 +20,7 @@ def initialize_message():
 def prepare():
     commands = [
         "sudo apt update",
-        "sudo apt-get remove -y docker docker-engine docker.io containerd runc",
+        # "sudo apt-get remove -y docker docker-engine docker.io containerd runc",
         "sudo apt-get -y install ca-certificates curl gnupg",
         "sudo install -m 0755 -d /etc/apt/keyrings",
         "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg",

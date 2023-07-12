@@ -205,10 +205,10 @@ def ping_sweeping(network_address:str, start:int=1, end:int=255):
     return list_ip_hostname
 
 
-def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255):
+def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
     if network_address == "":
         print("Please enter an Network Address.")
-        return
+        return []
     
     network_address_splitted= network_address.split('.')
     last_dot = '.'

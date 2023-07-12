@@ -63,6 +63,9 @@ def menu_action_selection():
         if option == "1":
             # ping_sweeping(network_address=input("Please enter a Network Address: "))
             scan_result = ping_sweeping_threaded(network_address=input("Please enter a Network Address [10.34.2.x]: "))
+            if scan_result == []:
+                continue
+            
             print_ip_table(ip_hostname_dict=scan_result)
             
             print("\nTotal Results: " + str(len(scan_result)))
@@ -75,9 +78,9 @@ def menu_action_selection():
         elif option == "2":
             port_scanner(ip_address=input("Please enter an IP Address: "))
         elif option == "3":
-            print("IP Address: " + get_ip_by_hostname(hostname=input("Please enter a Hostname: ")))
+            print("IP Address:", get_ip_by_hostname(hostname=input("Please enter a Hostname: ")))
         elif option == "4":
-            print("Hostname: " + get_hostname_by_ip(ip_address=input("Please enter an IP Address: ")))
+            print("Hostname:", get_hostname_by_ip(ip_address=input("Please enter an IP Address: ")))
         elif option == "5":
             update_hostname_ssh(
                 ip_address=input("Please enter an IP Address: "), 

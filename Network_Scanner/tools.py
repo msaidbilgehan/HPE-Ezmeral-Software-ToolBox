@@ -363,6 +363,11 @@ def update_hostname_ssh(ip_address:str, username:str, password:str, new_hostname
         if exit_status==0:
             print("Hostname updated successfully")
     
+            # Hosts dosyasını güncelle
+            stdin, stdout, stderr = client.exec_command('sudo sed -i -e "s/^127\.0\.1\.1.*/127.0.1.1\t{}/" /etc/hosts'.format(new_hostname))
+            stdin.write(f'{password}\n')  # Sudo parolasını buraya yazın
+            stdin.flush()
+    
             if reboot == "y":
                 stdin, stdout, stderr = client.exec_command('sudo reboot -h now')
             else:

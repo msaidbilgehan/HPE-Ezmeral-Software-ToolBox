@@ -15,3 +15,4 @@ __*
 venv/
 Network_Scanner/results.json
 Network_Scanner/.vscode/settings.json
+Network_Scanner/hosts_*

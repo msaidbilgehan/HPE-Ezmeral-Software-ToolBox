@@ -293,7 +293,7 @@ ff02::2 ip6-allrouters
         
         hosts_file_content = hosts_file_template.format(
             ip_address=ip_address_hostname["ip"],
-            hostname=ip_address_hostname['hostname'],
+            hostname=ip_address_hostname["hostname"],
             ip_address_to_host_string=ip_address_to_host_string
         )
         hosts_file_for_ip_list.append(

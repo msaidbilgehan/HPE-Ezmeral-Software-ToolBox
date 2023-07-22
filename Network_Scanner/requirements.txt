@@ -1,0 +1,13 @@
+anyio
+bcrypt
+certifi
+cffi
+cryptography
+dnspython
+h11
+httpcore
+idna
+paramiko
+pycparser
+PyNaCl
+sniffio

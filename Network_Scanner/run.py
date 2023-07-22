@@ -22,8 +22,9 @@ def print_menu_actions():
     print("5. Rename Hostname")
     print("6. Create Hosts File")
     print("7. Sync Hosts File with Specified Hosts")
+    print("8. Automate - Create Hosts File and Sync Hosts File with Specified Hosts")
     
-    print("8. Exit")
+    print("9. Exit")
     
 def select_ip_addresses_from_json()->list:
     selected_ip_addresses = []
@@ -131,6 +132,60 @@ def menu_action_selection():
                 )
             
         elif option == "8":
+            # IP Scan
+            scan_result = ping_sweeping_threaded(network_address=input("Please enter a Network Address [10.34.2.x]: "))
+            if scan_result == []:
+                continue
+            
+            # Save IP Scan Result
+            save_to_json(data=scan_result, path="results.json")
+            
+            # Select Target IP Addresses
+            selected_ip_addresses = select_ip_addresses_from_json()
+            if selected_ip_addresses == []:
+                print("No IP Selected!")
+                continue
+                
+            # Create Hosts File
+            ip_address_hostname_list = create_hosts_file(ip_address_hostname_list=selected_ip_addresses)
+            
+            # Send Hosts File
+            
+            same_ssh_information_for_all = input("Are all ssh logins have same credentials? (y/n): ")
+            
+            ssh_username = ""
+            ssh_password = ""
+            if same_ssh_information_for_all == "y":
+                ssh_username = input("Please enter a Username: ")
+                ssh_password = input("Please enter a Password: ")
+                
+            
+            for i, target in enumerate(selected_ip_addresses):
+                print("Sending Hosts File to " + target["ip"] + "...")
+                filepath_for_ip_address =  "hosts_" + target["ip"]
+                
+                if same_ssh_information_for_all != "y":
+                    ssh_username = input("Please enter a Username: ")
+                    ssh_password = input("Please enter a Password: ")
+                
+                send_hostfile_to_device_ssh(
+                    ip_address=target["ip"], 
+                    username=ssh_username, 
+                    password=ssh_password, 
+                    local_file_path=filepath_for_ip_address,
+                    remote_file_path="/etc/hosts", 
+                )
+                update_hostname_ssh(
+                    ip_address=target["ip"], 
+                    # port=int(input("Please enter a Port: ")), 
+                    username=ssh_username, 
+                    password=ssh_password, 
+                    new_hostname=ip_address_hostname_list[i]["hostname"],
+                    reboot="y"
+                )
+            
+            
+        elif option == "9":
             break
         
     

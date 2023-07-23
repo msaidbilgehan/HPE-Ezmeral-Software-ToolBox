@@ -1,7 +1,7 @@
 
 
 import os
-from socket import socket, AF_INET, SOCK_STREAM, gethostbyaddr, gethostbyname, getaddrinfo
+from socket import socket, AF_INET, SOCK_STREAM, gethostbyaddr, gethostbyname
 import concurrent.futures
 import subprocess
 from dns import reversename, resolver
@@ -230,9 +230,10 @@ def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
             if entry is not None:
                 list_ip_hostname.append(entry)
             
+    list_ip_hostname.sort()
     print(f"Scanning completed.")
     print("")
-
+    
     return list_ip_hostname
 
 

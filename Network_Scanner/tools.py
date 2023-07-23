@@ -202,6 +202,9 @@ def ping_sweeping(network_address:str, start:int=1, end:int=255):
         list_ip_hostname[-1]["ip"] = scan_ip_address
         list_ip_hostname[-1]["hostname"] = hostname
     
+    # Sort the list by IP address
+    list_ip_hostname = sorted(list_ip_hostname, key=lambda x: tuple(map(int, x['ip'].split('.'))))
+    
     return list_ip_hostname
 
 
@@ -230,7 +233,9 @@ def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
             if entry is not None:
                 list_ip_hostname.append(entry)
             
-    list_ip_hostname.sort()
+    # Sort the list by IP address
+    list_ip_hostname = sorted(list_ip_hostname, key=lambda x: tuple(map(int, x['ip'].split('.'))))
+
     print(f"Scanning completed.")
     print("")
     

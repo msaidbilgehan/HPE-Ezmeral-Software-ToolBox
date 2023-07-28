@@ -264,7 +264,7 @@ def create_hosts_file(ip_address_hostname_list=[], filename:str="hosts"):
 
     hosts_file_template = """#Auto-generated hosts file with Network Scanner by Muhammed Said BİLGEHAN for {ip_address}
 127.0.0.1	localhost
-127.0.1.1	{hostname}
+127.0.0.1	{hostname}
 
 {ip_address_to_host_string}
 

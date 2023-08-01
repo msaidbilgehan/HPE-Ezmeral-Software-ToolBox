@@ -294,7 +294,7 @@ ff02::2 ip6-allrouters
         
     for ip_address_hostname in ip_address_hostname_list:
         ip_address_to_host_string = ''.join(
-            string_item for string_item in ip_address_to_host_list
+            string_item for string_item in ip_address_to_host_list if ip_address_hostname["ip"] =! string_item else ""
         )
         
         hosts_file_content = hosts_file_template.format(
@@ -370,7 +370,7 @@ def update_hostname_ssh(ip_address:str, username:str, password:str, new_hostname
             print("Hostname updated successfully")
     
             # Hosts dosyasını güncelle
-            stdin, stdout, stderr = client.exec_command('sudo sed -i -e "s/^127\.0\.1\.1.*/127.0.0.1\t{}/" /etc/hosts'.format(new_hostname))
+            stdin, stdout, stderr = client.exec_command('sudo sed -i -e "s/^127\.0\.1\.1.*/127.0.1.1\t{}/" /etc/hosts'.format(new_hostname))
             stdin.write(f'{password}\n')  # Sudo parolasını buraya yazın
             stdin.flush()
     

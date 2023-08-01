@@ -294,10 +294,17 @@ ff02::2 ip6-allrouters
         
     for ip_address_hostname in ip_address_hostname_list:
         ip_address_to_host_string = ''.join(
-            string_item if ip_address_hostname["ip"] != string_item else ""
-            for string_item in ip_address_to_host_list
+            string_item for string_item in ip_address_to_host_list
         )
-
+        # ip_address_to_host_string = ""
+        # for string_item in ip_address_to_host_list:
+        #     if ip_address_hostname["ip"] in string_item:
+        #         continue
+        #     ip_address_to_host_string = ''.join(string_item)
+        
+        lines = ip_address_to_host_string.splitlines()
+        lines = [line for line in lines if ip_address_hostname["ip"] not in line]
+        ip_address_to_host_string = '\n'.join(lines)
         
         hosts_file_content = hosts_file_template.format(
             ip_address=ip_address_hostname["ip"],
@@ -314,9 +321,9 @@ ff02::2 ip6-allrouters
         print(hosts_file_content)
         
         path = f"hosts_{ip_address_hostname['ip']}" # The path of your file should go here
-        with open(path, "w") as fil: # Opens the file using 'w' method. See below for list of methods.
-            fil.write(hosts_file_content) # Writes to the file used .write() method
-            # fil.close() # Closes file
+        with open(path, "w") as file: # Opens the file using 'w' method. See below for list of methods.
+            file.write(hosts_file_content) # Writes to the file used .write() method
+            # file.close() # Closes file
             print(f"Hosts file for {ip_address_hostname['ip']} created successfully.")
             
     return ip_address_hostname_list
@@ -372,7 +379,7 @@ def update_hostname_ssh(ip_address:str, username:str, password:str, new_hostname
             print("Hostname updated successfully")
     
             # Hosts dosyasını güncelle
-            stdin, stdout, stderr = client.exec_command('sudo sed -i -e "s/^127\.0\.1\.1.*/127.0.1.1\t{}/" /etc/hosts'.format(new_hostname))
+            stdin, stdout, stderr = client.exec_command('sudo sed -i -e "s/^127\.0\.0\.1.*/127.0.1.1\t{}/" /etc/hosts'.format(new_hostname))
             stdin.write(f'{password}\n')  # Sudo parolasını buraya yazın
             stdin.flush()
     

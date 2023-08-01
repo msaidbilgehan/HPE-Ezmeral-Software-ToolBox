@@ -53,7 +53,7 @@ def menu_action_selection():
 
     option = "-1"
     
-    while option not in ["1", "2", "3", "4", "5"]:
+    while option not in ["1", "2", "3", "4", "5", "6", "7", "8", "9"]:
         print_menu_actions()
         print("Please select an option: ", end="")
         option = input()

@@ -294,7 +294,7 @@ ff02::2 ip6-allrouters
         
     for ip_address_hostname in ip_address_hostname_list:
         ip_address_to_host_string = ''.join(
-            string_item for string_item in ip_address_to_host_list if ip_address_hostname["ip"] =! string_item else ""
+            string_item for string_item in ip_address_to_host_list if ip_address_hostname["ip"] =! string_item
         )
         
         hosts_file_content = hosts_file_template.format(

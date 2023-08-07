@@ -1,4 +1,4 @@
-from tools import port_scanner, get_ip_by_hostname, get_hostname_by_ip, ping_sweeping_threaded, save_to_json, load_from_json, update_hostname_ssh, create_hosts_file, print_ip_table, send_hostfile_to_device_ssh
+from tools import port_scanner, get_ip_by_hostname, get_hostname_by_ip, ping_sweeping_threaded, save_to_json, load_from_json, update_hostname_ssh, create_hosts_file, print_ip_table, send_hostfile_to_device_ssh, get_local_IP
 
 
 
@@ -8,6 +8,8 @@ def initialize_message():
     print('| Welcome to the Network Scanner Tool |')
     print('|  Written by Muhammed Said BİLGEHAN  |')
     print('\'-------------------------------------\'')
+    print('')
+    print("IP Address:", get_local_IP())
     print('')
     
 def print_menu_actions():
@@ -63,7 +65,9 @@ def menu_action_selection():
 
         if option == "1":
             # ping_sweeping(network_address=input("Please enter a Network Address: "))
-            scan_result = ping_sweeping_threaded(network_address=input("Please enter a Network Address [10.34.2.x]: "))
+            local_ip_mask = get_local_IP()
+            local_ip_mask = local_ip_mask[:local_ip_mask.rfind(".")] + ".x"
+            scan_result = ping_sweeping_threaded(network_address=input(f"Please enter a Network Address [{local_ip_mask}]: "))
             if scan_result == []:
                 continue
             
@@ -77,7 +81,9 @@ def menu_action_selection():
                 save_to_json(data=scan_result, path="results.json")
                 
         elif option == "2":
-            port_scanner(ip_address=input("Please enter an IP Address: "))
+            port_scanner(
+                ip_address=input("Please enter an IP Address: ")
+            )
         elif option == "3":
             print("IP Address:", get_ip_by_hostname(hostname=input("Please enter a Hostname: ")))
         elif option == "4":
@@ -133,7 +139,9 @@ def menu_action_selection():
             
         elif option == "8":
             # IP Scan
-            scan_result = ping_sweeping_threaded(network_address=input("Please enter a Network Address [10.34.2.x]: "))
+            scan_result = ping_sweeping_threaded(
+                network_address=input("Please enter a Network Address [10.34.2.x]: ")
+            )
             if scan_result == []:
                 continue
             

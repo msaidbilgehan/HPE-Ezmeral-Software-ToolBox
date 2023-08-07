@@ -1,7 +1,7 @@
 
 
 import os
-from socket import socket, AF_INET, SOCK_STREAM, gethostbyaddr, gethostbyname
+from socket import socket, AF_INET, SOCK_STREAM, gethostbyaddr, gethostbyname, gethostname
 import concurrent.futures
 import subprocess
 from dns import reversename, resolver
@@ -21,6 +21,10 @@ def get_nth_key(dictionary, n=0):
         if i == n:
             return key
     raise IndexError("dictionary index out of range")
+
+
+def get_local_IP():
+    return gethostbyname(gethostname())
 
 
 def ping_by_ip(ip_address: str, legacy=False, port=22)-> bool:
@@ -120,16 +124,27 @@ def __port_scanner(ip_address:str):
 
 # define the function to scan a single port
 def scan_port(ip_address:str, port:int):
-    s = socket(AF_INET, SOCK_STREAM)
-    s.settimeout(3)  # Set a timeout of 3 second
+    # sock = socket(AF_INET, SOCK_STREAM)
+    # sock.settimeout(3)  # Set a timeout of 3 second
+    # is_open = False
+    # try:
+    #     conn = sock.connect_ex((ip_address, port))
+    #     if conn == 0:
+    #         # print(f'Port {port}: OPEN')
+    #         is_open = True
+    # finally:
+    #     sock.close()
+    
     is_open = False
-    try:
-        conn = s.connect_ex((ip_address, port))
-        if conn == 0:
-            # print(f'Port {port}: OPEN')
-            is_open = True
-    finally:
-        s.close()
+    with socket(AF_INET, SOCK_STREAM) as sock:
+        sock.settimeout(3)  # Set a timeout of 3 second
+        try:
+            conn = sock.connect_ex((ip_address, port))
+            if conn == 0:
+                # print(f'Port {port}: OPEN')
+                is_open = True
+        except:
+            pass
     
     return port, is_open
 
@@ -149,7 +164,7 @@ def port_scanner(ip_address:str, start_range=0, end_range=50000):
     port_scan_tasks = []
     open_port_list = []
     # Create a ThreadPool, adjust the max_workers parameter to the number of cores you want to use
-    with concurrent.futures.ThreadPoolExecutor(max_workers=500) as executor:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
         # Use the executor to start a task for each port
         for i in range(start_range, end_range):
             executor.submit(scan_port, ip_address, i)
@@ -168,8 +183,9 @@ def port_scanner(ip_address:str, start_range=0, end_range=50000):
       
 def ping_sweeping(network_address:str, start:int=1, end:int=255):
     if network_address == "":
-        print("Please enter an Network Address.")
-        return
+        network_address = get_local_IP()
+        network_address = network_address[:network_address.rfind(".")] + ".x"
+        print("Selected Default IP Mask:", network_address)
     
     network_address_splitted= network_address.split('.')
     last_dot = '.'
@@ -210,8 +226,9 @@ def ping_sweeping(network_address:str, start:int=1, end:int=255):
 
 def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
     if network_address == "":
-        print("Please enter an Network Address.")
-        return []
+        network_address = get_local_IP()
+        network_address = network_address[:network_address.rfind(".")] + ".x"
+        print("Selected Default IP Mask:", network_address)
     
     network_address_splitted= network_address.split('.')
     last_dot = '.'
@@ -221,7 +238,7 @@ def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
     list_ip_hostname = []
 
     print(f"Starting to scan.")
-    with concurrent.futures.ThreadPoolExecutor(255) as executor:
+    with concurrent.futures.ThreadPoolExecutor(50) as executor:
         futures = []
         for i in range(start, end):
             scan_ip_address = network_address_clean + str(i)

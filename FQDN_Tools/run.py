@@ -158,7 +158,6 @@ def menu_action_selection():
             ip_address_hostname_list = create_hosts_file(ip_address_hostname_list=selected_ip_addresses)
             
             # Send Hosts File
-            
             same_ssh_information_for_all = input("Are all ssh logins have same credentials? (y/n): ")
             
             ssh_username = ""

@@ -2,10 +2,21 @@ import os
 from socket import socket, AF_INET, SOCK_STREAM, gethostbyaddr, gethostbyname, gethostname
 import concurrent.futures
 import paramiko
+from Libraries.logger_module import logger
+from stat import S_ISDIR
 
 
 
-def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:str, remote_file_path:str="/tmp/", port:int=22, overwrite=False):
+def isdir(st_mode):
+  try:
+    return S_ISDIR(st_mode)
+  except IOError:
+    #Path does not exist, so by definition not a directory
+    return False
+
+
+
+def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:str, remote_file_path:str="/tmp/", port:int=22, overwrite=False) -> str:
     transport = paramiko.Transport((ssh_client, port))
     
     remote_file_path = remote_file_path if remote_file_path[-1] == "/" else remote_file_path + "/"
@@ -18,7 +29,8 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
     try:
         if overwrite:
             # Delete file if exists
-            print(f"Deleting file {remote_tmp_path}...")
+            logger.info(f"Deleting file {remote_tmp_path}...")
+            # print(f"Deleting file {remote_tmp_path}...")
             response_command = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
@@ -36,7 +48,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         if sftp is None:
             raise Exception("Error opening SFTP Client")
 
-        print(f"Uploading file to {remote_tmp_path}...")
+        logger.info(f"Uploading file to {remote_tmp_path}...")
         # upload file to temporary location
         sftp.put(local_file_path, remote_tmp_path)
         sftp.close()
@@ -44,7 +56,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         
         if remote_tmp_path != uploaded_location:
             if overwrite:
-                print(f"Deleting file {uploaded_location}...")
+                logger.info(f"Deleting file {uploaded_location}...")
                 response_command = ssh_execute_command(
                     ssh_client=ssh_client, 
                     username=username, 
@@ -53,7 +65,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                     port=port, 
                     reboot=False
                 )
-            print(f"Moving file to {uploaded_location}...")
+            logger.info(f"Moving file to {uploaded_location}...")
             # Move file to the desired location
             response_command = ssh_execute_command(
                 ssh_client=ssh_client, 
@@ -67,10 +79,10 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 raise Exception("Error moving file to desired location")
 
     except paramiko.AuthenticationException:
-        print("Authentication failed")
+        logger.error("Authentication failed")
         uploaded_location = ""
     except Exception as e:
-        print("Exception: ", e)
+        logger.error("Exception: ", e)
         if response_upload == False and response_command == False:
             uploaded_location = ""
         elif response_upload == True and response_command == False:
@@ -82,47 +94,144 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
 
 
 
-def ssh_execute_command(ssh_client:str, username:str, password:str, command:str, port:int=22, is_sudo=False, reboot:bool=False):
+def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str, local_folder_path:str="./received_files", port:int=22) -> str:
+    transport = paramiko.Transport((ssh_client, port))
+    
+    local_folder_path = local_folder_path if local_folder_path[-1] == "/" else local_folder_path + "/"
+    
+    # Create directory of Given Path if not exists
+    if not os.path.exists(local_folder_path):
+        os.makedirs(local_folder_path)
+    
+    last_download_path = ""
+    response_download = False
+    
+    try:
+        transport.connect(username=username, password=password)
+        sftp = transport.open_sftp_client()
+
+        if sftp is None:
+            raise Exception("Error opening SFTP Client")
+
+        try:
+            st_mode = sftp.stat(remote_path).st_mode
+            if isdir(st_mode):
+                logger.info(f"Downloading folder from {remote_path} to {local_folder_path}...")
+                logger.info(f"Listing directories of '{remote_path}'")
+
+                folder_path_cache = [remote_path]
+                while len(folder_path_cache) > 0:
+                    folder_path = folder_path_cache.pop(0)
+                    r_paths = sftp.listdir(folder_path)
+                    
+                    for r_path in r_paths:
+                        remote_path_cache = folder_path + "/" + r_path
+
+                        if isdir(sftp.stat(remote_path_cache).st_mode):
+                            folder_path_cache.append(remote_path_cache)
+                        else:
+                            print("Creating dirs:", local_folder_path + folder_path)
+                            os.makedirs(local_folder_path + folder_path, exist_ok=True)
+
+                            last_download_path = remote_path_cache
+                            logger.info(f"Downloading file from '{last_download_path}' to '{local_folder_path + remote_path_cache[1:]}'")
+                            try:
+                                sftp.get(
+                                    remote_path_cache, 
+                                    local_folder_path + remote_path_cache[1:]
+                                )
+                            except PermissionError:
+                                logger.error(f"Permission Denied '{last_download_path}'")
+                                logger.warn(f"Trying to change permissions of file '{last_download_path}'")
+                                status, output = ssh_execute_command(
+                                    ssh_client=ssh_client,
+                                    username=username,
+                                    password=password,
+                                    command=f"chmod 777 {last_download_path}",
+                                    is_sudo=True,
+                                    port=port,
+                                    reboot=False
+                                )
+                                if status == False:
+                                    logger.error(f"Error changing permissions of file '{last_download_path}'")
+                                else:
+                                    logger.info(f"Permissions changed to 777 of file '{last_download_path}'")
+                                    logger.info(f"Re-Trying to Download file from '{last_download_path}' to '{local_folder_path + remote_path_cache[1:]}'")
+                                    sftp.get(
+                                        remote_path_cache, 
+                                        local_folder_path + remote_path_cache[1:]
+                                    )
+            else:
+                logger.info(f"Downloading file from {remote_path} to {local_folder_path}...")
+                last_download_path = remote_path
+                sftp.get(last_download_path, local_folder_path)
+        except FileNotFoundError:
+            logger.error(f"[Errno 2] No such file: '{remote_path}'")
+        
+        sftp.close()
+
+        local_folder_path += os.path.basename(remote_path)
+        response_download = True
+
+    except paramiko.AuthenticationException:
+        logger.error("Authentication failed")
+        local_folder_path = ""
+    except Exception as e:
+        logger.error(f"Last Download Dir: {last_download_path}")
+        logger.error("Exception: ", e)
+        if response_download == False:
+            local_folder_path = ""
+        elif response_download == True:
+            local_folder_path = local_folder_path
+    finally:
+        transport.close()
+
+    return local_folder_path
+
+
+
+def ssh_execute_command(ssh_client:str, username:str, password:str, command:str, port:int=22, is_sudo=False, reboot:bool=False) -> tuple[bool, str]:
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     status = False
+    client_stdout = ""
     
     try:
         client.connect(ssh_client, port, username, password)
-        print("Connection Established!")
+        logger.info("Connection Established!")
         
         # update hostname
         # stdin, stdout, stderr = client.exec_command(f'echo {new_hostname} > /etc/hostname')
         if is_sudo:
-            command = f'echo {password} | {command}'
+            command = f'echo {password} | sudo -S {command}'
             # command = f'echo {password} | sudo -S sh -c "echo \'{command}\'"'
         
-        print("Executing command: ", command)
+        logger.info(f"Executing command: {command}")
         stdin, stdout, stderr = client.exec_command(command)
-        # print("stdout:", stdout.read().decode())
+        client_stdout = stdout.read().decode()
+        logger.info(f"stdout: {client_stdout}")
         
         exit_status = stdout.channel.recv_exit_status() # Blocking call
         if exit_status==0:
-            print("Command successfully executed!")
+            logger.info("Command successfully executed!")
             status = True
             
             if reboot:
-                stdin_reboot, stdout_reboot, stderr_reboot = client.exec_command('echo {password} | sudo reboot -h now')
+                stdin_reboot, stdout_reboot, stderr_reboot = client.exec_command('echo {password} | sudo -S reboot -h now')
             else:
-                print("Reboot skipped.")
+                logger.info("Reboot skipped.")
         else:
-            print("Error", exit_status)
-            print("Detail:", stdout.read().decode())
-            print("Error Detail:", stderr.read().decode())
+            logger.error(f"STDOUT Detail: {stdout.read().decode()}")
+            logger.error(f"STDERR Detail [Exit Status {exit_status}]: {stderr.read().decode()}")
             status = False
         
     except paramiko.AuthenticationException:
-        print("Authentication failed")
+        logger.info("Authentication failed")
         status = False
     finally:
         client.close()
         
-    return status
+    return status, client_stdout
     
 
 
@@ -143,11 +252,11 @@ def ping_by_ip(ip_address: str, legacy=False, port=22)-> bool:
         command = ping_command + ip_address
         response = os.popen(command)
 
-        print("Response: ", response.readlines())
+        logger.info("Response: ", response.readlines())
 
         for line in response.readlines():
             if "TTL" in line:
-                # print(ip_address, "--> Live")
+                # logger.info(ip_address, "--> Live")
                 return True
 
         return False
@@ -166,7 +275,7 @@ def scan_port(ip_address:str, port:int):
     # try:
     #     conn = sock.connect_ex((ip_address, port))
     #     if conn == 0:
-    #         # print(f'Port {port}: OPEN')
+    #         # logger.info(f'Port {port}: OPEN')
     #         is_open = True
     # finally:
     #     sock.close()
@@ -177,7 +286,7 @@ def scan_port(ip_address:str, port:int):
         try:
             conn = sock.connect_ex((ip_address, port))
             if conn == 0:
-                # print(f'Port {port}: OPEN')
+                # logger.info(f'Port {port}: OPEN')
                 is_open = True
         except:
             pass
@@ -202,9 +311,9 @@ def scan_ip(scan_ip_address):
     hostname = get_hostname_by_ip(scan_ip_address)
 
     # if hostname:
-    #     print(f"IP: {scan_ip_address}, Hostname: {hostname}")
+    #     logger.info(f"IP: {scan_ip_address}, Hostname: {hostname}")
     # else:
-    #     print(f"IP: {scan_ip_address}")
+    #     logger.info(f"IP: {scan_ip_address}")
         
     dict_ip_hostname_template = {
         "ip": "",
@@ -222,7 +331,7 @@ def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
     if network_address == "":
         network_address = get_local_IP()
         network_address = network_address[:network_address.rfind(".")] + ".x"
-        print("Selected Default IP Mask:", network_address)
+        logger.info(f"Selected Default IP Mask: {network_address}")
     
     network_address_splitted= network_address.split('.')
     last_dot = '.'
@@ -231,14 +340,14 @@ def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
 
     list_ip_hostname = []
 
-    print(f"Starting to scan.")
+    logger.info("Starting to scan.")
     with concurrent.futures.ThreadPoolExecutor(50) as executor:
         futures = []
         for i in range(start, end):
             scan_ip_address = network_address_clean + str(i)
             futures.append(executor.submit(scan_ip, scan_ip_address))
 
-        print(f"Scanning...")
+        logger.info("Scanning...")
         for future in concurrent.futures.as_completed(futures):
             entry = future.result()
             if entry is not None:
@@ -247,8 +356,7 @@ def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
     # Sort the list by IP address
     list_ip_hostname = sorted(list_ip_hostname, key=lambda x: tuple(map(int, x['ip'].split('.'))))
 
-    print(f"Scanning completed.")
-    print("")
+    logger.info("Scanning completed.")
     
     return list_ip_hostname
 
@@ -257,7 +365,7 @@ def ping_sweeping_threaded(network_address:str, start:int=1, end:int=255)->list:
 def select_ip_addresses(ip_addresses:list)->list:
     selected_ip_addresses = []
     
-    print("Select IP Addresses to connect over ssh:")
+    logger.info("Select IP Addresses to connect over ssh:")
     print_ip_table(ip_hostname_pack=ip_addresses)
 
     selected_indexes = input("Please enter the IP Addresses to add to the Hosts File (separated by comma)[1,2,3]: ")
@@ -273,6 +381,8 @@ def select_ip_addresses(ip_addresses:list)->list:
 
 
 def print_ip_table(ip_hostname_pack):
-    print(f"\tIP\t |\tHostname")
+    # print(f"\tIP\t |\tHostname")
+    logger.info(f"\tIP\t |\tHostname")
     for i, result in enumerate(ip_hostname_pack):
-        print(f" ({i})\t{result['ip']}\t |\t {result['hostname'] if result['hostname'] else '---'}")
+        logger.info(f" ({i})\t{result['ip']}\t |\t {result['hostname'] if result['hostname'] else '---'}")
+        # print(f" ({i})\t{result['ip']}\t |\t {result['hostname'] if result['hostname'] else '---'}")

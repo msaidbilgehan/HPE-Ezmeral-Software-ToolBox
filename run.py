@@ -82,6 +82,7 @@ def menu_action_selection():
                     password=ssh_password, 
                     local_file_path=filepath,
                     # remote_file_path="/tmp/", 
+                    overwrite=True
                 )
                 if remote_file_path != "":
                     ssh_execute_command(

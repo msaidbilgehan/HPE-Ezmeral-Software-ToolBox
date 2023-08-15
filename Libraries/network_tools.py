@@ -5,7 +5,7 @@ import paramiko
 
 
 
-def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:str, remote_file_path:str="/tmp/", port:int=22):
+def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:str, remote_file_path:str="/tmp/", port:int=22, overwrite=False):
     transport = paramiko.Transport((ssh_client, port))
     
     remote_file_path = remote_file_path if remote_file_path[-1] == "/" else remote_file_path + "/"
@@ -16,6 +16,20 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
     response_command = False
     
     try:
+        if overwrite:
+            # Delete file if exists
+            print(f"Deleting file {remote_tmp_path}...")
+            response_command = ssh_execute_command(
+                ssh_client=ssh_client, 
+                username=username, 
+                password=password, 
+                command=f'sudo rm -f {remote_tmp_path}', 
+                port=port, 
+                reboot=False
+            )
+            if response_command == False:
+                raise Exception("Error deleting file")
+        
         transport.connect(username=username, password=password)
         sftp = transport.open_sftp_client()
 
@@ -29,6 +43,16 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         response_upload = True
         
         if remote_tmp_path != uploaded_location:
+            if overwrite:
+                print(f"Deleting file {uploaded_location}...")
+                response_command = ssh_execute_command(
+                    ssh_client=ssh_client, 
+                    username=username, 
+                    password=password, 
+                    command=f'sudo rm -f {uploaded_location}', 
+                    port=port, 
+                    reboot=False
+                )
             print(f"Moving file to {uploaded_location}...")
             # Move file to the desired location
             response_command = ssh_execute_command(
@@ -75,18 +99,21 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
         
         print("Executing command: ", command)
         stdin, stdout, stderr = client.exec_command(command)
+        # print("stdout:", stdout.read().decode())
+        
         exit_status = stdout.channel.recv_exit_status() # Blocking call
         if exit_status==0:
             print("Command successfully executed!")
             status = True
             
             if reboot:
-                stdin, stdout, stderr = client.exec_command('echo {password} | sudo reboot -h now')
+                stdin_reboot, stdout_reboot, stderr_reboot = client.exec_command('echo {password} | sudo reboot -h now')
             else:
                 print("Reboot skipped.")
         else:
             print("Error", exit_status)
-            print("Detail:", stderr.read().decode())
+            print("Detail:", stdout.read().decode())
+            print("Error Detail:", stderr.read().decode())
             status = False
         
     except paramiko.AuthenticationException:

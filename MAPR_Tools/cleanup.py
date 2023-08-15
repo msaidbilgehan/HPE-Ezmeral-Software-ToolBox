@@ -18,7 +18,7 @@ def initialize_message():
 
 def cleanup():
     commands = [
-        "for servis in $(systemctl list-units --type=service --no-legend | grep mapr- | awk '{{print $1}}'); do {} systemctl disable $servis; done",
+        "for servis in $(systemctl list-units --type=service --no-legend | grep mapr- | awk '{{print $1}}'); do {} systemctl stop $servis && systemctl disable $servis; done",
         "for paket in $(dpkg -l | grep mapr- | awk '{{print $2}}'); do {} apt-get remove --purge -y $paket; done",
         "{} apt --fix-broken install",
         "{} docker stop $(sudo docker ps -a -q)",

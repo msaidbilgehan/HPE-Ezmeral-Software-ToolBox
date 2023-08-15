@@ -11,8 +11,8 @@ Node_Installation/dependencies/mapr-nfs4server_7.2.0.0.20230118195227.GA-1_amd64
 Node_Installation/dependencies/mapr-nfsganesha_3.3.0.0.202111090944_all.deb
 Node_Installation/dependencies/mapr-zk-internal_7.2.0.0.20230118195227.GA-1_amd64.deb
 Node_Installation/dependencies/mapr-zookeeper_7.2.0.0.20230118195227.GA-1_amd64.deb
-__*
+__pycache__
 venv*
-Network_Scanner/results.json
-Network_Scanner/.vscode/settings.json
-Network_Scanner/hosts_*
+results.json
+FQDN_Tools/.vscode/settings.json
+hosts_*

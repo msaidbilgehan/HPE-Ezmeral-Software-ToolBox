@@ -18,6 +18,8 @@ def initialize_message():
 
 def cleanup():
     commands = [
+        "for servis in $(systemctl list-units --type=service --no-legend | grep mapr- | awk '{{print $1}}'); do {} systemctl disable $servis; done",
+        "for paket in $(dpkg -l | grep mapr- | awk '{{print $2}}'); do {} apt-get remove --purge -y $paket; done",
         "{} apt --fix-broken install",
         "{} docker stop $(sudo docker ps -a -q)",
         # "{} docker rmi $(sudo docker images -a -q) -f",
@@ -33,11 +35,10 @@ def cleanup():
         "{} rm -rf /var/run/docker /var/lib/docker /var/run/docker.sock /var/lib/docker.sock ~/.docker /usr/local/bin/docker-compose",
         "{} systemctl daemon-reload",
         "{} systemctl reset-failed",
-        "{} apt-get remove --purge -y mapr-*",
-        "{} rm -rf /opt/mapr",
         "{} apt --fix-broken install",
         "{} apt autoremove -y",
         "{} dpkg --configure -a",
+        "{} rm -rf /opt/mapr",
         "echo Rebooting in 3 seconds...",
         "sleep 1",
         "echo .",
@@ -47,12 +48,13 @@ def cleanup():
         "echo .",
         "{} reboot -h now",
     ]
+    print("Running Commands Below;")
     for command in commands:
         if len(sys.argv) == 2:
-            print(f"Running: echo {sys.argv[1]} | {command.format('sudo -S')}")
-            os.system(f"echo {sys.argv[1]} | {command.format('sudo -S')}")
+            print(f"\t{command.format(f'echo {sys.argv[1]} | sudo -S')}")
+            os.system(command.format(f'echo {sys.argv[1]} | sudo -S'))
         else:
-            print("Running:", command.format("sudo"))
+            print(f"\t{command.format('sudo')}")
             os.system(command.format("sudo"))
 
 

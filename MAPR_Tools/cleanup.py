@@ -39,6 +39,7 @@ def cleanup():
         "{} apt autoremove -y",
         "{} dpkg --configure -a",
         "{} rm -rf /opt/mapr",
+        "{} umount /mapr",
         "echo Rebooting in 3 seconds...",
         "sleep 1",
         "echo .",

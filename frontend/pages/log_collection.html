@@ -3,13 +3,51 @@
 {% block content %}
 
 <div class="container-fluid pt-4 px-4">
-    <div class="bg-secondary text-center rounded p-4">
-        <button type="button" class="btn-lg btn-success m-2" id="run-btn">Run</button>
-        <button type="button" class="btn-lg btn-success m-2" id="load_logs-btn">Load Logs</button>
 
-        <button type="button" class="btn-lg btn-success m-2" id="clear_buffer-btn" onclick="clear_Log_Buffer()">Clear Buffer</button>
-        <button type="button" class="btn-lg btn-success m-2" id="clear_logs-btn" onclick="clear_Log_Collection_Log_Files()">Clear Log Files</button>
+    <div class="row g-4">
+
+        <form class="input-group" id="ipForm">
+            
+            <!-- IP Addresses -->
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-secondary rounded h-100 p-4">
+                    <div class="form-floating mb-3">
+                        <span class="input-group-text">IP Addresses</span>
+                        <textarea class="form-control box_height_150px" aria-label="IP Addresses" spellcheck="false" id="ipInput" placeholder="Enter IP addresses separated by a new line or comma" required></textarea>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- SSH Credentials -->
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-secondary rounded h-100 p-4">
+                    <div class="form-floating mb-3">
+                        <label for="inputEmail" class="form-label">SSH User</label>
+                        <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
+                        <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
+                    </div>
+                    <div class="form-floating mb-3">
+                        <label for="inputSSHPassword" class="form-label">SSH Password</label>
+                        <input type="ssh_password" class="form-control" id="inputSSHPassword">
+                    </div>
+
+                    <input type="submit" class="btn btn-primary" value="Run" id="run-btn">
+                </div>
+            </div>
+        </form>
     </div>
+
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6">
+            <div class="bg-secondary rounded h-100 p-4">
+                <button type="button" class="btn-lg btn-success m-2" id="load_logs-btn">Load Logs</button>
+                <button type="button" class="btn-lg btn-success m-2" id="clear_buffer-btn" onclick="clear_Log_Buffer()">Clear Buffer</button>
+                <button type="button" class="btn-lg btn-success m-2" id="clear_logs-btn" onclick="clear_Log_Collection_Log_Files()">Clear Log Files</button>
+            </div>
+        </div>
+    </div>
+
     <div class=fakeMenu>
         <div class="fakeButtons fakeClose"></div>
         <div class="fakeButtons fakeMinimize"></div>

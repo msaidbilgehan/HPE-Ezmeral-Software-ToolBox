@@ -8,11 +8,11 @@ from flask_commands import log_collection #, cleanup, fqdn_setup
 # Log Collection Thread
 log_collection_thread = Task_Handler_Thread(
     task=log_collection,
-    parameters=[
-        "mapr",
-        "mapr",
-        ["10.34.2.122"]
-    ]
+    parameters={
+        "ssh_username": "mapr",
+        "ssh_password": "mapr",
+        "ip_addresses": ["1.1.1.1"]
+    }
 )
 log_collection_logger_streamer = File_Content_Streamer_Thread(
     path=root_path_log_collection_logs,

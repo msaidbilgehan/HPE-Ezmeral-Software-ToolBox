@@ -1,8 +1,8 @@
-import os
+import json
 
 from flask import Flask, Response
 from flask import render_template
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
 # from flask_commands import log_collection
 from Pools.thread_to_task_pool import log_collection_logger_streamer, log_collection_thread
@@ -54,8 +54,33 @@ def log_collection_page():
 
 @app.route('/log_collection_API',methods = ['POST', 'GET'])
 def log_collection_API():
+
+    # ssh_credentials_json = request.args.get('ssh_credentials')
+    ip_addresses_json = request.args.get('ip_addresses')
+    if ip_addresses_json is not None:
+        ip_addresses = json.loads(ip_addresses_json)
+    else:
+        ip_addresses = []
+        
+    parameters = {
+        "ssh_username": "mapr",
+        "ssh_password": "mapr",
+        "ip_addresses": ip_addresses
+    }
+        
+    log_collection_thread.set_Parameters(
+        parameters=parameters
+    )
+        
     if not log_collection_thread.is_alive():
         log_collection_thread.start()
+    else:
+        # log_collection_thread.stop_Thread()
+        # log_collection_thread.start()
+        jsonify(
+            message="Log collection is already running"
+        )
+
 
     return Response(
         log_collection_logger_streamer.read_file_continues(

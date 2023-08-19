@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+            <a type="button" class="btn btn-success m-2" href="{{ url_for('hashtags_view', page=page - 1) }}">Previous</a>
+            </li>
+            <li class="page-item {% if page == current_page %}active{% endif %}">
+            <a type="button" class="btn btn-success m-2"href="{{ url_for('hashtags_view', page=page) }}">{{ page }}</a>
+            </li>
+            <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+            <a type="button" class="btn btn-success m-2" href="{{ url_for('hashtags_view', page=page + 1) }}">Next</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Hashtags</h6>
+            <a href="">Show All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <!-- <th scope="col">RSS Link Name</th> -->
+                        <th scope="col">Name</th>
+                        <th scope="col">I Auto True?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in hashtags %}
+                    <tr>
+                        <td><input class="form-check-input" type="checkbox"></td>
+                        <!-- <td>{{ row.rss_link_name }}</td> -->
+                        <td>{{ row.name }}</td>
+                        <td>{{ 'Yes' if row.is_auto_true == 1 else 'No' if row.is_auto_true == 0 else "*" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

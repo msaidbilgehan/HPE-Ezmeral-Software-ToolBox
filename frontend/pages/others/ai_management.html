@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- Sales Chart Start -->
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        {% include 'template/ml_chart.html' %}
+        <div class="col-sm-12 col-xl-6">
+            <div class="bg-secondary text-center rounded p-4">
+                <div class="mb-4">
+                    <button type="button" class="btn btn-success m-2 w-100" id="move_labeled_data_training_pool-btn">Move Labeled Data to Training Pool</button>
+                </div>
+                <div class="mb-4">
+                    <button type="button" class="btn btn-success m-2 w-100" id="move_unlabeled_data_prediction_pool-btn">Move UnLabeled Data to Prediction Pool</button>
+                </div>
+                <div class="mb-4">
+                    <button type="button" class="btn btn-success m-2 w-100" id="start_ai_training-btn">Start Training</button>
+                </div>
+                <div class="mb-4">
+                    <button type="button" class="btn btn-success m-2 w-100" id="start_ai_prediction-btn">Start Prediction</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Sales Chart End -->
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="{{ url_for('company_detail_edit') }}" method="POST">
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4">
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-secondary rounded h-100 p-4">
+                    <h6 class="mb-4">Company Details</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Company Name</span>
+                            <input id="company_name" name="company_name" type="text" class="form-control" aria-label="company_name" value='{{company_name}}'>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Company Description</span>
+                            <textarea id="company_description" name="company_description" class="form-control" aria-label="With textarea">{{company_description}}</textarea>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Company Interests</span>
+                            <input id="company_interests" name="company_interests" type="text" class="form-control" aria-label="company_interests" value='{{company_interests}}'>
+                        </div>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">Company Not Interests</span>
+                            <input id="company_interests" name="company_not_interests" type="text" class="form-control" aria-label="company_not_interests" value='{{company_not_interests}}'>
+                        </div>
+                        <div class="mb-3">
+                            <label for="companyInputEmail1" class="form-label">Email address</label>
+                            <input id="company_email" name="company_email" type="email" class="form-control" value='{{company_email}}'>
+                        </div>
+                        <label for="basic-url" class="form-label">Website</label>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon3">https://example.com/</span>
+                            <input id="website" name="website" type="text" class="form-control" aria-describedby="basic-addon3" value='{{website}}'>
+                        </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-secondary rounded h-100 p-4">
+                        <h6 class="mb-4">Linkedin</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">@</span>
+                            <input id="linkedin" name="linkedin" type="text" class="form-control" placeholder="Username" aria-label="Username" value='{{linkedin}}'>
+                        </div>
+                        <h6 class="mb-4">Instagram</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">@</span>
+                            <input id="instagram" name="instagram" type="text" class="form-control" placeholder="Username" aria-label="Username" value='{{instagram}}'>
+                        </div>
+                        <h6 class="mb-4">Facebook</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">@</span>
+                            <input id="facebook" name="facebook" type="text" class="form-control" placeholder="Username" aria-label="Username" value='{{facebook}}'>
+                        </div>
+                        <h6 class="mb-4">Tweeter</h6>
+                        <div class="input-group mb-3">
+                            <span class="input-group-text">@</span>
+                            <input id="tweeter" name="tweeter" type="text" class="form-control" placeholder="Username" aria-label="Username" value='{{tweeter}}'>
+                        </div>
+                </div>
+            </div>
+
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-secondary text-center rounded p-4">
+                    <button type="submit" class="btn btn-success py-3 w-100 mb-4" id="save-company-details-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

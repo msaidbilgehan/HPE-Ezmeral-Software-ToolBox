@@ -1,0 +1,40 @@
+.notification {
+    display: none;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    font-size: 17px;
+    opacity: 0;
+    /* start invisible */
+    transition: opacity 0.7s ease-in-out;
+    /* fade in/out over 0.7 seconds */
+
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    /* high value to ensure it appears above other elements */
+}
+
+.notification.show {
+    opacity: 1;
+    /* fully visible when the 'show' class is added */
+}
+
+.info {
+    background-color: #4CAF50;
+    /* Green */
+    color: white;
+}
+
+.warning {
+    background-color: #ff9800;
+    /* Orange */
+    color: white;
+}
+
+.error {
+    background-color: #f44336;
+    /* Red */
+    color: white;
+}

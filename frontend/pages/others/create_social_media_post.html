@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action="{{ url_for('create_social_media_post') }}" method="POST">
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-secondary rounded h-100 p-4">
+            <h6 class="mb-4">Content</h6>
+            <div class="form-floating mb-3">
+                <input type="" class="form-control" id="floatingInput" name="aim"
+                    placeholder="Aim" aria-describedby="aim_help">
+                <label for="floatingInput">Aim</label>
+                <div id="aim_help" class="form-text">State the purpose and destination of the post. For example, promoting a product, inviting to an event, drawing attention
+                to a blog post, building brand awareness, etc. Audience: Define the audience the post is targeting. For example, you can
+                determine by criteria such as age, gender, interests, and demographics.</div>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="" class="form-control" id="floatingInput" name="tone_and_style"
+                    placeholder="Tone and style" aria-describedby="tone_and_style_help">
+                <label for="floatingInput">Tone and style</label>
+                <div id="tone_and_style_help" class="form-text">Specify the tone and style of the post. For example, friendly, professional, entertaining, informative, inspiring, etc.
+                This will help your post better communicate with the target audience.</div>
+            </div>
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="Description" id="floatingTextarea" name="description"
+                    style="height: 100px;" aria-describedby="description_help"></textarea>
+                <label for="floatingTextarea">Description</label>
+                <div id="description_help" class="form-text">You can directly copy the news description to here.</div>
+            </div>
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="Keywords and Hashtags" id="floatingTextarea"name="keywords_and_hashtags"
+                    style="height: 100px;" aria-describedby="keywords_and_hashtags_help"></textarea>
+                <label for="floatingTextarea">Keywords and Hashtags</label>
+                <div id="keywords_and_hashtags_help" class="form-text">Specify the keywords and hashtags you want to use in your post. This will help your post reach the target audience and
+                perform better in searches.</div>
+            </div>
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="Target Group Area" id="floatingTextarea" name="target_group"
+                    style="height: 100px;" aria-describedby="target_group_help"></textarea>
+                <label for="floatingTextarea">Target Group</label>
+                <div id="target_group_help" class="form-text">Define the audience the post is targeting. For example, you can determine by criteria such as age, gender, interests,
+                and demographics.</div>
+            </div>
+            <div class="form-floating">
+                <textarea class="form-control" placeholder="Target Group Area" id="floatingTextarea" name="restrictions_and_special_requests"
+                    style="height: 100px;" aria-describedby="restrictions_and_special_requests_help"></textarea>
+                <label for="floatingTextarea">Restrictions and Special Requests</label>
+                <div id="restrictions_and_special_requests_help" class="form-text">If there are any restrictions or special requests regarding your post, indicate those as well. For example, a character limit, a text that must be written in a certain language, etc.</div>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="" class="form-control" id="floatingInput" name="language" placeholder="language" aria-describedby="language_help">
+                <label for="floatingInput">Language</label>
+                <div id="language_help" class="form-text">Select post language such as English, Turkish, etc...</div>
+            </div>
+            <select class="form-select" name="platforms">
+                <option selected="any platform">Any Social Media Platform</option>
+                <option value="facebook">Facebook</option>
+                <option value="instagram">Instagram</option>
+                <option value="twitter">Twitter</option>
+                <option value="linkedin">Linkedin</option>
+                <option value="website">Website</option>
+            </select>
+            <div class="container-fluid pt-4 px-4">
+                <div class="bg-secondary text-center rounded p-4">
+                    <button type="submit" class="btn btn-success py-3 w-100 mb-4" id="create_post-btn">Create Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Created Last Post</h6>
+            <a href="">Show All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <th scope="col">Post Content</th>
+                        <th scope="col">Aim</th>
+                        <th scope="col">Tone and Style</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Keywords and Hashtags</th>
+                        <th scope="col">Restrictions and Special Requests</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input class="form-check-input" type="checkbox"></td>
+                        <td>{{ created_last_post.post }}</td>
+                        <td>{{ created_last_post.aim }}</td>
+                        <td>{{ created_last_post.tone_and_style}}</td>
+                        <td>{{ created_last_post.description}}</td>
+                        <td>{{ created_last_post.keywords_and_hashtags}}</td>
+                        <td>{{ created_last_post.restrictions_and_special_requests}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Recent News</h6>
+            <a href="">Show All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <th scope="col">Publish Date</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Is Interesting?</th>
+                        <th scope="col">Prediction</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in total_records %}
+                    <tr>
+                        <td><input class="form-check-input" type="checkbox"></td>
+                        <td>{{ row.publish_date }}</td>
+                        <td>{{ row.title }}</td>
+                        <td>{{ row.description }}</td>
+                        <td>{{ 'Yes' if row.is_interesting == 1 else 'No' if row.is_interesting == 0 else "*" }}</td>
+                        <td>{{ 'Yes' if row.predicted == 1 else 'No' if row.predicted == 0 else "*" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

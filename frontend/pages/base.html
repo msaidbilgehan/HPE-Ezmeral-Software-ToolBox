@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>HPE Ezmeral Data Fabric Tools</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="ai, assistant, social media, ai assistant, social media assistant, ai based social media assistant"
+        name="keywords">
+    <meta content="" name="description">
+</head>
+
+<body>
+    <header>
+        {% include 'template/header.html' %}
+    </header>
+    <div class="container-fluid position-relative d-flex p-2">
+        {% include 'template/notification.html' %}
+        {% include 'template/spinner.html' %}
+        {% include 'template/sidebar.html' %}
+        <div class="content">
+            {% include 'template/navbar.html' %}
+            
+            <main>
+                {% block content %}
+                {% endblock %}
+            </main>
+        {% include 'template/footer.html' %}
+        </div>
+        
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+</body>
+
+</html>

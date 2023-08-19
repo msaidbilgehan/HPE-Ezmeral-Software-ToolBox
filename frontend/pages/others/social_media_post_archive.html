@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Created Posts</h6>
+            <a href="">Show All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <th scope="col">Post Content</th>
+                        <th scope="col">Aim</th>
+                        <th scope="col">Tone and Style</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Keywords and Hashtags</th>
+                        <th scope="col">Target Group</th>
+                        <th scope="col">Restrictions and Special Requests</th>
+                        <th scope="col">Language</th>
+                        <th scope="col">Platform</th>
+                        <th scope="col">Shared?</th>
+                    </tr>
+                </thead>
+                <style>
+                    table tr {
+                        font-size: 13px;
+                    }
+                </style>
+                <tbody>
+                    {% for row in total_records %}
+                    <tr>
+                        <td><input class="form-check-input" type="checkbox"></td>
+                        <td>{{ row.post }}</td>
+                        <td>{{ row.aim }}</td>
+                        <td>{{ row.tone_and_style}}</td>
+                        <td>{{ row.description}}</td>
+                        <td>{{ row.keywords_and_hashtags}}</td>
+                        <td>{{ row.restrictions_and_special_requests}}</td>
+                        <td>{{ row.language}}</td>
+                        <td>{{ row.platform }}</td>
+                        <td>{{ 'Yes' if row.is_shared == 1 else 'No' if row.is_shared == 0 else "*" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

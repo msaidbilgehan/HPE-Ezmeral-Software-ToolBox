@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="">
+            <div class="bg-secondary text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">ML Scores</h6>
+                    <a href="{{ url_for('ai_management') }}">Show All</a>
+                </div>
+                <canvas id="ml-scores"></canvas>
+            </div>
+        </div>
+        <script>
+            {% if ml_scores is not undefined %}
+            window.mlScores = {{ ml_scores | tojson | safe }};
+            {% endif %}
+        </script>
+    </div>
+</div>
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Recent News</h6>
+            <a href="">Show All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Accuracy</th>
+                        <th scope="col">Precision</th>
+                        <th scope="col">Recall</th>
+                        <th scope="col">Created At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in total_records %}
+                    <tr>
+                        <td><input class="form-check-input" type="checkbox"></td>
+                        <td>{{ row.name }}</td>
+                        <td>{{ row.accuracy}}</td>
+                        <td>{{ row.precision}}</td>
+                        <td>{{ row.recall }}</td>
+                        <td>{{ row.created_at }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

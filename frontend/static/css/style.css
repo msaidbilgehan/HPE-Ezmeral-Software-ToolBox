@@ -82,6 +82,9 @@
     border-radius: 50px;
 }
 
+.btn-custom {
+    background-color: inherit;
+}
 
 /*** Layout ***/
 .sidebar {

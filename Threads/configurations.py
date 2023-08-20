@@ -1,19 +1,25 @@
 
 from Classes.File_Handler import File_Content_Streamer_Thread
-from Classes.Task_Handler import Task_Handler_Thread
-from Libraries.logger_module import root_path_log_collection_logs #, root_path_cleanup_logs, root_path_fqdn_logs
-from flask_commands import log_collection #, cleanup, fqdn_setup
+from Classes.Log_Collection_Class import Log_Collection_Class
+from Libraries.logger_module import log_collection_logger, root_path_log_collection_logs #, root_path_cleanup_logs, root_path_fqdn_logs
+import logging
 
 
 # Log Collection Thread
-log_collection_thread = Task_Handler_Thread(
-    task=log_collection,
-    parameters={
-        "ssh_username": "mapr",
-        "ssh_password": "mapr",
-        "ip_addresses": ["1.1.1.1"]
-    }
+log_collection_thread = Log_Collection_Class(
+    name="Log Collection Thread",
+    logger=None, # log_collection_logger
+    logger_level_stdo=logging.DEBUG,
+    logger_level_file=logging.DEBUG,
+    logger_file_path=root_path_log_collection_logs,
 )
+# log_collection_thread.set_Parameters(
+#     ssh_username="mapr",
+#     ssh_password="mapr",
+#     ip_addresses=[]
+# )
+log_collection_thread.start_Thread()
+
 log_collection_logger_streamer = File_Content_Streamer_Thread(
     path=root_path_log_collection_logs,
     # wait_thread=log_collection_thread,

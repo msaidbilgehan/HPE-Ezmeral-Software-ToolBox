@@ -4,8 +4,7 @@ from flask import Flask, Response
 from flask import render_template
 from flask import Flask, jsonify, request
 
-# from flask_commands import log_collection
-from Pools.thread_to_task_pool import log_collection_logger_streamer, log_collection_thread
+from Threads.configurations import log_collection_logger_streamer, log_collection_thread
 
 
 app = Flask(__name__, template_folder='frontend/pages', static_folder='frontend/static')
@@ -54,54 +53,53 @@ def log_collection_page():
 
 @app.route('/log_collection_API',methods = ['POST', 'GET'])
 def log_collection_API():
-
-    # ssh_credentials_json = request.args.get('ssh_credentials')
+    ssh_username_json = request.args.get('ssh_username')
+    ssh_password_json = request.args.get('ssh_password')
     ip_addresses_json = request.args.get('ip_addresses')
+    
+    
+    if ssh_username_json is not None:
+        ssh_username = json.loads(ssh_username_json)
+    else:
+        ssh_username = ""
+        
+    if ssh_password_json is not None:
+        ssh_password = json.loads(ssh_password_json)
+    else:
+        ssh_password = ""
+    
     if ip_addresses_json is not None:
         ip_addresses = json.loads(ip_addresses_json)
     else:
         ip_addresses = []
-        
-    parameters = {
-        "ssh_username": "mapr",
-        "ssh_password": "mapr",
-        "ip_addresses": ip_addresses
-    }
-        
+    
+    
     log_collection_thread.set_Parameters(
-        parameters=parameters
+        ssh_username=ssh_username,
+        ssh_password=ssh_password,
+        ip_addresses=ip_addresses
     )
-        
-    if not log_collection_thread.is_alive():
-        log_collection_thread.start()
+    
+    if not log_collection_thread.is_Running():
+        log_collection_thread.start_Task()
     else:
-        # log_collection_thread.stop_Thread()
-        # log_collection_thread.start()
-        jsonify(
-            message="Log collection is already running"
-        )
-
-
-    return Response(
-        log_collection_logger_streamer.read_file_continues(
-            is_yield=True,
-            sleep_time=1
-        ), 
-        mimetype='text/event-stream',
-        headers={
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-            'X-Accel-Buffering': 'no' # Disable buffering
-        }
+        log_collection_thread.stop_Task()
+        log_collection_thread.wait_To_Stop_Once_Task()
+        log_collection_thread.start_Task()
+        
+    return jsonify(
+        message="Log collection task queued"
     )
 
 
-@app.route('/log_collection_buffered_API',methods = ['POST', 'GET'])
-def log_collection_buffered_API():
+@app.route('/log_collection_log_endpoint',methods = ['POST', 'GET'])
+def log_collection_log_endpoint():
     return Response(
         log_collection_logger_streamer.read_file_continues(
             is_yield=True,
-            sleep_time=0# 0.3
+            sleep_time=0, # 0.3
+            new_sleep_time=1,
+            content_control=False
         ), 
         mimetype='text/event-stream',
         headers={
@@ -128,6 +126,17 @@ def clear_Log_Buffer():
     return jsonify(
         message="Log buffer cleared"
     )
+    
+
+@app.route('/log_collection_log_stop_endpoint',methods = ['POST', 'GET'])
+def log_collection_stop_endpoint():
+    log_collection_thread.stop_Task()
+    log_collection_thread.wait_To_Stop_Task()
+    
+    return jsonify(
+        message="Log collection tasks stopped"
+    )
+    
     
 ##########################
 ##########################

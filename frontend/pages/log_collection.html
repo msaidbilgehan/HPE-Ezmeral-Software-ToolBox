@@ -4,7 +4,7 @@
 
 <div class="container-fluid pt-4 px-4">
 
-    <div class="row g-4">
+    <div class="row g-4 p-1">
 
         <form class="input-group" id="ipForm">
             
@@ -13,7 +13,7 @@
                 <div class="bg-secondary rounded h-100 p-4">
                     <div class="form-floating mb-3">
                         <span class="input-group-text">IP Addresses</span>
-                        <textarea class="form-control box_height_150px" aria-label="IP Addresses" spellcheck="false" id="ipInput" placeholder="Enter IP addresses separated by a new line or comma" required></textarea>
+                        <textarea class="form-control box_height_150px" aria-label="IP Addresses" spellcheck="false" id="input_IP_Addresses" placeholder="Enter IP addresses separated by a new line or comma" required></textarea>
                     </div>
                 </div>
             </div>
@@ -23,39 +23,42 @@
             <div class="col-sm-12 col-xl-6">
                 <div class="bg-secondary rounded h-100 p-4">
                     <div class="form-floating mb-3">
-                        <label for="inputEmail" class="form-label">SSH User</label>
-                        <input type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
+                        <input type="username" class="form-control" id="input_SSH_Username" aria-describedby="emailHelp">
+                        <label for="floatingInput" class="form-label">SSH User</label>
                         <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
                     </div>
                     <div class="form-floating mb-3">
-                        <label for="inputSSHPassword" class="form-label">SSH Password</label>
-                        <input type="ssh_password" class="form-control" id="inputSSHPassword">
+                        <input type="password" class="form-control" id="input_SSH_Password">
+                        <label for="floatingInput" class="form-label">SSH Password</label>
                     </div>
 
-                    <input type="submit" class="btn btn-primary" value="Run" id="run-btn">
+                    <input type="submit" class="btn btn-lg btn-outline-success" value="Run" id="run-btn">
+                    <button class="btn btn-lg btn-outline-danger" id="stop-btn">Stop</button>
                 </div>
             </div>
         </form>
-    </div>
 
-    <div class="row g-4">
-        <div class="col-sm-12 col-xl-6">
+        <div class="col-sm-12 col-xl-12 align_item_center">
             <div class="bg-secondary rounded h-100 p-4">
-                <button type="button" class="btn-lg btn-success m-2" id="load_logs-btn">Load Logs</button>
-                <button type="button" class="btn-lg btn-success m-2" id="clear_buffer-btn" onclick="clear_Log_Buffer()">Clear Buffer</button>
-                <button type="button" class="btn-lg btn-success m-2" id="clear_logs-btn" onclick="clear_Log_Collection_Log_Files()">Clear Log Files</button>
+                <button type="button" class="btn btn-lg btn-outline-success m-2" id="listen_logs-btn">Listen Logs</button>
+                <button type="button" class="btn btn-lg btn-outline-warning m-2" id="stop_logs-btn" onclick="terminal_EventSource_Stop()">Stop Logs</button>
+                <button type="button" class="btn btn-lg btn-outline-info m-2" id="clear_buffer-btn" onclick="clear_Log_Buffer()">Clear Buffer</button>
+                <button type="button" class="btn btn-lg btn-outline-info m-2" id="clear_logs-btn" onclick="clear_Log_Collection_Log_Files()">Clear Log Files</button>
+            </div>
+        </div>
+
+        <div class="bg-secondary rounded h-100 p-4">
+            <div class=fakeMenu>
+                <div class="fakeButtons fakeClose"></div>
+                <div class="fakeButtons fakeMinimize"></div>
+                <div class="fakeButtons fakeZoom"></div>
+            </div>
+            <div class="fakeScreen">
+                <p id="stream_content" class="line2"></p>
             </div>
         </div>
     </div>
-
-    <div class=fakeMenu>
-        <div class="fakeButtons fakeClose"></div>
-        <div class="fakeButtons fakeMinimize"></div>
-        <div class="fakeButtons fakeZoom"></div>
-    </div>
-    <div class="fakeScreen">
-        <p id="stream_content" class="line2"></p>
-    </div>
+    
 </div>
 
 

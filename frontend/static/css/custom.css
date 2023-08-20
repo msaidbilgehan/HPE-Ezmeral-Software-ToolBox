@@ -1,3 +1,7 @@
 .box_height_150px {
     height: 150px !important;
 }
+
+.align_item_center {
+    text-align: center;
+}

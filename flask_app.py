@@ -5,9 +5,13 @@ from flask import render_template
 from flask import Flask, jsonify, request
 
 from Threads.configurations import log_collection_logger_streamer, log_collection_thread
-
+from threading import Lock
 
 app = Flask(__name__, template_folder='frontend/pages', static_folder='frontend/static')
+
+
+__log_collection_endpoint_lock = Lock()
+__log_collection_stop_endpoint_lock = Lock()
 
 
 @app.route('/',methods = ['POST', 'GET'])
@@ -51,42 +55,51 @@ def log_collection_page():
     )
     
 
-@app.route('/log_collection_API',methods = ['POST', 'GET'])
-def log_collection_API():
-    ssh_username_json = request.args.get('ssh_username')
-    ssh_password_json = request.args.get('ssh_password')
-    ip_addresses_json = request.args.get('ip_addresses')
+@app.route('/log_collection_endpoint',methods = ['POST', 'GET'])
+def log_collection_endpoint():
     
+    global __log_collection_endpoint_lock
     
-    if ssh_username_json is not None:
-        ssh_username = json.loads(ssh_username_json)
+    if not __log_collection_endpoint_lock.locked():
+        with __log_collection_endpoint_lock:
+            ssh_username_json = request.args.get('ssh_username')
+            ssh_password_json = request.args.get('ssh_password')
+            ip_addresses_json = request.args.get('ip_addresses')
+            
+            
+            if ssh_username_json is not None:
+                ssh_username = json.loads(ssh_username_json)
+            else:
+                ssh_username = ""
+                
+            if ssh_password_json is not None:
+                ssh_password = json.loads(ssh_password_json)
+            else:
+                ssh_password = ""
+            
+            if ip_addresses_json is not None:
+                ip_addresses = json.loads(ip_addresses_json)
+            else:
+                ip_addresses = []
+            
+            
+            log_collection_thread.set_Parameters(
+                ssh_username=ssh_username,
+                ssh_password=ssh_password,
+                ip_addresses=ip_addresses
+            )
+            
+            if not log_collection_thread.is_Running():
+                log_collection_thread.start_Task()
+            else:
+                log_collection_thread.stop_Task()
+                log_collection_thread.wait_To_Stop_Once_Task()
+                log_collection_thread.start_Task()
     else:
-        ssh_username = ""
-        
-    if ssh_password_json is not None:
-        ssh_password = json.loads(ssh_password_json)
-    else:
-        ssh_password = ""
+        return jsonify(
+            message="Log collection task already running"
+        )
     
-    if ip_addresses_json is not None:
-        ip_addresses = json.loads(ip_addresses_json)
-    else:
-        ip_addresses = []
-    
-    
-    log_collection_thread.set_Parameters(
-        ssh_username=ssh_username,
-        ssh_password=ssh_password,
-        ip_addresses=ip_addresses
-    )
-    
-    if not log_collection_thread.is_Running():
-        log_collection_thread.start_Task()
-    else:
-        log_collection_thread.stop_Task()
-        log_collection_thread.wait_To_Stop_Once_Task()
-        log_collection_thread.start_Task()
-        
     return jsonify(
         message="Log collection task queued"
     )
@@ -130,8 +143,16 @@ def clear_Log_Buffer():
 
 @app.route('/log_collection_log_stop_endpoint',methods = ['POST', 'GET'])
 def log_collection_stop_endpoint():
-    log_collection_thread.stop_Task()
-    log_collection_thread.wait_To_Stop_Task()
+    global __log_collection_stop_endpoint_lock
+    
+    if not __log_collection_stop_endpoint_lock.locked():
+        with __log_collection_stop_endpoint_lock:
+            log_collection_thread.stop_Task()
+            log_collection_thread.wait_To_Stop_Task()
+    else:
+        return jsonify(
+            message="Log collection task stop already running"
+        )
     
     return jsonify(
         message="Log collection tasks stopped"

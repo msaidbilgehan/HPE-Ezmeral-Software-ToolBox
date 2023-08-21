@@ -111,7 +111,7 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
     var ssh_passwordJson = JSON.stringify(ssh_password);
 
     // Append the IP addresses as a query parameter
-    var url = '/log_collection_API'
+    var url = '/log_collection_endpoint'
     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
     url = url + '&ip_addresses=' + encodeURIComponent(ipAddressesJson);

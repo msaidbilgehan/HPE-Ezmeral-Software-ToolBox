@@ -27,6 +27,7 @@
 
 .fakeMenu {
     /* width: 550px; */
+    height: fit-content !important;
     width: 100%;
 
     box-sizing: border-box;

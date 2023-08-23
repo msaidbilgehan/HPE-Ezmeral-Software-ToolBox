@@ -1,6 +1,7 @@
 
 from abc import ABC, abstractmethod
 import logging
+from logging.handlers import RotatingFileHandler
 import sys
 import threading
 import time
@@ -8,7 +9,7 @@ import time
 
 
 class Task_Handler_Class(ABC, threading.Thread):
-   def __init__(self, logger=None, logger_level_stdo: int = logging.DEBUG, logger_level_file: int = logging.DEBUG, logger_file_path: str ="", *args, **kwargs):
+   def __init__(self, logger=None, logger_level_stdo: int = logging.DEBUG, logger_level_file: int = logging.DEBUG, logger_file_path: str ="", mode="a", maxBytes=5*1024*1024, backupCount=2, *args, **kwargs):
       super(Task_Handler_Class, self).__init__(*args, **kwargs)
 
       self.logger_file_path = logger_file_path
@@ -17,6 +18,9 @@ class Task_Handler_Class(ABC, threading.Thread):
          self.create_Logger(
             level_stdo=logger_level_stdo,
             level_file=logger_level_file,
+            mode=mode, 
+            maxBytes=maxBytes,
+            backupCount=backupCount
          )
       else:
          self.logger = logger
@@ -36,7 +40,7 @@ class Task_Handler_Class(ABC, threading.Thread):
       self.daemon = True
             
             
-   def create_Logger(self, level_stdo: int = logging.DEBUG, level_file: int = logging.DEBUG) -> int:
+   def create_Logger(self, level_stdo: int = logging.DEBUG, level_file: int = logging.DEBUG, mode="a", maxBytes=5*1024*1024, backupCount=2) -> int:
       self.logger = logging.getLogger(self.name)
       self.logger.setLevel(logging.DEBUG)
 
@@ -49,7 +53,7 @@ class Task_Handler_Class(ABC, threading.Thread):
       self.logger.addHandler(self.stdout_handler)
 
       if self.logger_file_path:
-         self.file_handler = logging.FileHandler(self.logger_file_path)
+         self.file_handler = RotatingFileHandler(self.logger_file_path, mode=mode, maxBytes=maxBytes, backupCount=backupCount)
          self.file_handler.setLevel(level_file)
          self.file_handler.setFormatter(self.file_formatter)
 

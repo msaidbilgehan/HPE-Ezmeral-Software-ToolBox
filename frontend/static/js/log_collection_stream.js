@@ -1,7 +1,7 @@
 var terminal_source;
 
 function terminal_EventSource_Start(url) {
-    clear_Log_Buffer();
+    clear_Terminal();
 
     var contentDiv = document.getElementById('stream_content');
     if (terminal_source) {
@@ -51,11 +51,8 @@ function clear_Log_Collection_Log_Files() {
         });
 }
 
-function clear_Log_Buffer() {
-    var contentDiv = document.getElementById('stream_content');
-    contentDiv.innerHTML = ""; // clear the content div
-
-    fetch('/clear_Log_Buffer')
+function clear_Collected_Log_Files() {
+    fetch('/clear_Collected_Log_Files')
         .then(response => response.json())
         .then(data => {
             // document.getElementById('output').innerText = data.message;
@@ -65,6 +62,11 @@ function clear_Log_Buffer() {
             console.error('An error occurred:', error);
             showNotification('An error occurred: ' + error, "error");
         });
+}
+
+function clear_Terminal() {
+    var contentDiv = document.getElementById('stream_content');
+    contentDiv.innerHTML = ""; // clear the content div
 }
 
 
@@ -129,6 +131,5 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
         showNotification(error, "error");
     });
 });
-
 
 terminal_EventSource_Start('/log_collection_log_endpoint');

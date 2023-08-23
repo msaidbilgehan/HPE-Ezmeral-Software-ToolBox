@@ -18,3 +18,4 @@ FQDN_Tools/.vscode/settings.json
 hosts_*
 node_logs
 *.log
+archives

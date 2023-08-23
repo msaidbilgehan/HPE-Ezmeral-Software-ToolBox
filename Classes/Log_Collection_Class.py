@@ -7,11 +7,13 @@ import time
 
 from Classes.Task_Handler import Task_Handler_Class
 from Libraries.network_tools import ssh_execute_command, ssh_receive_file
-
+from Libraries.tools import list_dir
 
 class Log_Collection_Class(Task_Handler_Class):
-   def __init__(self, *args, **kwargs):
+    def __init__(self, download_path, *args, **kwargs):
         super(Log_Collection_Class, self).__init__(*args, **kwargs)
+        
+        self.download_path = download_path
         
         self.__parameters_template = {
             "ssh_username": "",
@@ -21,7 +23,7 @@ class Log_Collection_Class(Task_Handler_Class):
         self.parameters = self.__parameters_template.copy()
 
 
-   def set_Parameters(self, ssh_username: str, ssh_password: str, ip_addresses: list[str]) -> int:
+    def set_Parameters(self, ssh_username: str, ssh_password: str, ip_addresses: list[str]) -> int:
         self.parameters = self.__parameters_template.copy()
         
         self.parameters["ssh_username"] = ssh_username
@@ -30,14 +32,13 @@ class Log_Collection_Class(Task_Handler_Class):
         return 0
    
 
-   def task(self, ssh_username, ssh_password, ip_addresses):
+    def task(self, ssh_username, ssh_password, ip_addresses):
         self.logger.info(f"Collecting Logs of {ip_addresses} ...")
-      
+
         try:
             # Create directory of Given Path if not exists
-            root_folder_logs = "./node_logs/"
-            if not os.path.exists(root_folder_logs):
-                os.makedirs(root_folder_logs)
+            if not os.path.exists(self.download_path):
+                os.makedirs(self.download_path)
             
             # Check Thread State
             time.sleep(1)
@@ -45,7 +46,7 @@ class Log_Collection_Class(Task_Handler_Class):
                 return -1
             
             log_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            timestamp_folder_logs = root_folder_logs + log_timestamp + "/"
+            timestamp_folder_logs = self.download_path + log_timestamp + "/"
             
             # Execute cleanup.py over SSH
             for ip_address in ip_addresses:
@@ -93,3 +94,13 @@ class Log_Collection_Class(Task_Handler_Class):
         self.logger.info(f"Log Connection Finished for IP Addresses: {ip_addresses}")
         
         return 0
+    
+    
+    def get_Collected_Log_Folder(self):
+        return self.download_path
+    
+    
+    def get_Logs(self):
+        root_path_log = "/".join(self.logger_file_path.split("/")[:-1])
+        log_file_name = self.logger_file_path.split("/")[-1]
+        return [root_path_log + "/" + i for i in list_dir(root_path_log) if log_file_name in i]

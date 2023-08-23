@@ -1,17 +1,23 @@
+import logging
 
 from Classes.File_Handler import File_Content_Streamer_Thread
 from Classes.Log_Collection_Class import Log_Collection_Class
-from Libraries.logger_module import log_collection_logger, root_path_log_collection_logs #, root_path_cleanup_logs, root_path_fqdn_logs
-import logging
+from Libraries.logger_module import root_path_log_collection_logs #, log_collection_logger, root_path_cleanup_logs, root_path_fqdn_logs
+
+from paths import root_path_log_collection_logs, root_log_collection_folder
 
 
 # Log Collection Thread
 log_collection_thread = Log_Collection_Class(
     name="Log Collection Thread",
+    download_path=root_log_collection_folder,
     logger=None, # log_collection_logger
     logger_level_stdo=logging.DEBUG,
     logger_level_file=logging.DEBUG,
     logger_file_path=root_path_log_collection_logs,
+    mode="a", 
+    maxBytes=128*1024, 
+    backupCount=2
 )
 # log_collection_thread.set_Parameters(
 #     ssh_username="mapr",

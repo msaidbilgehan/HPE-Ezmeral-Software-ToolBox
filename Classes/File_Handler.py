@@ -37,7 +37,7 @@ class File_Content_Streamer_Thread(threading.Thread):
     
 
     def read_file_continues(self, wait_thread=None, is_yield=False, store_in_buffer=True, is_print=False, sleep_time=1., new_sleep_time=1., content_control=True):
-        time.sleep(1)
+        time.sleep(0.1)
         
         if content_control:
             if os.path.exists(self.path):
@@ -68,6 +68,12 @@ class File_Content_Streamer_Thread(threading.Thread):
         self._flag_stop = False
                 
         current_sleep_time = sleep_time
+        while not os.path.exists(self.path) and not self._flag_stop:
+            if wait_thread is not None:
+                if not wait_thread.is_alive():
+                    break
+            time.sleep(0.2)
+            
         with open(self.path, 'r') as file:
             while not self._flag_stop:
                 raw_line = file.readline()

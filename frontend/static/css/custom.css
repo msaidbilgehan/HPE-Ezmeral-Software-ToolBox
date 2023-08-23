@@ -1,7 +1,39 @@
+.form_area_auto_fit {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+}
+
+.text_area_height_100 {
+    height: 100% !important;
+}
+
 .box_height_150px {
     height: 150px !important;
 }
 
+.box_height_200px {
+    height: 200px !important;
+}
+
+.box_height_250px {
+    height: 250px !important;
+}
+
 .align_item_center {
     text-align: center;
+}
+
+.logo-container {
+    padding: 10px;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+.logo {
+    width: 100px;
+    height: auto;
+    margin: 0 auto;
+    display: block;
 }

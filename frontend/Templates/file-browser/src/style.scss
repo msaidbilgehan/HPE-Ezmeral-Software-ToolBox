@@ -1,0 +1,421 @@
+$spacing: 1rem;
+$primary: #47cedf;
+$secondary: #c298cf;
+$black: #787878;
+$border-radius: 5px;
+
+$bp: 900px;
+
+html {
+    box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: inherit;
+}
+
+body {
+    background: #efefef;
+    font-size: 100%;
+    line-height: 1.5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial,
+        sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    color: $black;
+    
+    @media (min-width: $bp) {
+        padding: $spacing;
+    }
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+[draggable] {
+  user-select: none;
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+
+
+h1,h2,h3,h4,h5,h6 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.btn {
+    display: inline-block;
+    margin: $spacing 0 0;
+    line-height: 1;
+    font-size: .75rem;
+    font-weight: bold;
+    padding: $spacing *.8 $spacing * 2;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: white;
+    background: $primary;
+    border: none;
+    outline: none;
+    
+    &:hover,
+    &:focus{
+        background: darken($primary, 10%);
+        cursor: pointer;
+    }
+    
+    &:active {
+        transform:translateY(2px);
+    }
+}
+
+
+.ui {
+    position: relative;
+    display: flex;
+    margin: 0 auto;
+    max-width: $bp;
+    min-height: 100vh;
+    background: #fff;
+    overflow: hidden;
+    
+    @media (min-width: $bp) {
+        margin: 10vh auto 0;
+        min-height: 50vh;
+        box-shadow: 0 0 20px rgba($black, 0.1);
+        border-radius: $border-radius;
+    }
+    
+    &.upload-drop--dragover {
+        .ui__sidebar {
+            opacity: .5;
+        }
+        
+        .ui__main {
+            transition: border .5s ease;
+            border: 4px dashed $primary;
+            
+            > * {
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+.ui__sidebar {
+    display: block;
+    background: #404040;
+    color: #ccc;
+    overflow: hidden;
+    transition: all .5s ease;
+    width: 0;
+    max-width: 300px;
+    max-height: 100%;
+    
+    .ui__sidebar--open & {
+        display: block;
+        width: 80%;
+        opacity: 1;
+        padding: $spacing;
+        border-right: 0.5rem solid #efefef;
+    }
+    
+    @media (min-width: $bp) {
+        display: block;
+        width: 300px;
+        padding: $spacing;
+        border-right: 0.5rem solid #efefef;
+        
+        .ui__sidebar--open & {
+            width: 300px
+        }
+    }
+}
+
+.ui__main {
+    flex: 1 1 auto;
+    display: block;
+    width: calc(100% - 300px);
+}
+
+
+.ui__overlay {
+    
+}
+
+.ui__menu {
+    display: flex;
+}
+
+.ui__btn {
+    flex: 0 0 auto;
+    padding: $spacing/2 $spacing;
+    transition: all .1s linear;
+    user-select: none;
+    
+    &::before {
+        font-family: FontAwesome;
+    }
+    
+    &:hover {
+        color: darken($black, 40%);
+    }
+    
+    &.ui__btn--active,
+    &:active {
+        color: $primary;
+    }
+}
+
+.upload-btn {
+    &::before {
+        content: '\f0ee';
+    }
+}
+
+.help-btn {    
+    &::before {
+        content: '\f128';
+    }
+}
+
+.sidebar-toggle {
+    margin-left: 0;
+    
+    &::before {
+        content: '\f152';
+    }
+    
+    .ui__sidebar--open & {
+        &::before {
+            content: '\f191';
+        }
+    }
+    @media (min-width: $bp) {
+        display: none;
+    }
+}
+
+.options-toggle {
+    margin-right: 0;
+    text-align: right;
+    
+    &::before {
+        content: '\f013';
+    }
+}
+
+.ui__info {
+    
+}
+
+.file-path {
+    flex: 1 1 auto;
+    display: inline-block;
+    margin: 0;
+    padding: $spacing / 3 $spacing;
+    font-size: .875rem;
+    list-style: none;
+    background: #f8f8f8;
+    border-radius: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 2;
+    border-radius: 0 0 3px 3px;
+    
+    li {
+        display: inline-block;
+        
+        &::after {
+            display: inline-block;
+            font-family: FontAwesome;
+            content: '\f105';
+            opacity: .5;
+            margin-left: $spacing / 2;
+            margin-right: $spacing / 4;
+        }
+    }
+    
+    a {
+        cursor: pointer;
+        
+        &:hover {
+            color: darken($black, 40%);
+        }
+    }
+}
+
+
+.file-tree {
+    display: block;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-height: 100%;
+    overflow-y: scroll;
+    user-select: none;
+}
+
+.file-tree__item {
+    display: block;
+    padding: $spacing / 2 $spacing;
+}
+
+.file-tree__subtree {
+    display: none;
+    margin: $spacing / 2 $spacing 0 $spacing * 1.5;
+    padding: 0;
+    list-style: none;
+    
+    .file-tree__item--open & {
+        display: block;
+    }
+
+    > li {
+        padding: $spacing / 3 0;
+        font-size: .875rem;
+
+        .folder::before {
+            color: $secondary;
+        }
+    }
+}
+
+.folder {
+    display: block;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &::before {
+        content: "\f07b";
+        font-family: FontAwesome;
+        margin-right: $spacing / 2;
+        color: $primary;
+    }
+
+    &:hover {
+        color: white;
+        cursor: pointer;
+
+        &::before {
+            color: lighten($primary, 5%);
+        }
+    }
+
+    &.folder--open {
+        color: white;
+        &::before {
+            content: "\f07c";
+        }
+    }
+}
+
+.file-list {
+    width: 100%;
+    text-align: left;
+    
+    .file-list__file {
+        &:nth-child(odd) {
+            background: #f8f8f8;
+        }
+    }
+    
+    th {
+        user-select: none;
+        border-bottom: 1px solid #efefef;
+        padding: $spacing;
+
+        &:hover {
+            cursor: pointer;
+            color: darken($black, 40%);
+        }
+    }
+    
+    td {
+        padding: $spacing/3 $spacing;
+
+        &:hover {
+            cursor: pointer;
+            color: darken($black, 40%);
+        }
+    }
+}
+
+.file-list__header {
+    font-size: 0.6875rem;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($primary, .6);
+    z-index: 1000;
+    box-shadow: 0 0 20px rgba($black, 0.1);
+    
+    &.overlay--active {
+        display: block;
+    }
+}
+
+.overlay__inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 auto;
+    z-index: 1001;
+    border-radius: $border-radius;
+    background: #f8f8f8;
+    
+    padding: $spacing * 2;
+    text-align: center;
+    
+    @media (min-width: $bp) {
+        top: 50%;
+        transform: translateY(-50%);
+        bottom: auto;
+        max-width: 500px;
+    }
+    
+    
+    .upload-drop--dragover & {
+        transition: border .5s ease;
+        border: 4px dashed $primary;
+
+        > * {
+            pointer-events: none;
+        }
+    }
+}
+
+.info-modal {
+    display: block;
+    transform: translateY(-100%);
+    opacity: 0;
+    overflow: hidden;
+    height: 0;
+    font-size: .875rem;
+    
+    &.info-modal--active {
+        transform: translateY(0);
+        opacity: 1;
+        height: auto;
+        padding: $spacing;
+        background: linear-gradient(to bottom, white, #efefef);
+        border: 5px solid #fff;
+    }
+}

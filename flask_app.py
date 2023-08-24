@@ -218,6 +218,11 @@ def not_found():
     return render_template('404.html')
 
 
+@app.route('/file_browser',methods = ['POST', 'GET'])
+def file_browser():
+    return render_template('template/file_browser.html')
+
+
 
 if __name__ == '__main__':
    app.run(debug = True)

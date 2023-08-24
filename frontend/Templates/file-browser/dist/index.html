@@ -1,8 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" >
 <head>
-    <link href="{{ url_for('static', filename='css/file_browser.css') }}" rel="stylesheet">
-    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css'>
-</head>
+  <meta charset="UTF-8">
+  <title>CodePen - File Browser</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css'><link rel="stylesheet" href="./style.css">
 
+</head>
+<body>
 <!-- partial:index.partial.html -->
 <div class="ui upload-drop">
 
@@ -17,7 +22,7 @@
 
                 <ul class="file-tree__subtree">
                     <li class="file-tree__item">
-                        <div class="folder">Plan folder</div>
+                        <div class="folder">Planfolder</div>
                     </li>
                     <li class="file-tree__item">
                         <div class="folder folder--open">Holiday</div>
@@ -32,7 +37,7 @@
                 <div class="folder">Project A</div>
                 <ul class="file-tree__subtree">
                     <li class="file-tree__item">
-                        <div class="folder">Plan folder</div>
+                        <div class="folder">Planfolder</div>
                     </li>
                     <li class="file-tree__item">
                         <div class="folder folder--open">Holiday</div>
@@ -55,7 +60,7 @@
                 <div class="folder">Project F</div>
                 <ul class="file-tree__subtree">
                     <li class="file-tree__item">
-                        <div class="folder">Plan folder</div>
+                        <div class="folder">Planfolder</div>
                     </li>
                     <li class="file-tree__item">
                         <div class="folder folder--open">Holiday</div>
@@ -78,7 +83,7 @@
                 <div class="folder">Project C</div>
                 <ul class="file-tree__subtree">
                     <li class="file-tree__item">
-                        <div class="folder">Plan folder</div>
+                        <div class="folder">Planfolder</div>
                     </li>
                     <li class="file-tree__item">
                         <div class="folder folder--open">Holiday</div>
@@ -96,7 +101,7 @@
                 <div class="folder">Project A</div>
                 <ul class="file-tree__subtree">
                     <li class="file-tree__item">
-                        <div class="folder">Plan folder</div>
+                        <div class="folder">Planfolder</div>
                     </li>
                     <li class="file-tree__item">
                         <div class="folder folder--open">Holiday</div>
@@ -138,15 +143,15 @@
 
         </div>
         <!-- /.ui__menu -->
-
+        
         <div class="ui__info info-modal" id="upload-modal">
             <h2>Upload</h2>
             <p>Simply drag & drop a file here or select one with the button below.</p>
             <form action="#" method="POST">
                 <div><input type="file" required></div>
-                <button type="submit" class="btn_file_browser">Upload</button>
+                <button type="submit" class="btn">Upload</button>
             </form>
-
+            
         </div>
         <!-- /.ui__info -->
 
@@ -163,37 +168,37 @@
                 <td>Holiday Photos</td>
                 <td>zip</td>
                 <td>1.2MB</td>
-                <td>private</td>
+                <td>privat</td>
             </tr>
             <tr class="file-list__file">
                 <td>Secrets</td>
                 <td>zip</td>
                 <td>1GB</td>
-                <td>private</td>
+                <td>privat</td>
             </tr>
             <tr class="file-list__file">
                 <td>Something else</td>
                 <td>jpeg</td>
                 <td>5MB</td>
-                <td>private</td>
+                <td>privat</td>
             </tr>
             <tr class="file-list__file">
                 <td>Short trip</td>
                 <td>txt</td>
                 <td>2kb</td>
-                <td>private</td>
+                <td>privat</td>
             </tr>
             <tr class="file-list__file">
                 <td>What a file name is that?</td>
                 <td>txt</td>
                 <td>3.1MB</td>
-                <td>private</td>
+                <td>privat</td>
             </tr>
             <tr class="file-list__file">
-                <td>Holiday Plan</td>
+                <td>Holidy Plan</td>
                 <td>txt</td>
                 <td>5MB</td>
-                <td>private</td>
+                <td>privat</td>
             </tr>
         </table>
         <!-- /.file-list -->
@@ -206,16 +211,18 @@
 
 <div class="ui__overlay overlay" id="help">
     <div class="overlay__inner">
-
+        
         <h2>🎂</h2>
         <p>The cake is a lie...</p>
-
+        
         <a href="javascript:void(0)" class="btn overlay__close">Oh no!</a>
-
+        
     </div>
     <!-- /.overlay__inner -->
 </div>
 <!-- /.overlay -->
 <!-- partial -->
-<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-<script src="{{ url_for('static', filename='js/file_browser.js') }}"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>

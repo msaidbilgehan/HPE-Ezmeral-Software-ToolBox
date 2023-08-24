@@ -9,6 +9,8 @@ from Classes.Task_Handler import Task_Handler_Class
 from Libraries.network_tools import ssh_execute_command, ssh_receive_file
 from Libraries.tools import list_dir
 
+
+
 class Log_Collection_Class(Task_Handler_Class):
     def __init__(self, download_path, *args, **kwargs):
         super(Log_Collection_Class, self).__init__(*args, **kwargs)

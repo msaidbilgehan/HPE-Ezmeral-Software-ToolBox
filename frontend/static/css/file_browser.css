@@ -80,7 +80,7 @@ h6 {
     margin: 0 auto;
     max-width: 900px;
     min-height: 100vh;
-    background: #fff;
+    background: #191c24ba;
     overflow: hidden;
 }
 
@@ -214,7 +214,8 @@ h6 {
     padding: 0.3333333333rem 1rem;
     font-size: 0.875rem;
     list-style: none;
-    background: #f8f8f8;
+    background: #191C24;
+    border-color: #41485d;
     border-radius: 3px;
     overflow: hidden;
     text-overflow: ellipsis;

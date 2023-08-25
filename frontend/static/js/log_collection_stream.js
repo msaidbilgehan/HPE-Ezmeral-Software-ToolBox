@@ -1,3 +1,4 @@
+
 var terminal_source;
 
 function terminal_EventSource_Start(url) {
@@ -70,9 +71,9 @@ function clear_Terminal() {
 }
 
 
-document.getElementById('listen_logs-btn').addEventListener('click', function () {
-    terminal_EventSource_Start('/log_collection_log_endpoint');
-});
+// document.getElementById('listen_logs-btn').addEventListener('click', function () {
+//     terminal_EventSource_Start(terminal_source_url);
+// });
 
 
 document.getElementById('stop-btn').addEventListener('click', function () {
@@ -119,7 +120,7 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
     url = url + '&ip_addresses=' + encodeURIComponent(ipAddressesJson);
 
     if (!terminal_source || terminal_source.readyState === 2) {
-        terminal_EventSource_Start('/log_collection_log_endpoint');
+        terminal_EventSource_Start(terminal_source_url);
     }
 
     // Call Endpoint
@@ -132,4 +133,4 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
     });
 });
 
-terminal_EventSource_Start('/log_collection_log_endpoint');
+terminal_EventSource_Start(terminal_source_url);

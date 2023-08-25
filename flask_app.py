@@ -5,7 +5,7 @@ from flask import Flask, jsonify, request, send_from_directory, render_template,
 
 from Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
 from paths import root_log_collection_folder, root_path_archives
-from Threads.configurations import log_collection_logger_streamer, log_collection_thread
+from Threads.configurations import cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread
 from Libraries.logger_module import global_logger
 
 app = Flask(__name__, template_folder='frontend/pages', static_folder='frontend/static')
@@ -17,7 +17,10 @@ __log_collection_stop_endpoint_lock = Lock()
 
 @app.route('/',methods = ['POST', 'GET'])
 def index():
-    return render_template('index.html')
+    return render_template(
+        'index.html',
+        page_id="index"
+    )
 
 
 ###################
@@ -27,7 +30,28 @@ def index():
 
 @app.route('/cleanup',methods = ['POST', 'GET'])
 def cleanup_page():
-    return render_template('cleanup.html')
+    return render_template(
+        'cleanup.html',
+        page_id="cleanup"
+    )
+
+
+@app.route('/cleanup_terminal_endpoint',methods = ['POST', 'GET'])
+def cleanup_terminal_endpoint():
+    return Response(
+        cleanup_logger_streamer.read_file_continues(
+            is_yield=True,
+            sleep_time=0.05, # 0.3
+            new_sleep_time=0.07,
+            content_control=False
+        ), 
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no' # Disable buffering
+        }
+    )
 
 ###################
 ###################
@@ -39,7 +63,10 @@ def cleanup_page():
 
 @app.route('/fqdn',methods = ['POST', 'GET'])
 def fqdn_page():
-    return render_template('fqdn.html')
+    return render_template(
+        'fqdn.html',
+        page_id="fqdn"
+    )
 
 ######################
 ######################
@@ -52,7 +79,8 @@ def fqdn_page():
 @app.route('/log_collection',methods = ['POST', 'GET'])
 def log_collection_page():
     return render_template(
-        'log_collection.html'
+        'log_collection.html',
+        page_id="log_collection"
     )
     
 
@@ -105,8 +133,8 @@ def log_collection_endpoint():
     )
 
 
-@app.route('/log_collection_log_endpoint',methods = ['POST', 'GET'])
-def log_collection_log_endpoint():
+@app.route('/log_collection_terminal_endpoint',methods = ['POST', 'GET'])
+def log_collection_terminal_endpoint():
     return Response(
         log_collection_logger_streamer.read_file_continues(
             is_yield=True,
@@ -213,12 +241,18 @@ def log_collection_stop_endpoint():
 
 @app.route('/about',methods = ['POST', 'GET'])
 def about():
-    return render_template('about.html')
+    return render_template(
+        'about.html',
+        page_id="about"
+    )
 
 
 @app.route('/404',methods = ['POST', 'GET'])
 def not_found():
-    return render_template('404.html')
+    return render_template(
+        '404.html',
+        page_id="404"
+    )
 
 
 @app.route('/file_table_download/<foldername>',methods = ['POST', 'GET'])

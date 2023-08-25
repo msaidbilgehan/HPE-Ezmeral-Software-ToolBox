@@ -14,7 +14,7 @@
         </li>
     </ul>
     <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade" id="control" role="tabpanel" aria-labelledby="control-tab">
+        <div class="tab-pane fade active show" id="control" role="tabpanel" aria-labelledby="control-tab">
             <div class="row g-4 p-1">
         
                 <form class="input-group" id="ipForm">
@@ -38,7 +38,6 @@
                             <div class="form-floating mb-3">
                                 <input type="username" class="form-control" id="input_SSH_Username" aria-describedby="emailHelp">
                                 <label for="floatingInput" class="form-label">SSH User</label>
-                                <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
                             </div>
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="input_SSH_Password">
@@ -60,22 +59,9 @@
                     </div>
                 </form>
             
-                <div class="col-sm-12 col-xl-12 align_item_center">
-                    <div class="bg-secondary rounded h-100 p-4">
-                        <a class="btn btn-lg btn-outline-success m-2" id="listen_logs-btn"
-                            href="/log_collection_download_collected_endpoint">Download Collected Logs</a>
-                        <!-- <button type="button" class="btn btn-lg btn-outline-info m-2" id="clear_buffer-btn" onclick="clear_Log_Buffer()">Clear Buffer</button> -->
-                        <!-- <button type="button" class="btn btn-lg btn-outline-info m-2" id="clear_logs-btn" onclick="clear_Log_Collection_Log_Files()">Clear Log Files</button> -->
-                        <!-- <button type="button" class="btn btn-lg btn-outline-info m-2" id="clear_logs-btn" onclick="clear_Collected_Log_Files()">Clear Collected Log Files</button> -->
-                    </div>
-                </div>
-            
                 <div class="col-sm-12 col-xl-12">
-                    <div class="bg-secondary rounded h-100 p-4">
+                    <div class="bg-secondary rounded p-4">
                         <div class="fakeMenu align_item_center">
-                            <!-- <div class="fakeButtons fakeClose"></div> -->
-                            <!-- <div class="fakeButtons fakeMinimize"></div> -->
-                            <!-- <div class="fakeButtons fakeZoom"></div> -->
                             <a class="btn btn-info p-2" id="download_terminal_logs-btn"
                                 href="/log_collection_download_terminal_log_endpoint">Download Terminal Log</a>
                             <button type="button" class="btn btn-info p-2 m-1" id="clear_terminal_logs-btn"
@@ -84,15 +70,23 @@
                         <div class="fakeScreen">
                             <p id="stream_content" class="line2"></p>
                         </div>
-                        <!-- <div class="bg-secondary rounded align_item_center m-2">
-                                <button type="button" class="btn btn btn-info m-2" id="clear_logs-btn" onclick="clear_Terminal()">Clear Terminal</button>
-                            </div> -->
                     </div>
                 </div>
             </div>
         </div>
-        <div class="tab-pane fade active show" id="file-browser" role="tabpanel" aria-labelledby="file-browser-tab">
-            {% include 'template/file_browser.html' %}
+        <div class="tab-pane fade" id="file-browser" role="tabpanel" aria-labelledby="file-browser-tab">
+            
+            <div class="col-sm-12 col-xl-12 align_item_center">
+                <div class="bg-secondary rounded p-4">
+                    <div class="col-sm-12 col-xl-12 align_item_center">
+                        <a class="btn btn-lg btn-outline-success m-2" id="listen_logs-btn" href="/log_collection_download_collected_endpoint">Download Collected Logs</a>
+                    </div>
+                    <div class="col-sm-12 col-xl-12 align_item_center">
+                        {% include 'template/file_table.html' %}
+                        {% include 'template/file_browser.html' %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     

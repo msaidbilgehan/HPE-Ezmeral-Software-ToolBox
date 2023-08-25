@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import time
 import shutil
@@ -17,6 +18,41 @@ def read_log_file(path, wait_thread=None):
             if wait_thread is not None:
                 if not wait_thread.is_alive():
                     break
+
+
+def get_directory_info(directory_path, round_in_gb=3):
+    # Belirtilen dizindeki tüm klasörleri listeleyelim
+    all_items = os.listdir(directory_path)
+    dirs = [item for item in all_items if os.path.isdir(os.path.join(directory_path, item))]
+
+    dir_info = []
+
+    for dir_name in dirs:
+        full_path = os.path.join(directory_path, dir_name)
+
+        # Klasörün boyutunu hesaplayalım (alt klasörler ve dosyalar dahil)
+        total_size = 0
+        for dirpath, dirnames, filenames in os.walk(full_path):
+            for f in filenames:
+                fp = os.path.join(dirpath, f)
+                total_size += os.path.getsize(fp) 
+        total_size = round(total_size * 10**-9, round_in_gb)
+        
+        # Oluşturma tarihini alalım
+        creation_timestamp = os.path.getctime(full_path)
+        creation_date = datetime.fromtimestamp(creation_timestamp).strftime('%Y-%m-%d %H:%M:%S')
+
+        dir_info.append({
+            'name': dir_name,
+            'size': total_size,
+            'creation_date': creation_date
+        })
+
+    # Klasör bilgilerini tarih bilgisine göre sıralayalım
+    sorted_dir_info = sorted(dir_info, key=lambda x: x['creation_date'], reverse=True)
+    
+    return sorted_dir_info
+
 
 
 def list_dir(path):

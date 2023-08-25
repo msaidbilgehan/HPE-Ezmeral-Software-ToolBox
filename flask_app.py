@@ -1,8 +1,8 @@
 import json
 
-from flask import Flask, jsonify, request, send_file, render_template, Response
+from flask import Flask, jsonify, request, send_from_directory, send_file, render_template, Response
 
-from Libraries.tools import delete_folder, archive_files, archive_directory, list_dir
+from Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
 from paths import root_log_collection_folder, root_path_log, root_path_archives
 from Threads.configurations import log_collection_logger_streamer, log_collection_thread
 from threading import Lock
@@ -131,17 +131,17 @@ def log_collection_list_collected_endpoint():
 @app.route('/log_collection_download_collected_endpoint')
 def log_collection_download_collected_endpoint():
     archive_name = "collected_logs"
-    archive_path = root_path_archives + archive_name + ".zip"
+    # archive_path = root_path_archives + archive_name + ".zip"
     
-    print("log_collection_thread.get_Collected_Log_Folder()", log_collection_thread.get_Collected_Log_Folder())
     archive_directory(
         archive_name=archive_name,
         directory_to_compress=log_collection_thread.get_Collected_Log_Folder(),
         output_directory=root_path_archives,
     )
-    return send_file(
-        path_or_file=archive_path, 
-        as_attachment=True, 
+    return send_from_directory(
+        path="collected_logs.zip",
+        directory=root_path_archives,
+        as_attachment=True,
         download_name="collected_logs.zip"
     )
 
@@ -152,11 +152,18 @@ def log_collection_download_terminal_log_endpoint():
         log_collection_thread.get_Logs(), 
         archive_path
     )
-    return send_file(
-        path_or_file=archive_path, 
-        as_attachment=False, 
+    # return send_file(
+    #     path_or_file=archive_path,
+    #     as_attachment=True,
+    #     download_name="log_collection_terminal_logs.zip"
+    # )
+    return send_from_directory(
+        path="log_collection_terminal_logs.zip",
+        directory=root_path_archives,
+        as_attachment=True,
         download_name="log_collection_terminal_logs.zip"
     )
+
 
     
 @app.route('/clear_Collected_Log_Files',methods = ['POST', 'GET'])
@@ -218,9 +225,41 @@ def not_found():
     return render_template('404.html')
 
 
-@app.route('/file_browser',methods = ['POST', 'GET'])
-def file_browser():
-    return render_template('template/file_browser.html')
+@app.route('/file_table',methods = ['POST', 'GET'])
+def file_table():
+    return render_template('template/file_table.html')
+
+
+@app.route('/folder_info/<endpoint>',methods = ['POST', 'GET'])
+def folder_info(endpoint):
+    directory_paths = {
+        "log_collection_collected": log_collection_thread.get_Collected_Log_Folder(),
+        "": "",
+    }
+    if endpoint in directory_paths.keys():
+        folder_info = get_directory_info(directory_paths[endpoint])
+        # for dir_info in folder_info:
+        #     print(dir_info)
+        if folder_info == []:
+            folder_info = [
+                {
+                    # "message": "No content in folder found",
+                    "size": "0",
+                    "name": "-",
+                    "creation_date": "-",
+                }
+            ]
+        return jsonify(folder_info)
+    else:
+        folder_info = [
+            {
+                "message": "No endpoint found",
+                "size": "0",
+                "name": "-",
+                "creation_date": "-",
+            }
+        ]
+        return jsonify(folder_info)
 
 
 

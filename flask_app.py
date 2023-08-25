@@ -1,11 +1,12 @@
 import json
+from threading import Lock
 
-from flask import Flask, jsonify, request, send_from_directory, send_file, render_template, Response
+from flask import Flask, jsonify, request, send_from_directory, render_template, Response
 
 from Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
-from paths import root_log_collection_folder, root_path_log, root_path_archives
+from paths import root_log_collection_folder, root_path_archives
 from Threads.configurations import log_collection_logger_streamer, log_collection_thread
-from threading import Lock
+from Libraries.logger_module import global_logger
 
 app = Flask(__name__, template_folder='frontend/pages', static_folder='frontend/static')
 
@@ -152,11 +153,6 @@ def log_collection_download_terminal_log_endpoint():
         log_collection_thread.get_Logs(), 
         archive_path
     )
-    # return send_file(
-    #     path_or_file=archive_path,
-    #     as_attachment=True,
-    #     download_name="log_collection_terminal_logs.zip"
-    # )
     return send_from_directory(
         path="log_collection_terminal_logs.zip",
         directory=root_path_archives,
@@ -225,9 +221,29 @@ def not_found():
     return render_template('404.html')
 
 
-@app.route('/file_table',methods = ['POST', 'GET'])
-def file_table():
-    return render_template('template/file_table.html')
+@app.route('/file_table_download/<foldername>',methods = ['POST', 'GET'])
+def file_table_download(foldername):
+    folder_path = log_collection_thread.get_Collected_Log_Folder()
+    folders = list_dir(folder_path)
+    
+    
+    if foldername in folders:
+        archive_directory(
+            archive_name="collected_logs",
+            directory_to_compress=folder_path + foldername,
+            output_directory=root_path_archives,
+        )
+        
+        return send_from_directory(
+            path="collected_logs.zip",
+            directory=root_path_archives,
+            as_attachment=True,
+            download_name="collected_logs.zip"
+        )
+    else:
+        return jsonify(
+            message=f"File {foldername} not found"
+        )
 
 
 @app.route('/folder_info/<endpoint>',methods = ['POST', 'GET'])

@@ -6,7 +6,7 @@ fetch("/folder_info/log_collection_collected").then(response => response.json())
         var fileInfo = {
             creationDate: file.creation_date,
             name: file.name,
-            size: file.size + " GB"
+            size: file.size + " GB",
         };
         addRowToFileTable(fileInfo, tbodyElement);
 
@@ -29,8 +29,6 @@ function addRowToFileTable(fileInfo, tableElement) {
     let nameCell = newRow.insertCell(1);
     let sizeCell = newRow.insertCell(2);
 
-    newRow.href = "#";
-
     creationDateCell.textContent = fileInfo.creationDate;
     nameCell.textContent = fileInfo.name;
     sizeCell.textContent = fileInfo.size;
@@ -38,10 +36,7 @@ function addRowToFileTable(fileInfo, tableElement) {
 
 $(document).ready(function () {
     $("#file_list").on("click", "tr", function () {
-        // "File Name" hücresinin değerini al
-        let fileName = $(this).find("td:nth-child(2)").text();
-
-        // İlgili indirme linkine yönlendirme yap
-        window.location.href = `/download/${fileName}`;
+        let foldername = $(this).find("td:nth-child(2)").text();
+        window.location.href = `/file_table_download/${foldername}`;
     });
 });

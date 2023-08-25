@@ -48,13 +48,6 @@
                                 <input type="submit" class="btn btn-lg btn-outline-success m-2" value="Run" id="run-btn">
                                 <button type="button" class="btn btn-lg btn-outline-danger m-2" id="stop-btn">Stop</button>
                             </div>
-            
-                            <div class="bg-secondary rounded">
-                                <button type="button" class="btn btn-lg btn-outline-success m-2" id="listen_logs-btn">Watch
-                                    Logs</button>
-                                <button type="button" class="btn btn-lg btn-outline-warning m-2" id="stop_logs-btn"
-                                    onclick="terminal_EventSource_Stop()">Stop Log Watching</button>
-                            </div>
                         </div>
                     </div>
                 </form>
@@ -62,8 +55,10 @@
                 <div class="col-sm-12 col-xl-12">
                     <div class="bg-secondary rounded p-4">
                         <div class="fakeMenu align_item_center">
-                            <a class="btn btn-info p-2" id="download_terminal_logs-btn"
+                            <a class="btn btn-info p-2 m-1" id="download_terminal_logs-btn"
                                 href="/log_collection_download_terminal_log_endpoint">Download Terminal Log</a>
+                            <button type="button" class="btn btn-success m-2" id="listen_logs-btn">Watch Logs</button>
+                            <button type="button" class="btn btn-warning m-2" id="stop_logs-btn" onclick="terminal_EventSource_Stop()">Stop Log Watching</button>
                             <button type="button" class="btn btn-info p-2 m-1" id="clear_terminal_logs-btn"
                                 onclick="clear_Terminal()">Clear Terminal</button>
                         </div>

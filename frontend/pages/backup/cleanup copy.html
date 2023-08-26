@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4 p-1">
+        <form class="input-group" id="ipForm">
+            <!-- IP Addresses -->
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-secondary rounded h-100 p-4">
+                    <div class="form-floating mb-3 form_area_auto_fit">
+                        <span class="input-group-text">IP Addresses</span>
+                        <textarea class="form-control text_area_height_100" aria-label="IP Addresses"
+                            spellcheck="false" id="input_IP_Addresses"
+                            placeholder="Enter IP addresses separated by a new line or comma"
+                            required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SSH Credentials -->
+            <div class="col-sm-12 col-xl-6">
+                <div class="bg-secondary rounded h-100 p-4">
+                    <div class="form-floating mb-3">
+                        <input type="username" class="form-control" id="input_SSH_Username"
+                            aria-describedby="emailHelp">
+                        <label for="floatingInput" class="form-label">SSH User</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="input_SSH_Password">
+                        <label for="floatingInput" class="form-label">SSH Password</label>
+                    </div>
+
+                    <div class="bg-secondary rounded">
+                        <input type="submit" class="btn btn-lg btn-outline-success m-2" value="Run"
+                            id="run-btn">
+                        <button type="button" class="btn btn-lg btn-outline-danger m-2"
+                            id="stop-btn">Stop</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="col-sm-12 col-xl-12">
+            <div class="bg-secondary rounded p-4">
+                <div class="fakeMenu align_item_center">
+                    <a class="btn btn-info p-2 m-1" id="download_terminal_logs-btn" href="javascript:window.location.href=window.terminal_log_download_source_url;">Download Terminal Log</a>
+                    <button type="button" class="btn btn-success m-2" id="listen_logs-btn" onclick="terminal_EventSource_Start(terminal_source_url)">Watch Logs</button>
+                    <button type="button" class="btn btn-warning m-2" id="stop_logs-btn" onclick="terminal_EventSource_Stop()">Stop Log Watching</button>
+                    <button type="button" class="btn btn-info p-2 m-1" id="clear_terminal_logs-btn" onclick="clear_Terminal()">Clear Terminal</button>
+                </div>
+                <div class="fakeScreen">
+                    <p id="stream_content" class="line2"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/terminal_stream.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/ssh_credentials.js') }}" type="module"></script>
+
+<!-- Recent Sales End -->
+{% endblock %}

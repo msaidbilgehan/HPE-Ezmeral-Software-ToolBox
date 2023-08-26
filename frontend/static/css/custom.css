@@ -37,3 +37,9 @@
     margin: 0 auto;
     display: block;
 }
+
+@media (max-width: 576px) {
+    .full_width {
+        width: 100%;
+    }
+}

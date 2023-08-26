@@ -18,11 +18,11 @@
     color: #787878;
 } */
 
-@media (min-width: 900px) {
+/* @media (min-width: 900px) {
     body {
         padding: 1rem;
     }
-}
+} */
 
 /* a {
     text-decoration: none;
@@ -78,7 +78,7 @@ h6 {
     position: relative;
     display: flex;
     margin: 0 auto;
-    max-width: 900px;
+    /* max-width: 900px; */
     min-height: 100vh;
     background: #191c24ba;
     overflow: hidden;
@@ -86,7 +86,7 @@ h6 {
 
 @media (min-width: 900px) {
     .ui {
-        margin: auto 0;
+        /* margin: auto 0; */
         /* margin: 10vh auto 0; */
         min-height: 50vh;
         box-shadow: 0 0 20px rgba(120, 120, 120, 0.1);

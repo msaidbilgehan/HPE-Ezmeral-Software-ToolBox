@@ -6,6 +6,8 @@ import sys
 import threading
 import time
 
+from Libraries.tools import list_dir
+
 
 
 class Task_Handler_Class(ABC, threading.Thread):
@@ -67,6 +69,12 @@ class Task_Handler_Class(ABC, threading.Thread):
 
    def set_Logger(self, logger: logging.Logger):
         self.logger = logger
+    
+    
+   def get_Logs(self):
+      root_path_log = "/".join(self.logger_file_path.split("/")[:-1])
+      log_file_name = self.logger_file_path.split("/")[-1]
+      return [root_path_log + "/" + i for i in list_dir(root_path_log) if log_file_name in i]
             
 
    def run(self) -> None:

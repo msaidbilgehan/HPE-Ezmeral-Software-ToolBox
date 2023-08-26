@@ -1,4 +1,5 @@
 import logging
+from Classes.Cleanup_Class import Cleanup_Class
 
 from Classes.File_Handler import File_Content_Streamer_Thread
 from Classes.Log_Collection_Class import Log_Collection_Class
@@ -35,17 +36,17 @@ log_collection_logger_streamer = File_Content_Streamer_Thread(
 
 
 # Cleanup Thread
-# cleanup_thread = Cleanup_Class(
-#     name="Cleanup Thread",
-#     logger=None,
-#     logger_level_stdo=logging.DEBUG,
-#     logger_level_file=logging.DEBUG,
-#     logger_file_path=root_path_cleanup_logs,
-#     mode="a", 
-#     maxBytes=128*1024, 
-#     backupCount=2
-# )
-# cleanup_thread.start_Thread()
+cleanup_thread = Cleanup_Class(
+    name="Cleanup Thread",
+    logger=None,
+    logger_level_stdo=logging.DEBUG,
+    logger_level_file=logging.DEBUG,
+    logger_file_path=root_path_cleanup_logs,
+    mode="a", 
+    maxBytes=128*1024, 
+    backupCount=2
+)
+cleanup_thread.start_Thread()
 
 cleanup_logger_streamer = File_Content_Streamer_Thread(
     path=root_path_cleanup_logs,

@@ -24,7 +24,11 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
     else:
         local_logger = logger
     
-    transport = paramiko.Transport((ssh_client, port))
+    try:
+        transport = paramiko.Transport((ssh_client, port))
+    except Exception as error:
+        local_logger.error(f"Error creating Transport: {error}")
+        return ""
     
     remote_file_path = remote_file_path if remote_file_path[-1] == "/" else remote_file_path + "/"
     remote_tmp_path = "/tmp/" + os.path.basename(local_file_path)
@@ -223,7 +227,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
 
 
 
-def ssh_execute_command(ssh_client:str, username:str, password:str, command:str, port:int=22, is_sudo=False, reboot:bool=False, logger_hook=None) -> tuple[bool, str]:
+def ssh_execute_command(ssh_client:str, username:str, password:str, command:str, port:int=22, timeout=5, is_sudo=False, reboot:bool=False, logger_hook=None) -> tuple[bool, str]:
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     status = False
@@ -237,7 +241,7 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
     
     
     try:
-        client.connect(ssh_client, port, username, password)
+        client.connect(ssh_client, port, username, password, timeout=timeout)
         local_logger.info("Connection Established!")
         
         # update hostname

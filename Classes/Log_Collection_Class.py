@@ -32,7 +32,7 @@ class Log_Collection_Class(Task_Handler_Class):
         self.parameters["ssh_password"] = ssh_password
         self.parameters["ip_addresses"] = ip_addresses
         return 0
-   
+
 
     def task(self, ssh_username, ssh_password, ip_addresses):
         self.logger.info(f"Collecting Logs of {ip_addresses} ...")
@@ -96,13 +96,8 @@ class Log_Collection_Class(Task_Handler_Class):
         self.logger.info(f"Log Connection Finished for IP Addresses: {ip_addresses}")
         
         return 0
-    
-    
+
+
     def get_Collected_Log_Folder(self):
         return self.download_path
     
-    
-    def get_Logs(self):
-        root_path_log = "/".join(self.logger_file_path.split("/")[:-1])
-        log_file_name = self.logger_file_path.split("/")[-1]
-        return [root_path_log + "/" + i for i in list_dir(root_path_log) if log_file_name in i]

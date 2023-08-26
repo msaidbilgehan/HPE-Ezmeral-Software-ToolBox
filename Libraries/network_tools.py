@@ -94,7 +94,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         local_logger.error("Authentication failed")
         uploaded_location = ""
     except Exception as e:
-        local_logger.error("Exception: ", e)
+        local_logger.error(f"Exception: {e}")
         if response_upload == False and response_command == False:
             uploaded_location = ""
         elif response_upload == True and response_command == False:
@@ -216,7 +216,8 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
         local_folder_path = ""
     except Exception as e:
         local_logger.error(f"Last Download Dir: {last_download_path}")
-        local_logger.error("Exception: ", e)
+        local_logger.error(f"Exception: {e}")
+
         if response_download == False:
             local_folder_path = ""
         elif response_download == True:
@@ -274,7 +275,7 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
         local_logger.info("Authentication failed")
         status = False
     except Exception as e:
-        local_logger.error("Exception: ", e)
+        local_logger.error(f"Exception: {e}")
         status = False
     finally:
         client.close()

@@ -2,12 +2,13 @@
 
  
 import os
-import threading
 import time
 
+from Classes.Task_Handler import Task_Handler_Class
 
 
-class File_Content_Streamer_Thread(threading.Thread):
+
+class File_Content_Streamer_Thread(Task_Handler_Class):
     def __init__(self, path, wait_thread=None, is_yield=False, content_control=True, *args, **kwargs):
         super(File_Content_Streamer_Thread, self).__init__(*args, **kwargs)
         
@@ -17,14 +18,13 @@ class File_Content_Streamer_Thread(threading.Thread):
         self.content_control = content_control
         
         self.__string_stream = ""
-        
-        self._flag_stop = False
-        self.is_running = False
-        self.daemon = True
 
 
-    def run(self) -> None:
-        self.is_running = True
+    def set_Parameters(self) -> int:
+        return 0
+   
+
+    def task(self):
         self.read_file_continues(
             wait_thread=self.wait_thread,
             is_yield=self.is_yield,
@@ -33,7 +33,6 @@ class File_Content_Streamer_Thread(threading.Thread):
             sleep_time=1,
             content_control=self.content_control
         )
-        self.is_running = False
     
 
     def read_file_continues(self, wait_thread=None, is_yield=False, store_in_buffer=True, is_print=False, sleep_time=1., new_sleep_time=1., content_control=True):
@@ -117,9 +116,3 @@ class File_Content_Streamer_Thread(threading.Thread):
             os.remove(self.path)
             return 0
         return -1
-    
-
-    def stop_Thread(self) -> str:
-        self._flag_stop = True
-        self.join()
-        return self.__string_stream

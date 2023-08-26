@@ -3,17 +3,22 @@ from abc import ABC, abstractmethod
 import logging
 from logging.handlers import RotatingFileHandler
 import sys
-import threading
+from threading import Lock, Thread
 import time
 
 from Libraries.tools import list_dir
 
 
 
-class Task_Handler_Class(ABC, threading.Thread):
+class Task_Handler_Class(ABC, Thread):
    def __init__(self, logger=None, logger_level_stdo: int = logging.DEBUG, logger_level_file: int = logging.DEBUG, logger_file_path: str ="", mode="a", maxBytes=5*1024*1024, backupCount=2, *args, **kwargs):
       super(Task_Handler_Class, self).__init__(*args, **kwargs)
 
+      ### Log Collection Lock ###
+
+      self.safe_task_lock = Lock()
+      self.task_stop_lock = Lock()
+      
       self.logger_file_path = logger_file_path
 
       if logger is None:

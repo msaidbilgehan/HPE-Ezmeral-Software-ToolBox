@@ -2,6 +2,7 @@ import os
 from socket import socket, AF_INET, SOCK_STREAM, gethostbyaddr, gethostbyname, gethostname
 import concurrent.futures
 import time
+from typing import Dict, List
 import paramiko
 from Libraries.logger_module import logger
 from stat import S_ISDIR
@@ -272,6 +273,9 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
     except paramiko.AuthenticationException:
         local_logger.info("Authentication failed")
         status = False
+    except Exception as e:
+        local_logger.error("Exception: ", e)
+        status = False
     finally:
         client.close()
         
@@ -427,7 +431,7 @@ def select_ip_addresses(ip_addresses:list, logger_hook=None)->list:
     selected_ip_addresses = []
     
     local_logger.info("Select IP Addresses to connect over ssh:")
-    print_ip_table(ip_hostname_pack=ip_addresses)
+    print_ip_table(ip_hostname_pack=ip_addresses, logger_hook=logger_hook)
 
     selected_indexes = input("Please enter the IP Addresses to add to the Hosts File (separated by comma)[1,2,3]: ")
     selected_indexes = selected_indexes.split(",")
@@ -453,3 +457,173 @@ def print_ip_table(ip_hostname_pack, logger_hook=None):
     for i, result in enumerate(ip_hostname_pack):
         local_logger.info(f" ({i})\t{result['ip']}\t |\t {result['hostname'] if result['hostname'] else '---'}")
         # print(f" ({i})\t{result['ip']}\t |\t {result['hostname'] if result['hostname'] else '---'}")
+        
+
+
+##################
+### FQDN Tools ###
+##################
+
+def create_hosts_file(ip_address_hostname_list: List[Dict[str, str]]=[], logger_hook=None):
+    
+    if logger_hook is not None:
+        local_logger = logger_hook
+    else:
+        local_logger = logger
+        
+    local_logger.info("Creating hosts file...")
+    print_ip_table(ip_address_hostname_list, logger_hook=logger_hook)
+    
+    ip_address_to_host_list = list()
+    ip_address_to_host_template = "{ip_address}\t{hostname}\n"
+
+    hosts_file_template = """#Auto-generated hosts file with HPE Ezmeral Tools Platform by Treo Information Technologies for {ip_address}
+    
+127.0.0.1	localhost
+127.0.0.1	{hostname}
+
+{ip_address_to_host_string}
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+"""
+    hosts_file_for_ip = {
+        "ip_address": "",
+        "hosts_file_content": ""
+    }
+    hosts_file_for_ip_list = list()
+    
+    
+    for ip_address_hostname in ip_address_hostname_list:
+        ip_address_hostname['hostname']=input(f"Please enter a hostname for {ip_address_hostname['ip']}: ")
+        
+        temp_ip_address_host = ip_address_to_host_template.format(
+            ip_address=ip_address_hostname["ip"],
+            hostname=ip_address_hostname['hostname']
+        )
+        ip_address_to_host_list.append(temp_ip_address_host)
+        
+        
+    for ip_address_hostname in ip_address_hostname_list:
+        ip_address_to_host_string = ''.join(
+            string_item for string_item in ip_address_to_host_list
+        )
+        # ip_address_to_host_string = ""
+        # for string_item in ip_address_to_host_list:
+        #     if ip_address_hostname["ip"] in string_item:
+        #         continue
+        #     ip_address_to_host_string = ''.join(string_item)
+        
+        lines = ip_address_to_host_string.splitlines()
+        lines = [line for line in lines if ip_address_hostname["ip"] not in line]
+        ip_address_to_host_string = '\n'.join(lines)
+        
+        hosts_file_content = hosts_file_template.format(
+            ip_address=ip_address_hostname["ip"],
+            hostname=ip_address_hostname["hostname"],
+            ip_address_to_host_string=ip_address_to_host_string
+        )
+        hosts_file_for_ip_list.append(
+            hosts_file_for_ip.copy()
+        )
+        hosts_file_for_ip_list[-1]["ip_address"] = ip_address_hostname["ip"]
+        hosts_file_for_ip_list[-1]["hosts_file_content"] = hosts_file_content
+        
+        local_logger.info(f"Hosts file content for {ip_address_hostname['ip']}: ")
+        local_logger.info(hosts_file_content)
+        
+        path = f"hosts_{ip_address_hostname['ip']}" # The path of your file should go here
+        with open(path, "w") as file: # Opens the file using 'w' method. See below for list of methods.
+            file.write(hosts_file_content) # Writes to the file used .write() method
+            # file.close() # Closes file
+            local_logger.info(f"Hosts file for {ip_address_hostname['ip']} created successfully.")
+            
+    return ip_address_hostname_list
+
+def send_hostfile_to_device_ssh(ip_address:str, username:str, password:str, local_file_path:str, remote_file_path:str="/etc/", port:int=22, logger_hook=None):
+    
+    if logger_hook is not None:
+        local_logger = logger_hook
+    else:
+        local_logger = logger
+        
+    transport = paramiko.Transport((ip_address, port))
+    
+    try:
+        transport.connect(username=username, password=password)
+        sftp = transport.open_sftp_client()
+
+        if sftp is None:
+            local_logger.error("Error opening SFTP Client")
+            return False
+
+        # upload file to temporary location
+        tmp_path = "/tmp/" + os.path.basename(local_file_path)
+        sftp.put(local_file_path, tmp_path)
+        sftp.close()
+
+        # move file to final location with sudo
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(ip_address, port, username, password)
+        stdin, stdout, stderr = client.exec_command(f'echo {password} | sudo -S mv {tmp_path} {remote_file_path}')
+        exit_status = stdout.channel.recv_exit_status()
+        if exit_status == 0:
+            local_logger.info(f"File {local_file_path} successfully sent to {remote_file_path}")
+        else:
+            local_logger.error(f"Error moving file to final location, status code {exit_status}")
+            local_logger.error(f"Detail: {stderr.read().decode()}")
+
+    except paramiko.AuthenticationException:
+        local_logger.error("Authentication failed")
+    finally:
+        transport.close()
+
+    return True
+    
+        
+def update_hostname_ssh(ip_address:str, username:str, password:str, new_hostname:str, port:int=22, reboot:str="y", logger_hook=None) -> int: 
+    
+    if logger_hook is not None:
+        local_logger = logger_hook
+    else:
+        local_logger = logger
+        
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    
+    try:
+        client.connect(ip_address, port, username, password)
+        
+        # update hostname
+        # stdin, stdout, stderr = client.exec_command(f'echo {new_hostname} > /etc/hostname')
+        stdin, stdout, stderr = client.exec_command(f'echo {password} | sudo -S sh -c "echo \'{new_hostname}\' > /etc/hostname"')
+        exit_status = stdout.channel.recv_exit_status() # Blocking call
+        if exit_status==0:
+            local_logger.info("Hostname updated successfully")
+    
+            # Hosts dosyasını güncelle
+            stdin, stdout, stderr = client.exec_command('sudo sed -i -e "s/^127\.0\.1\.1.*/127.0.1.1\t{}/" /etc/hosts'.format(new_hostname))
+            stdin.write(f'{password}\n')  # Sudo parolasını buraya yazın
+            stdin.flush()
+    
+            if reboot == "y":
+                stdin, stdout, stderr = client.exec_command('sudo reboot -h now')
+            else:
+                local_logger.info("Reboot skipped.")
+        else:
+            local_logger.error("Error", exit_status)
+            local_logger.error("Detail:", stderr.read().decode())
+            return exit_status
+        
+    except paramiko.AuthenticationException:
+        local_logger.error("Authentication failed")
+        return -1
+    finally:
+        client.close()
+        
+    return 0

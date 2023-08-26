@@ -7,7 +7,6 @@ import time
 
 from Classes.Task_Handler import Task_Handler_Class
 from Libraries.network_tools import ssh_execute_command, ssh_receive_file
-from Libraries.tools import list_dir
 
 
 
@@ -36,6 +35,7 @@ class Log_Collection_Class(Task_Handler_Class):
 
     def task(self, ssh_username, ssh_password, ip_addresses):
         self.logger.info(f"Collecting Logs of {ip_addresses} ...")
+        failed_ip_addresses:list[str] = list()
 
         try:
             # Create directory of Given Path if not exists
@@ -62,9 +62,12 @@ class Log_Collection_Class(Task_Handler_Class):
                     reboot=False,
                     logger_hook=self.logger
                 )
-                
+                if status != True:
+                    failed_ip_addresses.append(ip_address)
+                    self.logger.error(f"Failed to run command in client: '{ip_address}''")
+                    continue
             
-            # Check Thread State
+                # Check Thread State
                 time.sleep(1)
                 if self.is_Thread_Stopped():
                     return -1
@@ -89,11 +92,16 @@ class Log_Collection_Class(Task_Handler_Class):
                         return -1
                     
                     if remote_file_path == "":
-                        self.logger.info(f"ERROR: File transfer failed! Remote '{ip_address}' Path is '{log_folder}'")
+                        self.logger.error(f"File transfer failed! Remote '{ip_address}' Path is '{log_folder}'")
+                        failed_ip_addresses.append(ip_address)
+                        continue
+                    
         except Exception as e:
             self.logger.error(f"An error occurred: {e}")
         
-        self.logger.info(f"Log Connection Finished for IP Addresses: {ip_addresses}")
+        if len(failed_ip_addresses) > 0:
+            self.logger.info(f"Log Collection Task Failed for IP Addresses: {failed_ip_addresses}")
+        self.logger.info(f"Log Collection Task Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
         
         return 0
 

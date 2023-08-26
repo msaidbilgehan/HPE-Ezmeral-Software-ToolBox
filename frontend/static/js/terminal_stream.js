@@ -83,6 +83,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // console.info("eventsource_source_url:" + eventsource_source_url);
 });
 
+
+
 window.clear_Terminal = clear_Terminal;
 window.terminal_EventSource_Stop = terminal_EventSource_Stop;
 window.terminal_EventSource_Start = terminal_EventSource_Start;

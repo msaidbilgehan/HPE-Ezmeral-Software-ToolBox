@@ -44,3 +44,9 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
         showNotification(error, "error");
     });
 });
+
+// function updateProgressBar(percentage) {
+//     var progressBar = document.querySelector('.progress-bar');
+//     progressBar.style.width = percentage + '%';
+//     progressBar.setAttribute('aria-valuenow', percentage);
+// }

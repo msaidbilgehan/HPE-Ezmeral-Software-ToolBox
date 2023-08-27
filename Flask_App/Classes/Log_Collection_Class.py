@@ -5,8 +5,8 @@ from datetime import datetime
 import os
 import time
 
-from Classes.Task_Handler import Task_Handler_Class
-from Libraries.network_tools import ssh_execute_command, ssh_receive_file
+from Flask_App.Classes.Task_Handler import Task_Handler_Class
+from Flask_App.Libraries.network_tools import ssh_execute_command, ssh_receive_file
 
 
 

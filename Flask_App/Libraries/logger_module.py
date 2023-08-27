@@ -1,7 +1,7 @@
 import logging
 import os
 import sys
-from paths import root_path_logs, root_path_log_collection_logs, root_path_log, root_path_cleanup_logs, root_path_fqdn_logs, root_path_global_logs 
+from Flask_App.paths import root_path_logs, root_path_log, root_path_global_logs 
 
 
 

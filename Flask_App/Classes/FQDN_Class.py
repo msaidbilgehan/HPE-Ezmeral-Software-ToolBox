@@ -5,8 +5,8 @@ from datetime import datetime
 import os
 import time
 
-from Classes.Task_Handler import Task_Handler_Class
-from Libraries.network_tools import create_hosts_file, send_hostfile_to_device_ssh, update_hostname_ssh
+from Flask_App.Classes.Task_Handler import Task_Handler_Class
+from Flask_App.Libraries.network_tools import create_hosts_file, send_hostfile_to_device_ssh, update_hostname_ssh
 
 
 

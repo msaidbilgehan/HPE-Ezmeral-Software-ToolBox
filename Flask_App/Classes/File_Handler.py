@@ -4,7 +4,7 @@
 import os
 import time
 
-from Classes.Task_Handler import Task_Handler_Class
+from Flask_App.Classes.Task_Handler import Task_Handler_Class
 
 
 

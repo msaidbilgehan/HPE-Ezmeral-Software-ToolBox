@@ -2,14 +2,14 @@ import json
 
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
 
-from Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
-from paths import root_path_archives, root_log_collection_folder, root_fqdn_folder
-from Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer
-from Libraries.logger_module import global_logger
+from Flask_App.Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
+from Flask_App.paths import app_path, root_path_archives, root_log_collection_folder
+from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer
+from Flask_App.Libraries.logger_module import global_logger
 
 
 
-app = Flask(__name__, template_folder='frontend/pages', static_folder='frontend/static')
+app = Flask(__name__, template_folder=f'{app_path}frontend/pages', static_folder=f'{app_path}frontend/static')
 
 
 

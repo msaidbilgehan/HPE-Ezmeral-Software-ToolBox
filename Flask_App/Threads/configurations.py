@@ -1,13 +1,11 @@
 import logging
 
-from Classes.FQDN_Class import FQDN_Class
-from Classes.Cleanup_Class import Cleanup_Class
-from Classes.Log_Collection_Class import Log_Collection_Class
-from Classes.File_Handler import File_Content_Streamer_Thread
+from Flask_App.Classes.FQDN_Class import FQDN_Class
+from Flask_App.Classes.Cleanup_Class import Cleanup_Class
+from Flask_App.Classes.Log_Collection_Class import Log_Collection_Class
+from Flask_App.Classes.File_Handler import File_Content_Streamer_Thread
 
-from Libraries.logger_module import root_path_log_collection_logs, root_path_cleanup_logs, root_path_fqdn_logs #, log_collection_logger
-
-from paths import root_path_log_collection_logs, root_log_collection_folder, root_fqdn_folder
+from Flask_App.paths import root_path_log_collection_logs, root_log_collection_folder, root_fqdn_folder, root_path_cleanup_logs, root_path_fqdn_logs
 
 
 # Log Collection Thread

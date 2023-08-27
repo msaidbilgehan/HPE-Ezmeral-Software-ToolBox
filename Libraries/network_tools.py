@@ -470,12 +470,13 @@ def print_ip_table(ip_hostname_pack, logger_hook=None):
 ### FQDN Tools ###
 ##################
 
-def create_hosts_file(ip_address_hostnames_list: List[Dict[str, str]]=[], logger_hook=None):
+def create_hosts_file(ip_address_hostnames_list: List[Dict[str, str]]=[], folder:str="/", logger_hook=None):
     
     if logger_hook is not None:
         local_logger = logger_hook
     else:
         local_logger = logger
+        
         
     local_logger.info("Creating hosts file...")
     print_ip_table(ip_address_hostnames_list, logger_hook=logger_hook)
@@ -541,7 +542,9 @@ ff02::2 ip6-allrouters
         local_logger.info(f"Hosts file content for {ip_address_hostname['ip']}: ")
         local_logger.info(hosts_file_content)
         
-        path = f"hosts_{ip_address_hostname['ip']}" # The path of your file should go here
+        folder = folder if folder[-1] == "/" else folder + "/"
+        path = f"{folder}hosts_{ip_address_hostname['ip']}" # The path of your file should go here
+        
         with open(path, "w") as file: # Opens the file using 'w' method. See below for list of methods.
             file.write(hosts_file_content) # Writes to the file used .write() method
             # file.close() # Closes file

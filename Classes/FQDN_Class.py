@@ -1,6 +1,8 @@
 
 
  
+from datetime import datetime
+import os
 import time
 
 from Classes.Task_Handler import Task_Handler_Class
@@ -9,8 +11,10 @@ from Libraries.network_tools import create_hosts_file, send_hostfile_to_device_s
 
 
 class FQDN_Class(Task_Handler_Class):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, hosts_folder, *args, **kwargs):
         super(FQDN_Class, self).__init__(*args, **kwargs)
+        
+        self.hosts_folder = hosts_folder
         
         self.__parameters_template:dict[str, str | list[dict[str, str]]] = {
             "ssh_username": "",
@@ -40,9 +44,16 @@ class FQDN_Class(Task_Handler_Class):
             if self.is_Thread_Stopped():
                 return -1
             
+            log_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            timestamp_folder_logs = self.hosts_folder + log_timestamp + "/"
+            
             # Create Hosts File
+            if not os.path.exists(self.hosts_folder):
+                os.makedirs(timestamp_folder_logs)
+                
             ip_address_hostnames_list = create_hosts_file(
                 ip_address_hostnames_list=ip_address_hostnames_list,
+                folder=timestamp_folder_logs,
                 logger_hook=self.logger
             )
             
@@ -98,3 +109,7 @@ class FQDN_Class(Task_Handler_Class):
         self.logger.info(f"FQDN Setup Finished for IP Addresses: {[ip_hostname for ip_hostname in ip_address_hostnames_list if ip_hostname not in failed_ip_addresses]}")
         
         return 0
+
+
+    def get_hosts_folder(self):
+        return self.hosts_folder

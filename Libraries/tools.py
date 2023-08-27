@@ -21,6 +21,8 @@ def read_log_file(path, wait_thread=None):
 
 
 def get_directory_info(directory_path, round_in_gb=3):
+    if os.path.exists(directory_path) == False:
+        return []
     # Belirtilen dizindeki tüm klasörleri listeleyelim
     all_items = os.listdir(directory_path)
     dirs = [item for item in all_items if os.path.isdir(os.path.join(directory_path, item))]

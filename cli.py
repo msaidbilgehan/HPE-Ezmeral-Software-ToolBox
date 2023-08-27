@@ -39,7 +39,7 @@ def menu_action_selection():
             
         elif option == "2":
             logger.info("Cleanup Starting...")
-            cleanup()
+            cleanup("./MAPR_Tools/cleanup.py")
             
         elif option == "3":
             logger.info("Collecting logs from nodes...")

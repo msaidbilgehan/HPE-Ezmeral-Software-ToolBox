@@ -1,9 +1,13 @@
 
+# Folder for all Thread/Endpoint files
+root_path = "Files/"
+
 # Log Download Path
-root_log_collection_folder = "node_logs/"
+root_log_collection_folder = root_path + "node_logs/"
+root_fqdn_folder = root_path + "fqdn_hosts/"
 
 # Files will be sent to Client 
-root_path_archives = "archives/"
+root_path_archives = root_path + "archives/"
 
 # Logger Paths
 root_path_log = "app_logs/"

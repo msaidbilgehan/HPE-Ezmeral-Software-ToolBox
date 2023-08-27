@@ -3,7 +3,7 @@ import json
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
 
 from Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
-from paths import root_log_collection_folder, root_path_archives
+from paths import root_path_archives, root_log_collection_folder, root_fqdn_folder
 from Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer
 from Libraries.logger_module import global_logger
 
@@ -158,7 +158,8 @@ def cleanup_endpoint():
             cleanup_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
-                ip_addresses=ip_addresses
+                ip_addresses=ip_addresses,
+                script_path="./cleanup.py"
             )
             
             if not cleanup_thread.is_Running():
@@ -399,10 +400,21 @@ def log_collection_stop_endpoint():
 #################
 
 
-@app.route('/file_table_download/<foldername>',methods = ['POST', 'GET'])
-def file_table_download(foldername):
+@app.route('/file_table_download/<endpoint>/<foldername>',methods = ['POST', 'GET'])
+def file_table_download(endpoint, foldername):
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    folder_path = log_collection_thread.get_Collected_Log_Folder()
+
+    if endpoint == "fqdn":
+        folder_path = fqdn_thread.get_hosts_folder()
+    elif endpoint == "cleanup":
+        folder_path= ""
+    elif endpoint == "log_collection":
+        folder_path = log_collection_thread.get_Collected_Log_Folder()
+    else:
+        return jsonify(
+            message=f"Endpoint {endpoint} not found"
+        )
+
     folders = list_dir(folder_path)
     
     
@@ -429,9 +441,10 @@ def file_table_download(foldername):
 def folder_info(endpoint):
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     directory_paths = {
-        "log_collection_collected": log_collection_thread.get_Collected_Log_Folder(),
-        "": "",
+        "log_collection": log_collection_thread.get_Collected_Log_Folder(),
+        "fqdn": fqdn_thread.get_hosts_folder(),
     }
+    
     if endpoint in directory_paths.keys():
         folder_info = get_directory_info(directory_paths[endpoint])
         # for dir_info in folder_info:

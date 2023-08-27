@@ -13,7 +13,7 @@ def fqdn_setup():
 
 
 
-def cleanup():
+def cleanup(script_path:str):
     logger.info("Scanning the local network...")
     network_address = get_local_IP()
     network_address = network_address[:network_address.rfind(".")] + ".x"
@@ -46,7 +46,6 @@ def cleanup():
     # Execute cleanup.py over SSH                
     for _, target in enumerate(selected_ip_addresses):
         logger.info("Connecting to " + target["ip"] + " ...")
-        filepath =  "./MAPR_Tools/cleanup.py"
         
         if same_ssh_information_for_all == "n":
             ssh_username = input("Please enter a Username: ")
@@ -56,7 +55,7 @@ def cleanup():
             ssh_client=target["ip"], 
             username=ssh_username, 
             password=ssh_password, 
-            local_file_path=filepath,
+            local_file_path=script_path,
             # remote_file_path="/tmp/", 
             overwrite=True
         )

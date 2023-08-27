@@ -7,7 +7,7 @@ from Classes.File_Handler import File_Content_Streamer_Thread
 
 from Libraries.logger_module import root_path_log_collection_logs, root_path_cleanup_logs, root_path_fqdn_logs #, log_collection_logger
 
-from paths import root_path_log_collection_logs, root_log_collection_folder
+from paths import root_path_log_collection_logs, root_log_collection_folder, root_fqdn_folder
 
 
 # Log Collection Thread
@@ -61,6 +61,7 @@ cleanup_logger_streamer = File_Content_Streamer_Thread(
 # FQDN Thread
 fqdn_thread = FQDN_Class(
     name="FQDN Thread",
+    hosts_folder=root_fqdn_folder,
     logger=None,
     logger_level_stdo=logging.DEBUG,
     logger_level_file=logging.DEBUG,

@@ -4,8 +4,10 @@ from flask import Flask, jsonify, request, send_from_directory, render_template,
 
 from Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
 from paths import root_log_collection_folder, root_path_archives
-from Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread
+from Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer
 from Libraries.logger_module import global_logger
+
+
 
 app = Flask(__name__, template_folder='frontend/pages', static_folder='frontend/static')
 
@@ -23,6 +25,90 @@ def fqdn_page():
         page_id="fqdn"
     )
 
+
+@app.route('/fqdn_endpoint',methods = ['POST', 'GET'])
+def fqdn_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    
+    if not fqdn_thread.safe_task_lock.locked():
+        with fqdn_thread.safe_task_lock:
+            ssh_username_json = request.args.get('ssh_username')
+            ssh_password_json = request.args.get('ssh_password')
+            ip_address_hostnames_list_json = request.args.get('ip_addresses_hostnames')
+            print("ip_address_hostnames_list_json", ip_address_hostnames_list_json)
+            
+            if ssh_username_json is not None:
+                ssh_username = json.loads(ssh_username_json)
+            else:
+                ssh_username = ""
+                
+            if ssh_password_json is not None:
+                ssh_password = json.loads(ssh_password_json)
+            else:
+                ssh_password = ""
+            
+            if ip_address_hostnames_list_json is not None:
+                ip_address_hostnames_list = json.loads(ip_address_hostnames_list_json)
+            else:
+                ip_address_hostnames_list = []
+            
+            print("ip_address_hostnames_list", ip_address_hostnames_list)
+            fqdn_thread.set_Parameters(
+                ssh_username=ssh_username,
+                ssh_password=ssh_password,
+                ip_address_hostnames_list=ip_address_hostnames_list
+            )
+            
+            if not fqdn_thread.is_Running():
+                fqdn_thread.start_Task()
+            else:
+                fqdn_thread.stop_Task()
+                fqdn_thread.wait_To_Stop_Once_Task()
+                fqdn_thread.start_Task()
+    else:
+        return jsonify(
+            message="fqdn task already running"
+        )
+    
+    return jsonify(
+        message="fqdn task queued"
+    )
+
+
+@app.route('/fqdn_terminal_endpoint',methods = ['POST', 'GET'])
+def fqdn_terminal_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    return Response(
+        fqdn_logger_streamer.read_file_continues(
+            is_yield=True,
+            sleep_time=0.05, # 0.3
+            new_sleep_time=0.07,
+            content_control=False
+        ), 
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no' # Disable buffering
+        }
+    )
+
+
+@app.route('/fqdn_download_terminal_log_endpoint')
+def fqdn_download_terminal_log_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    archive_path = root_path_archives + "fqdn_terminal_logs.zip"
+    archive_files(
+        fqdn_thread.get_Logs(), 
+        archive_path
+    )
+    return send_from_directory(
+        path="fqdn_terminal_logs.zip",
+        directory=root_path_archives,
+        as_attachment=True,
+        download_name="fqdn_terminal_logs.zip"
+    )
+    
 
 ######################
 ######################
@@ -50,7 +136,7 @@ def cleanup_endpoint():
         with cleanup_thread.safe_task_lock:
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
-            ip_addresses_json = request.args.get('ip_addresses')
+            ip_addresses_json = request.args.get('ip_addresses_hostnames')
             
             
             if ssh_username_json is not None:
@@ -153,7 +239,7 @@ def log_collection_endpoint():
         with log_collection_thread.safe_task_lock:
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
-            ip_addresses_json = request.args.get('ip_addresses')
+            ip_addresses_json = request.args.get('ip_addresses_hostnames')
             
             
             if ssh_username_json is not None:

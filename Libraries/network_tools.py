@@ -112,9 +112,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
         local_logger = logger_hook
     else:
         local_logger = logger
-    
-    transport = paramiko.Transport((ssh_client, port))
-    
+        
     local_folder_path = local_folder_path if local_folder_path[-1] == "/" else local_folder_path + "/"
     
     # Create directory of Given Path if not exists
@@ -126,6 +124,13 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
     
     last_download_path = ""
     response_download = False
+    
+    
+    try:
+        transport = paramiko.Transport((ssh_client, port))
+    except Exception as error:
+        local_logger.error(f"Error creating Transport: {error}")
+        return ""
     
     try:
         transport.connect(username=username, password=password)
@@ -205,8 +210,8 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
                 sftp.get(last_download_path, local_folder_path)
         except FileNotFoundError:
             local_logger.error(f"[Errno 2] No such file: '{remote_path}'")
-        
-        sftp.close()
+        finally:
+            sftp.close()
 
         local_folder_path += os.path.basename(remote_path)
         response_download = True
@@ -465,7 +470,7 @@ def print_ip_table(ip_hostname_pack, logger_hook=None):
 ### FQDN Tools ###
 ##################
 
-def create_hosts_file(ip_address_hostname_list: List[Dict[str, str]]=[], logger_hook=None):
+def create_hosts_file(ip_address_hostnames_list: List[Dict[str, str]]=[], logger_hook=None):
     
     if logger_hook is not None:
         local_logger = logger_hook
@@ -473,7 +478,7 @@ def create_hosts_file(ip_address_hostname_list: List[Dict[str, str]]=[], logger_
         local_logger = logger
         
     local_logger.info("Creating hosts file...")
-    print_ip_table(ip_address_hostname_list, logger_hook=logger_hook)
+    print_ip_table(ip_address_hostnames_list, logger_hook=logger_hook)
     
     ip_address_to_host_list = list()
     ip_address_to_host_template = "{ip_address}\t{hostname}\n"
@@ -499,8 +504,7 @@ ff02::2 ip6-allrouters
     hosts_file_for_ip_list = list()
     
     
-    for ip_address_hostname in ip_address_hostname_list:
-        ip_address_hostname['hostname']=input(f"Please enter a hostname for {ip_address_hostname['ip']}: ")
+    for ip_address_hostname in ip_address_hostnames_list:
         
         temp_ip_address_host = ip_address_to_host_template.format(
             ip_address=ip_address_hostname["ip"],
@@ -509,7 +513,7 @@ ff02::2 ip6-allrouters
         ip_address_to_host_list.append(temp_ip_address_host)
         
         
-    for ip_address_hostname in ip_address_hostname_list:
+    for ip_address_hostname in ip_address_hostnames_list:
         ip_address_to_host_string = ''.join(
             string_item for string_item in ip_address_to_host_list
         )
@@ -543,17 +547,23 @@ ff02::2 ip6-allrouters
             # file.close() # Closes file
             local_logger.info(f"Hosts file for {ip_address_hostname['ip']} created successfully.")
             
-    return ip_address_hostname_list
+    return ip_address_hostnames_list
 
-def send_hostfile_to_device_ssh(ip_address:str, username:str, password:str, local_file_path:str, remote_file_path:str="/etc/", port:int=22, logger_hook=None):
+
+def send_hostfile_to_device_ssh(ssh_client:str, username:str, password:str, local_file_path:str, remote_file_path:str="/etc/", port:int=22, logger_hook=None):
     
     if logger_hook is not None:
         local_logger = logger_hook
     else:
         local_logger = logger
         
-    transport = paramiko.Transport((ip_address, port))
     
+    try:
+        transport = paramiko.Transport((ssh_client, port))
+    except Exception as error:
+        local_logger.error(f"Error creating Transport: {error}")
+        return False
+
     try:
         transport.connect(username=username, password=password)
         sftp = transport.open_sftp_client()
@@ -570,7 +580,7 @@ def send_hostfile_to_device_ssh(ip_address:str, username:str, password:str, loca
         # move file to final location with sudo
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(ip_address, port, username, password)
+        client.connect(ssh_client, port, username, password)
         stdin, stdout, stderr = client.exec_command(f'echo {password} | sudo -S mv {tmp_path} {remote_file_path}')
         exit_status = stdout.channel.recv_exit_status()
         if exit_status == 0:
@@ -581,13 +591,17 @@ def send_hostfile_to_device_ssh(ip_address:str, username:str, password:str, loca
 
     except paramiko.AuthenticationException:
         local_logger.error("Authentication failed")
+        return False
+    except Exception as error:
+        local_logger.error(f"Exception: {error}")
+        return False
     finally:
         transport.close()
 
     return True
     
         
-def update_hostname_ssh(ip_address:str, username:str, password:str, new_hostname:str, port:int=22, reboot:str="y", logger_hook=None) -> int: 
+def update_hostname_ssh(ssh_client:str, username:str, password:str, new_hostname:str, port:int=22, reboot:str="y", logger_hook=None) -> int: 
     
     if logger_hook is not None:
         local_logger = logger_hook
@@ -598,7 +612,7 @@ def update_hostname_ssh(ip_address:str, username:str, password:str, new_hostname
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     
     try:
-        client.connect(ip_address, port, username, password)
+        client.connect(ssh_client, port, username, password)
         
         # update hostname
         # stdin, stdout, stderr = client.exec_command(f'echo {new_hostname} > /etc/hostname')
@@ -623,6 +637,9 @@ def update_hostname_ssh(ip_address:str, username:str, password:str, new_hostname
         
     except paramiko.AuthenticationException:
         local_logger.error("Authentication failed")
+        return -1
+    except Exception as error:
+        local_logger.error(f"Exception: {error}")
         return -1
     finally:
         client.close()

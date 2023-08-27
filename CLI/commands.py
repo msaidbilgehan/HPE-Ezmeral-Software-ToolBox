@@ -2,7 +2,7 @@
 
 from datetime import datetime
 import os
-from FQDN_Tools.tools import get_local_IP, ping_sweeping_threaded
+from CLI.FQDN_Tools.tools import get_local_IP, ping_sweeping_threaded
 from Libraries.network_tools import ping_sweeping_threaded, select_ip_addresses, ssh_send_file, ssh_execute_command, get_local_IP, ssh_receive_file
 from Libraries.logger_module import logger
 

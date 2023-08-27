@@ -1,5 +1,5 @@
 from Libraries.logger_module import logger
-from commands import cleanup, fqdn_setup, log_collection
+from CLI.commands import cleanup, fqdn_setup, log_collection
 
 
 def initialize_message():

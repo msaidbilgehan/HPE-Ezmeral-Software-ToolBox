@@ -53,18 +53,19 @@
     overflow-y: auto;
 }
 
-p {
+.terminal_text {
+    color: limegreen;
     position: relative;
     height: 100%;
     /* left: 50%; */
     /* margin-left: -8.5em; */
     text-align: left;
-    font-size: 0.5em;
+    font-size: 0.6em;
     font-family: monospace;
     white-space: normal;
     /* Removed because of the scroll bar */
     /* overflow: hidden; */
-    width: 0;
+    /* width: 0; */
 }
 
 span {

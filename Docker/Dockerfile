@@ -1,4 +1,4 @@
-FROM python:3.9-slim-buster
+FROM python:3.11-slim-buster
 ENV PYTHONBUFFERED 1
 
 WORKDIR /app
@@ -13,5 +13,4 @@ ENV PORT=5010
 
 EXPOSE ${PORT}
 
-RUN ls -la
 CMD ["python",  "-u", "flask_app.py"]

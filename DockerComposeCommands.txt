@@ -1,0 +1,4 @@
+sudo docker-compose up -d
+
+docker rm treo-hpe-ezmeral-toolbox
+docker rmi mapr-structure-treo-hpe-ezmeral-toolbox

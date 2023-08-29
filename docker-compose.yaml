@@ -10,6 +10,7 @@ services:
       PORT: 5010
     restart: always
     volumes:
+      - ./Docker/Flask_App/Files:/app/Flask_App/Files
       - ./Docker/Flask_App/app_logs:/app/Flask_App/app_logs
       - ./Docker/CLI/app_logs:/app/CLI/app_logs
     ports:

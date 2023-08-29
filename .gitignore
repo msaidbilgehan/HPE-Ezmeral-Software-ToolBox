@@ -14,9 +14,9 @@ Node_Installation/dependencies/mapr-zookeeper_7.2.0.0.20230118195227.GA-1_amd64.
 __pycache__
 venv*
 results.json
-FQDN_Tools/.vscode/settings.json
+.vscode
 hosts_*
 node_logs
 *.log
 *.log.*
-archives
+Docker/Flask_App/Files

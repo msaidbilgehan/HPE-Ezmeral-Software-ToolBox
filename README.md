@@ -28,7 +28,7 @@ This section describes the steps required to run the project on your local machi
 3. Run the application:
 
    ``` bash
-   python [filename].py
+   python flask_app.py
    ```
 
 ## API Endpoints

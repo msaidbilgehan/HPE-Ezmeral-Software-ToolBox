@@ -8,6 +8,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-EXPOSE 5005
+ENV HOST="0.0.0.0"
+ENV PORT=5010
 
+EXPOSE ${PORT}
+
+RUN ls -la
 CMD ["python",  "-u", "flask_app.py"]

@@ -1,4 +1,5 @@
 import json
+import os
 
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
 
@@ -508,4 +509,8 @@ def not_found():
 
 
 if __name__ == '__main__':
-   app.run(host="0.0.0.0", port=5005, debug = True)
+    app.run(
+        host=os.getenv("HOST", "0.0.0.0"), 
+        port=os.getenv("PORT", 5005), 
+        debug = True
+    )

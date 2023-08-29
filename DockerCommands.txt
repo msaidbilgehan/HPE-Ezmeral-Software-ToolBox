@@ -1,5 +1,6 @@
-sudo docker build -t treo_hpe_ezmeral_tools:latest ./Docker
-sudo docker run -v /Docker/Flask_App/app_logs:/Flask_App/app_logs -v /Docker/CLI/app_logs:/CLI/app_logs treo_hpe_ezmeral_tools
+sudo docker build -t treo_hpe_ezmeral_tools:latest ./Docker/
+sudo docker run -v ./Docker/Flask_App/app_logs:/Flask_App/app_logs -v ./Docker/CLI/app_logs:/CLI/app_logs treo_hpe_ezmeral_tools
 
 ---
+sudo docker run treo_hpe_ezmeral_tools
 sudo docker run -v /path/on/host:/Flask_App/app_logs -v /path/on/host2:/CLI/app_logs treo_hpe_ezmeral_tools

@@ -50,7 +50,7 @@ If you wish to contribute to this project, please first create an issue to discu
 
 ## License
 
-This project is licensed under the [License Name] - see the `LICENSE` file for more details.
+This project is licensed under the [CUSTOM LICENSE] - see the [`LICENSE`](/LICENSE) file for more details.
 
 ## Acknowledgments
 

@@ -550,6 +550,7 @@ ff02::2 ip6-allrouters
             file.write(hosts_file_content) # Writes to the file used .write() method
             # file.close() # Closes file
             local_logger.info(f"Hosts file for {ip_address_hostname['ip']} created successfully.")
+            ip_address_hostname['hosts_file_path'] = path
             
     return ip_address_hostnames_list
 

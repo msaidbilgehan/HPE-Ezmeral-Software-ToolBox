@@ -48,7 +48,7 @@ class FQDN_Class(Task_Handler_Class):
             timestamp_folder_logs = self.hosts_folder + log_timestamp + "/"
             
             # Create Hosts File
-            if not os.path.exists(self.hosts_folder):
+            if not os.path.exists(timestamp_folder_logs):
                 os.makedirs(timestamp_folder_logs)
                 
             ip_address_hostnames_list = create_hosts_file(
@@ -63,20 +63,20 @@ class FQDN_Class(Task_Handler_Class):
                 return -1
             
             # Execute cleanup.py over SSH
-            for i, ip_address_hostname in enumerate(ip_address_hostnames_list):
-                self.logger.info(f"Connecting to {ip_address_hostname} ...")
-                filepath_for_ip_address =  f"hosts_{ip_address_hostname['ip']}"
+            for i, ip_address_hostname_hosts in enumerate(ip_address_hostnames_list):
+                self.logger.info(f"Connecting to {ip_address_hostname_hosts} ...")
+                filepath_for_ip_address =  f"hosts_{ip_address_hostname_hosts['ip']}"
                 
                 response = send_hostfile_to_device_ssh(
-                    ssh_client=ip_address_hostname["ip"], 
+                    ssh_client=ip_address_hostname_hosts["ip"], 
                     username=ssh_username, 
                     password=ssh_password, 
-                    local_file_path=filepath_for_ip_address,
+                    local_file_path=ip_address_hostname_hosts["hosts_file_path"],
                     remote_file_path="/etc/hosts", 
                     logger_hook=self.logger
                 )
                 if response != True:
-                    failed_ip_addresses.append(ip_address_hostname)
+                    failed_ip_addresses.append(ip_address_hostname_hosts)
                     continue
             
                 # Check Thread State
@@ -85,7 +85,7 @@ class FQDN_Class(Task_Handler_Class):
                     return -1
                 
                 response = update_hostname_ssh(
-                    ssh_client=ip_address_hostname["ip"], 
+                    ssh_client=ip_address_hostname_hosts["ip"], 
                     # port=int(input("Please enter a Port: ")), 
                     username=ssh_username, 
                     password=ssh_password, 
@@ -94,7 +94,7 @@ class FQDN_Class(Task_Handler_Class):
                     logger_hook=self.logger
                 )
                 if response != 0:
-                    failed_ip_addresses.append(ip_address_hostname)
+                    failed_ip_addresses.append(ip_address_hostname_hosts)
                 
                 # Check Thread State
                 time.sleep(1)

@@ -36,7 +36,6 @@ def fqdn_endpoint():
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_address_hostnames_list_json = request.args.get('ip_addresses_hostnames')
-            print("ip_address_hostnames_list_json", ip_address_hostnames_list_json)
             
             if ssh_username_json is not None:
                 ssh_username = json.loads(ssh_username_json)
@@ -53,7 +52,6 @@ def fqdn_endpoint():
             else:
                 ip_address_hostnames_list = []
             
-            print("ip_address_hostnames_list", ip_address_hostnames_list)
             fqdn_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
@@ -511,6 +509,6 @@ def not_found():
 if __name__ == '__main__':
     app.run(
         host=os.getenv("HOST", "0.0.0.0"), 
-        port=os.getenv("PORT", 5005), 
+        port=int(os.getenv("PORT", 5005)), 
         debug = True
     )

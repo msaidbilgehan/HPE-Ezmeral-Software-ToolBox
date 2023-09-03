@@ -77,7 +77,7 @@ function clear_Terminal() {
 
 
 document.getElementById('stop-btn').addEventListener('click', function () {
-    fetch('/log_collection_log_stop_endpoint')
+    fetch('/log_collection_stop_endpoint')
         .then(response => response.json())
         .then(data => {
             // document.getElementById('output').innerText = data.message;

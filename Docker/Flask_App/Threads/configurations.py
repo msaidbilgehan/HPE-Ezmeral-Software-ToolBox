@@ -8,6 +8,9 @@ from Flask_App.Classes.File_Handler import File_Content_Streamer_Thread
 from Flask_App.paths import root_path_log_collection_logs, root_log_collection_folder, root_fqdn_folder, root_path_cleanup_logs, root_path_fqdn_logs
 
 
+maxBytes = 64*1024
+
+
 # Log Collection Thread
 log_collection_thread = Log_Collection_Class(
     name="Log Collection Thread",
@@ -17,7 +20,7 @@ log_collection_thread = Log_Collection_Class(
     logger_level_file=logging.DEBUG,
     logger_file_path=root_path_log_collection_logs,
     mode="a", 
-    maxBytes=128*1024, 
+    maxBytes=maxBytes, 
     backupCount=2
 )
 # log_collection_thread.set_Parameters(
@@ -43,7 +46,7 @@ cleanup_thread = Cleanup_Class(
     logger_level_file=logging.DEBUG,
     logger_file_path=root_path_cleanup_logs,
     mode="a", 
-    maxBytes=128*1024, 
+    maxBytes=maxBytes, 
     backupCount=2
 )
 cleanup_thread.start_Thread()
@@ -65,7 +68,7 @@ fqdn_thread = FQDN_Class(
     logger_level_file=logging.DEBUG,
     logger_file_path=root_path_fqdn_logs,
     mode="a", 
-    maxBytes=128*1024, 
+    maxBytes=maxBytes, 
     backupCount=2
 )
 fqdn_thread.start_Thread()

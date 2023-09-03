@@ -108,6 +108,23 @@ def fqdn_download_terminal_log_endpoint():
         download_name="fqdn_terminal_logs.zip"
     )
     
+    
+@app.route('/fqdn_stop_endpoint',methods = ['POST', 'GET'])
+def fqdn_stop_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    if not fqdn_thread.task_stop_lock.locked():
+        with fqdn_thread.task_stop_lock:
+            fqdn_thread.stop_Task()
+            fqdn_thread.wait_To_Stop_Task()
+    else:
+        return jsonify(
+            message="FQDN task stop already running"
+        )
+    
+    return jsonify(
+        message="FQDN tasks stopped"
+    )
+    
 
 ######################
 ######################
@@ -209,6 +226,23 @@ def cleanup_download_terminal_log_endpoint():
         directory=root_path_archives,
         as_attachment=True,
         download_name="cleanup_terminal_logs.zip"
+    )
+
+    
+@app.route('/cleanup_stop_endpoint',methods = ['POST', 'GET'])
+def cleanup_stop_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    if not cleanup_thread.task_stop_lock.locked():
+        with cleanup_thread.task_stop_lock:
+            cleanup_thread.stop_Task()
+            cleanup_thread.wait_To_Stop_Task()
+    else:
+        return jsonify(
+            message="Cleanup task stop already running"
+        )
+    
+    return jsonify(
+        message="Cleanup tasks stopped"
     )
 
 
@@ -372,7 +406,7 @@ def clear_Log_Buffer():
     )
     
 
-@app.route('/log_collection_log_stop_endpoint',methods = ['POST', 'GET'])
+@app.route('/log_collection_stop_endpoint',methods = ['POST', 'GET'])
 def log_collection_stop_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     if not log_collection_thread.task_stop_lock.locked():

@@ -1,4 +1,4 @@
-import { terminal_source_url } from './page_specific_urls.js';
+import { terminal_source_url, terminal_source_stop_url } from './page_specific_urls.js';
 
 var terminal_source;
 
@@ -58,14 +58,22 @@ function clear_Terminal() {
     contentDiv.innerHTML = ""; // clear the content div
 }
 
-
-// document.getElementById('listen_logs-btn').addEventListener('click', function () {
-//     terminal_EventSource_Start(terminal_source_url);
-// });
+function stop_Action(url) {
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // document.getElementById('output').innerText = data.message;
+            showNotification(data.message, "info");
+        })
+        .catch(error => {
+            console.error('An error occurred:', error);
+            showNotification('An error occurred: ' + error, "error");
+        });
+}
 
 
 document.getElementById('stop-btn').addEventListener('click', function () {
-    fetch('/log_collection_log_stop_endpoint')
+    fetch('/log_collection_stop_endpoint')
         .then(response => response.json())
         .then(data => {
             // document.getElementById('output').innerText = data.message;
@@ -88,4 +96,5 @@ document.addEventListener('DOMContentLoaded', function () {
 window.clear_Terminal = clear_Terminal;
 window.terminal_EventSource_Stop = terminal_EventSource_Stop;
 window.terminal_EventSource_Start = terminal_EventSource_Start;
+window.stop_Action = stop_Action;
 

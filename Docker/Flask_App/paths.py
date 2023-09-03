@@ -1,4 +1,6 @@
-app_path = "Flask_App/"
+import os
+
+app_path = os.path.dirname(__file__) + "/"
 
 # Folder for all Thread/Endpoint files
 root_path = app_path + "Files/"

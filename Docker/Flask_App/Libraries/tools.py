@@ -80,7 +80,7 @@ def archive_directory(directory_to_compress:str, output_directory:str, archive_n
     if delete_exist and os.path.exists(output_archive_path + ".zip"):
         os.remove(output_archive_path + ".zip")
         
-    print(f"Creating ZIP File: {output_archive_path}.zip to compress {directory_to_compress}")
+    # print(f"Creating ZIP File: {output_archive_path}.zip to compress {directory_to_compress}")
     return shutil.make_archive(
         base_name=output_archive_path,
         format='zip', 
@@ -98,7 +98,8 @@ def archive_files(files:list[str], output_archive_path:str, delete_exist:bool=Tr
     with zipfile.ZipFile(output_archive_path, 'w') as zipper:
         for file in files:
             # print(f"Adding File: {file}")
-            zipper.write(file)
+            file_name_only = os.path.basename(file)
+            zipper.write(file, arcname=file_name_only)
             
     # print(f"ZIP File Created: {output_archive_path}")
     return output_archive_path

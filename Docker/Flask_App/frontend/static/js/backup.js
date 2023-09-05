@@ -41,18 +41,3 @@ function backup_cron_control() {
         showNotification(error, "error");
     });
 };
-
-
-
-function clear_Collected_Log_Files() {
-    fetch('/clear_Collected_Log_Files')
-        .then(response => response.json())
-        .then(data => {
-            // document.getElementById('output').innerText = data.message;
-            showNotification(data.message, "info");
-        })
-        .catch(error => {
-            console.error('An error occurred:', error);
-            showNotification('An error occurred: ' + error, "error");
-        });
-}

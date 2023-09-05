@@ -29,7 +29,8 @@ function backup_cron_control() {
     url = url + '&ip_addresses=' + encodeURIComponent(ipAddressesJson);
 
     if (!terminal_source || terminal_source.readyState === 2) {
-        terminal_EventSource_Start(terminal_source_url);
+        var pageType = document.body.getAttribute('data-page-type');
+        terminal_EventSource_Start(terminal_source_url + "/" + pageType);
     }
 
     // Call Endpoint

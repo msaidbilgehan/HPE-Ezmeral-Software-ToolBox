@@ -1,4 +1,4 @@
-import { terminal_source_url, terminal_source_stop_url } from './page_specific_urls.js';
+import { terminal_source_url, endpoint_stop_url } from './page_specific_urls.js';
 
 var terminal_source;
 
@@ -9,7 +9,8 @@ function terminal_EventSource_Start() {
     if (terminal_source) {
         terminal_source.close();
     }
-    terminal_source = new EventSource(terminal_source_url); // use the URL with the IP addresses
+    var pageType = document.body.getAttribute('data-page-type');
+    terminal_source = new EventSource(terminal_source_url + "/" + pageType); // use the URL with the IP addresses
     
     terminal_source.onerror = function (error) {
         console.error("EventSource failed:", error);
@@ -42,7 +43,8 @@ function clear_Terminal() {
 }
 
 function stop_Action() {
-    fetch(terminal_source_stop_url)
+    var pageType = document.body.getAttribute('data-page-type');
+    fetch(endpoint_stop_url + "/" + pageType)
         .then(response => response.json())
         .then(data => {
             // document.getElementById('output').innerText = data.message;
@@ -55,7 +57,7 @@ function stop_Action() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    terminal_EventSource_Start(terminal_source_url);
+    terminal_EventSource_Start();
 });
 
 

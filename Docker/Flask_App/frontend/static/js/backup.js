@@ -1,3 +1,4 @@
+import { terminal_source_url } from './page_specific_urls.js';
 
 
 function backup_cron_control() {

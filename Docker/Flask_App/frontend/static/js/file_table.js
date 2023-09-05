@@ -1,9 +1,11 @@
+import { download_action_files_url, action_folder_info_url } from './page_specific_urls.js';
+
+
 const tbodyElement = document.getElementById("file_list");
 
 
-
 $(document).ready(function () {
-    fetch("/folder_info/" + document.body.getAttribute('data-page-type')).then(response => response.json()).then(data => {
+    fetch(action_folder_info_url + "/" + document.body.getAttribute('data-page-type')).then(response => response.json()).then(data => {
 
         data.forEach(file => {
             var fileInfo = {
@@ -29,7 +31,7 @@ $(document).ready(function () {
 $(document).ready(function () {
     $("#file_list").on("click", "tr", function () {
         let foldername = $(this).find("td:nth-child(2)").text();
-        window.location.href = `/file_table_download/${document.body.getAttribute('data-page-type')}/${foldername}`;
+        window.location.href = `${download_action_files_url}/${document.body.getAttribute('data-page-type')}/${foldername}`;
     });
 });
 

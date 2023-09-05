@@ -122,6 +122,8 @@ class Task_Handler_Class(ABC, Thread):
       self.logger.warning("Task Stopped")
       return 0
 
+   def stop_Action_Control(self):
+      return self.is_Thread_Stopped() or self.is_Task_Stopped()
 
    def wait_To_Stop_Once_Task(self) -> int:
       self.logger.warning("Waiting to stop task once...")

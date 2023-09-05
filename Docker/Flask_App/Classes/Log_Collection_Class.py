@@ -44,7 +44,8 @@ class Log_Collection_Class(Task_Handler_Class):
             
             # Check Thread State
             time.sleep(1)
-            if self.is_Thread_Stopped():
+            if self.stop_Action_Control():
+                self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                 return -1
             
             log_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -52,6 +53,13 @@ class Log_Collection_Class(Task_Handler_Class):
             
             # Execute cleanup.py over SSH
             for ip_address in ip_addresses:
+            
+                # Check Thread State
+                time.sleep(1)
+                if self.stop_Action_Control():
+                    self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
+                    return -1
+                
                 self.logger.info("Connecting to " + ip_address + " ...")
                 
                 status, client_stdout = ssh_execute_command(
@@ -66,11 +74,6 @@ class Log_Collection_Class(Task_Handler_Class):
                     failed_ip_addresses.append(ip_address)
                     self.logger.error(f"Failed to run command in client: '{ip_address}''")
                     continue
-            
-                # Check Thread State
-                time.sleep(1)
-                if self.is_Thread_Stopped():
-                    return -1
                 
                 log_folders =  client_stdout.split("\n")
                 log_folders = [log_folder for log_folder in log_folders if log_folder != ""]
@@ -88,7 +91,8 @@ class Log_Collection_Class(Task_Handler_Class):
                     
                     # Check Thread State
                     time.sleep(1)
-                    if self.is_Thread_Stopped():
+                    if self.stop_Action_Control():
+                        self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                         return -1
                     
                     if remote_file_path == "":

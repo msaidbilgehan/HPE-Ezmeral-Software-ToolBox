@@ -41,7 +41,8 @@ class FQDN_Class(Task_Handler_Class):
         try:
             # Check Thread State
             time.sleep(1)
-            if self.is_Thread_Stopped():
+            if self.stop_Action_Control():
+                self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                 return -1
             
             log_timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -59,7 +60,8 @@ class FQDN_Class(Task_Handler_Class):
             
             # Check Thread State
             time.sleep(1)
-            if self.is_Thread_Stopped():
+            if self.stop_Action_Control():
+                self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                 return -1
             
             # Execute cleanup.py over SSH
@@ -81,7 +83,8 @@ class FQDN_Class(Task_Handler_Class):
             
                 # Check Thread State
                 time.sleep(1)
-                if self.is_Thread_Stopped():
+                if self.stop_Action_Control():
+                    self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                     return -1
                 
                 response = update_hostname_ssh(
@@ -98,7 +101,8 @@ class FQDN_Class(Task_Handler_Class):
                 
                 # Check Thread State
                 time.sleep(1)
-                if self.is_Thread_Stopped():
+                if self.stop_Action_Control():
+                    self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                     return -1
                     
         except Exception as e:

@@ -41,7 +41,8 @@ class Backup_Class(Task_Handler_Class):
         try:
             # Check Thread State
             time.sleep(1)
-            if self.is_Thread_Stopped():
+            if self.stop_Action_Control():
+                self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                 return -1
             
             # Execute script over SSH
@@ -60,7 +61,8 @@ class Backup_Class(Task_Handler_Class):
 
                 # Check Thread State
                 time.sleep(1)
-                if self.is_Thread_Stopped():
+                if self.stop_Action_Control():
+                    self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                     return -1
                 
                 if remote_file_path != "":
@@ -81,7 +83,8 @@ class Backup_Class(Task_Handler_Class):
                 
                 # Check Thread State
                 time.sleep(1)
-                if self.is_Thread_Stopped():
+                if self.stop_Action_Control():
+                    self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                     return -1
                     
         except Exception as e:

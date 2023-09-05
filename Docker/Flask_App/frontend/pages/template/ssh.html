@@ -28,7 +28,7 @@
             <div class="bg-secondary rounded">
                 <input type="submit" class="btn btn-lg btn-outline-success m-2" value="Run"
                     id="run-btn">
-                <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action(terminal_source_stop_url)"
+                <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action()"
                     id="stop-btn">Stop</button>
             </div>
         </div>
@@ -49,8 +49,8 @@
 <div class="col-sm-12 col-xl-12">
     <div class="bg-secondary rounded p-4">
         <div class="fakeMenu align_item_center">
-            <a class="btn btn-info p-2 m-1" id="download_terminal_logs-btn" href="javascript:window.location.href=window.terminal_log_download_source_url;">Download Terminal Log</a>
-            <button type="button" class="btn btn-success m-2" id="listen_logs-btn" onclick="terminal_EventSource_Start(terminal_source_url)">Watch Logs</button>
+            <a class="btn btn-info p-2 m-1" id="download_terminal_logs-btn" href="javascript:window.location.href=window.terminal_log_download_source_url + '/' + document.body.getAttribute('data-page-type');">Download Terminal Log</a>
+            <button type="button" class="btn btn-success m-2" id="listen_logs-btn" onclick="terminal_EventSource_Start()">Watch Logs</button>
             <button type="button" class="btn btn-warning m-2" id="stop_logs-btn" onclick="terminal_EventSource_Stop()">Stop Log Watching</button>
             <button type="button" class="btn btn-info p-2 m-1" id="clear_terminal_logs-btn" onclick="clear_Terminal()">Clear Terminal</button>
         </div>

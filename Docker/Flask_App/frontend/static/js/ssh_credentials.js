@@ -1,7 +1,6 @@
 import { eventsource_source_url } from './page_specific_urls.js';
 
 
-
 document.getElementById('ipForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
@@ -52,10 +51,6 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesHostnamesJson);
 
-    // if (!terminal_source || terminal_source.readyState === 2) {
-    //     terminal_EventSource_Start(terminal_source_url);
-    // }
-
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
         // console.log(data.message);
@@ -65,9 +60,3 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
         showNotification(error, "error");
     });
 });
-
-// function updateProgressBar(percentage) {
-//     var progressBar = document.querySelector('.progress-bar');
-//     progressBar.style.width = percentage + '%';
-//     progressBar.setAttribute('aria-valuenow', percentage);
-// }

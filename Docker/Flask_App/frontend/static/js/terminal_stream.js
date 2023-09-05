@@ -2,14 +2,14 @@ import { terminal_source_url, terminal_source_stop_url } from './page_specific_u
 
 var terminal_source;
 
-function terminal_EventSource_Start(url) {
+function terminal_EventSource_Start() {
     clear_Terminal();
 
     var contentDiv = document.getElementById('stream_content');
     if (terminal_source) {
         terminal_source.close();
     }
-    terminal_source = new EventSource(url); // use the URL with the IP addresses
+    terminal_source = new EventSource(terminal_source_url); // use the URL with the IP addresses
     
     terminal_source.onerror = function (error) {
         console.error("EventSource failed:", error);
@@ -36,30 +36,13 @@ function terminal_EventSource_Stop() {
     }
 }
 
-
-// function clear_Log_Collection_Log_Files() {
-//     var contentDiv = document.getElementById('stream_content');
-//     contentDiv.innerHTML = ""; // clear the content div
-
-//     fetch('/clear_Log_Collection_Log_Files')
-//         .then(response => response.json())
-//         .then(data => {
-//             // document.getElementById('output').innerText = data.message;
-//             showNotification(data.message, "info");
-//         })
-//         .catch(error => {
-//             console.error('An error occurred:', error);
-//             showNotification('An error occurred: ' + error, "error");
-//         });
-// }
-
 function clear_Terminal() {
     var contentDiv = document.getElementById('stream_content');
     contentDiv.innerHTML = ""; // clear the content div
 }
 
-function stop_Action(url) {
-    fetch(url)
+function stop_Action() {
+    fetch(terminal_source_stop_url)
         .then(response => response.json())
         .then(data => {
             // document.getElementById('output').innerText = data.message;
@@ -71,24 +54,8 @@ function stop_Action(url) {
         });
 }
 
-
-document.getElementById('stop-btn').addEventListener('click', function () {
-    fetch('/log_collection_stop_endpoint')
-        .then(response => response.json())
-        .then(data => {
-            // document.getElementById('output').innerText = data.message;
-            showNotification(data.message, "info");
-        })
-        .catch(error => {
-            console.error('An error occurred:', error);
-            showNotification('An error occurred: ' + error, "error");
-        });
-});
-
 document.addEventListener('DOMContentLoaded', function () {
     terminal_EventSource_Start(terminal_source_url);
-    // console.info("terminal_source_url:" + terminal_source_url);
-    // console.info("eventsource_source_url:" + eventsource_source_url);
 });
 
 

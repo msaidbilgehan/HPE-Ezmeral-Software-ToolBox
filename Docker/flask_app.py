@@ -2,6 +2,7 @@ import json
 import os
 
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
+from Flask_App.Classes.Task_Handler import Task_Handler_Class
 from Flask_App.Libraries.network_tools import ssh_execute_command
 
 from Flask_App.Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
@@ -12,6 +13,14 @@ from Flask_App.Libraries.logger_module import global_logger
 
 
 app = Flask(__name__, template_folder=f'{app_path}frontend/pages', static_folder=f'{app_path}frontend/static')
+
+endpoint_thread_mapping: dict[str, Task_Handler_Class] = {
+    "cleanup": cleanup_thread,
+    "log_collection": log_collection_thread,
+    "fqdn": fqdn_thread,
+    "backup": backup_thread,
+}
+
 
 
 
@@ -528,49 +537,6 @@ def log_collection_download_collected_endpoint():
         as_attachment=True,
         download_name="collected_logs.zip"
     )
-
-
-@app.route('/log_collection_download_terminal_log_endpoint')
-def log_collection_download_terminal_log_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    archive_path = root_path_archives + "log_collection_terminal_logs.zip"
-    archive_files(
-        log_collection_thread.get_Logs(), 
-        archive_path
-    )
-    return send_from_directory(
-        path="log_collection_terminal_logs.zip",
-        directory=root_path_archives,
-        as_attachment=True,
-        download_name="log_collection_terminal_logs.zip"
-    )
-    
-
-# @app.route('/clear_Log_Collection_Log_Files',methods = ['POST', 'GET'])
-# def clear_Log_Collection_Log_Files():
-#     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-#     log_collection_logger_streamer.clear_File_Content()
-    
-#     return jsonify(
-#         message="Log contents are cleared"
-#     )
-    
-
-@app.route('/log_collection_stop_endpoint',methods = ['POST', 'GET'])
-def log_collection_stop_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    if not log_collection_thread.task_stop_lock.locked():
-        with log_collection_thread.task_stop_lock:
-            log_collection_thread.stop_Task()
-            log_collection_thread.wait_To_Stop_Task()
-    else:
-        return jsonify(
-            message="Log collection task stop already running"
-        )
-    
-    return jsonify(
-        message="Log collection tasks stopped"
-    )
     
     
 ##########################
@@ -581,6 +547,41 @@ def log_collection_stop_endpoint():
 #################
 ### ENDPOINTS ###
 #################
+
+
+@app.route('/download_terminal_log/<endpoint>')
+def download_terminal_log(endpoint):
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    archive_path = root_path_archives + f"{endpoint}_terminal_logs.zip"
+    
+    archive_files(
+        endpoint_thread_mapping[endpoint].get_Logs(), 
+        archive_path
+    )
+    return send_from_directory(
+        path=f"{endpoint}_terminal_logs.zip",
+        directory=root_path_archives,
+        as_attachment=True,
+        download_name=f"{endpoint}_terminal_logs.zip"
+    )
+    
+
+@app.route('/endpoint_stop/<endpoint>',methods = ['POST', 'GET'])
+def endpoint_stop_endpoint(endpoint):
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    
+    if not endpoint_thread_mapping[endpoint].task_stop_lock.locked():
+        with endpoint_thread_mapping[endpoint].task_stop_lock:
+            endpoint_thread_mapping[endpoint].stop_Task()
+            endpoint_thread_mapping[endpoint].wait_To_Stop_Task()
+    else:
+        return jsonify(
+            message=f"{endpoint} task stop already running"
+        )
+    
+    return jsonify(
+        message=f"{endpoint} tasks stopped"
+    )
 
     
 @app.route('/clear_action_files/<endpoint>',methods = ['POST', 'GET'])

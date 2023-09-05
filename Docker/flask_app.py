@@ -142,58 +142,6 @@ def backup_control_endpoint():
     )
 
 
-@app.route('/backup_terminal_endpoint',methods = ['POST', 'GET'])
-def backup_terminal_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    return Response(
-        backup_logger_streamer.read_file_continues(
-            is_yield=True,
-            sleep_time=0.05, # 0.3
-            new_sleep_time=0.07,
-            content_control=False
-        ), 
-        mimetype='text/event-stream',
-        headers={
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-            'X-Accel-Buffering': 'no' # Disable buffering
-        }
-    )
-
-
-@app.route('/backup_download_terminal_log_endpoint')
-def backup_download_terminal_log_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    archive_path = root_path_archives + "backup_terminal_logs.zip"
-    archive_files(
-        backup_thread.get_Logs(), 
-        archive_path
-    )
-    return send_from_directory(
-        path="backup_terminal_logs.zip",
-        directory=root_path_archives,
-        as_attachment=True,
-        download_name="backup_terminal_logs.zip"
-    )
-
-    
-@app.route('/backup_stop_endpoint',methods = ['POST', 'GET'])
-def backup_stop_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    if not backup_thread.task_stop_lock.locked():
-        with backup_thread.task_stop_lock:
-            backup_thread.stop_Task()
-            backup_thread.wait_To_Stop_Task()
-    else:
-        return jsonify(
-            message="Backup task stop already running"
-        )
-    
-    return jsonify(
-        message="Backup tasks stopped"
-    )
-
-
 ###################
 ###################
 ###################
@@ -257,58 +205,6 @@ def fqdn_endpoint():
     
     return jsonify(
         message="FQDN task queued"
-    )
-
-
-@app.route('/fqdn_terminal_endpoint',methods = ['POST', 'GET'])
-def fqdn_terminal_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    return Response(
-        fqdn_logger_streamer.read_file_continues(
-            is_yield=True,
-            sleep_time=0.05, # 0.3
-            new_sleep_time=0.07,
-            content_control=False
-        ), 
-        mimetype='text/event-stream',
-        headers={
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-            'X-Accel-Buffering': 'no' # Disable buffering
-        }
-    )
-
-
-@app.route('/fqdn_download_terminal_log_endpoint')
-def fqdn_download_terminal_log_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    archive_path = root_path_archives + "fqdn_terminal_logs.zip"
-    archive_files(
-        fqdn_thread.get_Logs(), 
-        archive_path
-    )
-    return send_from_directory(
-        path="fqdn_terminal_logs.zip",
-        directory=root_path_archives,
-        as_attachment=True,
-        download_name="fqdn_terminal_logs.zip"
-    )
-    
-    
-@app.route('/fqdn_stop_endpoint',methods = ['POST', 'GET'])
-def fqdn_stop_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    if not fqdn_thread.task_stop_lock.locked():
-        with fqdn_thread.task_stop_lock:
-            fqdn_thread.stop_Task()
-            fqdn_thread.wait_To_Stop_Task()
-    else:
-        return jsonify(
-            message="FQDN task stop already running"
-        )
-    
-    return jsonify(
-        message="FQDN tasks stopped"
     )
     
 
@@ -377,39 +273,6 @@ def cleanup_endpoint():
     
     return jsonify(
         message="Cleanup task queued"
-    )
-
-
-@app.route('/cleanup_download_terminal_log_endpoint')
-def cleanup_download_terminal_log_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    archive_path = root_path_archives + "cleanup_terminal_logs.zip"
-    archive_files(
-        cleanup_thread.get_Logs(), 
-        archive_path
-    )
-    return send_from_directory(
-        path="cleanup_terminal_logs.zip",
-        directory=root_path_archives,
-        as_attachment=True,
-        download_name="cleanup_terminal_logs.zip"
-    )
-
-    
-@app.route('/cleanup_stop_endpoint',methods = ['POST', 'GET'])
-def cleanup_stop_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    if not cleanup_thread.task_stop_lock.locked():
-        with cleanup_thread.task_stop_lock:
-            cleanup_thread.stop_Task()
-            cleanup_thread.wait_To_Stop_Task()
-    else:
-        return jsonify(
-            message="Cleanup task stop already running"
-        )
-    
-    return jsonify(
-        message="Cleanup tasks stopped"
     )
 
 

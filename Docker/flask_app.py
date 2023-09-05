@@ -2,6 +2,7 @@ import json
 import os
 
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
+from Flask_App.Classes.File_Handler import File_Content_Streamer_Thread
 from Flask_App.Classes.Task_Handler import Task_Handler_Class
 from Flask_App.Libraries.network_tools import ssh_execute_command
 
@@ -21,6 +22,12 @@ endpoint_thread_mapping: dict[str, Task_Handler_Class] = {
     "backup": backup_thread,
 }
 
+endpoint_streamer_mapping: dict[str, File_Content_Streamer_Thread] = {
+    "cleanup": cleanup_logger_streamer,
+    "log_collection": log_collection_logger_streamer,
+    "fqdn": fqdn_logger_streamer,
+    "backup": backup_logger_streamer,
+}
 
 
 
@@ -373,25 +380,6 @@ def cleanup_endpoint():
     )
 
 
-@app.route('/cleanup_terminal_endpoint',methods = ['POST', 'GET'])
-def cleanup_terminal_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    return Response(
-        cleanup_logger_streamer.read_file_continues(
-            is_yield=True,
-            sleep_time=0.05, # 0.3
-            new_sleep_time=0.07,
-            content_control=False
-        ), 
-        mimetype='text/event-stream',
-        headers={
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-            'X-Accel-Buffering': 'no' # Disable buffering
-        }
-    )
-
-
 @app.route('/cleanup_download_terminal_log_endpoint')
 def cleanup_download_terminal_log_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
@@ -491,13 +479,23 @@ def log_collection_endpoint():
     return jsonify(
         message="Log collection task queued"
     )
+    
+    
+##########################
+##########################
+##########################
 
 
-@app.route('/log_collection_terminal_endpoint',methods = ['POST', 'GET'])
-def log_collection_terminal_endpoint():
+#################
+### ENDPOINTS ###
+#################
+
+
+@app.route('/terminal_endpoint/<endpoint>',methods = ['POST', 'GET'])
+def terminal_endpoint(endpoint):
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     return Response(
-        log_collection_logger_streamer.read_file_continues(
+        endpoint_streamer_mapping[endpoint].read_file_continues(
             is_yield=True,
             sleep_time=0.05, # 0.3
             new_sleep_time=0.07,
@@ -510,43 +508,6 @@ def log_collection_terminal_endpoint():
             'X-Accel-Buffering': 'no' # Disable buffering
         }
     )
-
-
-@app.route('/log_collection_list_collected_endpoint',methods = ['POST', 'GET'])
-def log_collection_list_collected_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    return jsonify(
-        message=log_collection_thread.get_Collected_Log_Folder()
-    )
-
-
-@app.route('/log_collection_download_collected_endpoint')
-def log_collection_download_collected_endpoint():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    archive_name = "collected_logs"
-    # archive_path = root_path_archives + archive_name + ".zip"
-    
-    archive_directory(
-        archive_name=archive_name,
-        directory_to_compress=log_collection_thread.get_Collected_Log_Folder(),
-        output_directory=root_path_archives,
-    )
-    return send_from_directory(
-        path="collected_logs.zip",
-        directory=root_path_archives,
-        as_attachment=True,
-        download_name="collected_logs.zip"
-    )
-    
-    
-##########################
-##########################
-##########################
-
-
-#################
-### ENDPOINTS ###
-#################
 
 
 @app.route('/download_terminal_log/<endpoint>')
@@ -567,7 +528,7 @@ def download_terminal_log(endpoint):
     
 
 @app.route('/endpoint_stop/<endpoint>',methods = ['POST', 'GET'])
-def endpoint_stop_endpoint(endpoint):
+def endpoint_stop(endpoint):
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
     if not endpoint_thread_mapping[endpoint].task_stop_lock.locked():

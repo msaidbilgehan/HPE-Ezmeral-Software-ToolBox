@@ -44,7 +44,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
             # Delete file if exists
             local_logger.info(f"Deleting file {remote_tmp_path}...")
             # print(f"Deleting file {remote_tmp_path}...")
-            response_command = ssh_execute_command(
+            response_command_tmp = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
@@ -52,8 +52,19 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 port=port, 
                 reboot=False
             )
-            if response_command == False:
-                raise Exception("Error deleting file")
+            if response_command_tmp == False:
+                local_logger.warn(f"Error deleting file 'sudo rm -f {remote_tmp_path}'")
+                
+            response_command_remote = ssh_execute_command(
+                ssh_client=ssh_client, 
+                username=username, 
+                password=password, 
+                command=f'sudo rm -f {remote_file_path}', 
+                port=port, 
+                reboot=False
+            )
+            if response_command_remote == False:
+                local_logger.warn(f"Error deleting file 'sudo rm -f {remote_file_path}'")
         
         transport.connect(username=username, password=password)
         sftp = transport.open_sftp_client()
@@ -78,13 +89,13 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                     port=port, 
                     reboot=False
                 )
-            local_logger.info(f"Moving file to {uploaded_location}...")
+            local_logger.info(f"Copying file to {uploaded_location}...")
             # Move file to the desired location
             response_command = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
-                command=f'sudo mv {remote_tmp_path} {uploaded_location}', 
+                command=f'sudo cp {remote_tmp_path} {uploaded_location}', 
                 port=port, 
                 reboot=False
             )

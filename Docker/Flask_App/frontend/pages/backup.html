@@ -15,7 +15,13 @@
     </ul>
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade active show" id="control" role="tabpanel" aria-labelledby="control-tab">
-
+            <div class="col-sm-12 col-xl-12 align_item_center">
+                <!-- <a href="{{ url_for('backup_control_endpoint') }}", type="button" class="btn-xlg-square btn-success m-2" id="backup-control-btn">
+                    Backup Control Endpoint
+                </a> -->
+                <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="clear_Action_Files(eventsource_action_clear_url)"
+                    id="stop-btn">Stop</button>
+            </div>
             <div class="col-sm-12 col-xl-12 align_item_center">
                 <div class="bg-secondary rounded">
                     {% include 'template/ssh.html' %}
@@ -26,6 +32,9 @@
             
             <div class="col-sm-12 col-xl-12 align_item_center">
                 <div class="bg-secondary rounded p-4">
+                    <div class="col-sm-12 col-xl-12 align_item_center">
+                        <a class="btn btn-lg btn-outline-success m-2" id="listen_logs-btn" href="/backup_download_endpoint">Download All Backups</a>
+                    </div>
                     <div class="col-sm-12 col-xl-12 align_item_center">
                         <div class="bg-secondary rounded p-4">
                             {% include 'template/file_table.html' %}

@@ -2,6 +2,12 @@
     <script src="{{ url_for('static', filename='js/file_table.js') }}" type="module"></script>
 </head>
 
+<div class="col-sm-12 col-xl-12 align_item_center">
+    <button class="btn btn-lg btn-outline-danger m-2" id="listen_logs-btn" onclick="clear_Action_Files()">
+        Clear All Files
+    </button>
+</div>
+
 <!-- <h6 class="mb-4">Hover Table</h6> -->
 <table class="table table-dark table-hover">
     <thead>

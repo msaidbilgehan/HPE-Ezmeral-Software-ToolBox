@@ -2,15 +2,185 @@ import json
 import os
 
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
+from Flask_App.Libraries.network_tools import ssh_execute_command
 
 from Flask_App.Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
-from Flask_App.paths import app_path, root_path_archives, root_log_collection_folder
-from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer
+from Flask_App.paths import app_path, root_path_archives, root_log_collection_folder, root_fqdn_folder
+from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer, backup_thread, backup_logger_streamer
 from Flask_App.Libraries.logger_module import global_logger
 
 
 
 app = Flask(__name__, template_folder=f'{app_path}frontend/pages', static_folder=f'{app_path}frontend/static')
+
+
+
+##################
+### BACKUP API ###
+##################
+
+
+@app.route('/backup',methods = ['POST', 'GET'])
+def backup_page():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    return render_template(
+        'backup.html',
+        page_id="backup"
+    )
+    
+@app.route('/backup_endpoint',methods = ['POST', 'GET'])
+def backup_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    
+    if not backup_thread.safe_task_lock.locked():
+        with backup_thread.safe_task_lock:
+            ssh_username_json = request.args.get('ssh_username')
+            ssh_password_json = request.args.get('ssh_password')
+            ip_addresses_json = request.args.get('ip_addresses_hostnames')
+            
+            
+            if ssh_username_json is not None:
+                ssh_username = json.loads(ssh_username_json)
+            else:
+                ssh_username = ""
+                
+            if ssh_password_json is not None:
+                ssh_password = json.loads(ssh_password_json)
+            else:
+                ssh_password = ""
+            
+            if ip_addresses_json is not None:
+                ip_addresses = json.loads(ip_addresses_json)
+            else:
+                ip_addresses = []
+            
+            
+            backup_thread.set_Parameters(
+                ssh_username=ssh_username,
+                ssh_password=ssh_password,
+                ip_addresses=ip_addresses,
+                script_path="./daily_backup_mapr.sh",
+                script_run_command="chmod +x daily_backup_mapr.sh &&",
+                script_parameters="",
+            )
+            
+            if not backup_thread.is_Running():
+                backup_thread.start_Task()
+            else:
+                backup_thread.stop_Task()
+                backup_thread.wait_To_Stop_Once_Task()
+                backup_thread.start_Task()
+    else:
+        return jsonify(
+            message="Backup task already running"
+        )
+    
+    return jsonify(
+        message="Backup task queued"
+    )
+    
+@app.route('/backup_control_endpoint',methods = ['POST', 'GET'])
+def backup_control_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    
+    if not backup_thread.safe_task_lock.locked():
+        with backup_thread.safe_task_lock:
+            ssh_username_json = request.args.get('ssh_username')
+            ssh_password_json = request.args.get('ssh_password')
+            ip_addresses_json = request.args.get('ip_addresses_hostnames')
+            
+            
+            if ssh_username_json is not None:
+                ssh_username = json.loads(ssh_username_json)
+            else:
+                ssh_username = ""
+                
+            if ssh_password_json is not None:
+                ssh_password = json.loads(ssh_password_json)
+            else:
+                ssh_password = ""
+            
+            if ip_addresses_json is not None:
+                ip_addresses = json.loads(ip_addresses_json)
+            else:
+                ip_addresses = []
+            
+            for ip_address in ip_addresses:
+                response, output = ssh_execute_command(
+                    ssh_client=ip_address, 
+                    username=ssh_username, 
+                    password=ssh_password, 
+                    command="crontab -l | awk '/daily_backup_mapr.*\\.sh/ {print $1, $2, $3, $4, $5}'",
+                    reboot=False,
+                    logger_hook=backup_thread.logger
+                )
+                if response:
+                    print(f"{ip_address} -> {output}")
+    else:
+        return jsonify(
+            message="Backup Control task already running"
+        )
+    
+    return jsonify(
+        message="Backup Control task queued"
+    )
+
+
+@app.route('/backup_terminal_endpoint',methods = ['POST', 'GET'])
+def backup_terminal_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    return Response(
+        backup_logger_streamer.read_file_continues(
+            is_yield=True,
+            sleep_time=0.05, # 0.3
+            new_sleep_time=0.07,
+            content_control=False
+        ), 
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no' # Disable buffering
+        }
+    )
+
+
+@app.route('/backup_download_terminal_log_endpoint')
+def backup_download_terminal_log_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    archive_path = root_path_archives + "backup_terminal_logs.zip"
+    archive_files(
+        backup_thread.get_Logs(), 
+        archive_path
+    )
+    return send_from_directory(
+        path="backup_terminal_logs.zip",
+        directory=root_path_archives,
+        as_attachment=True,
+        download_name="backup_terminal_logs.zip"
+    )
+
+    
+@app.route('/backup_stop_endpoint',methods = ['POST', 'GET'])
+def backup_stop_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    if not backup_thread.task_stop_lock.locked():
+        with backup_thread.task_stop_lock:
+            backup_thread.stop_Task()
+            backup_thread.wait_To_Stop_Task()
+    else:
+        return jsonify(
+            message="Backup task stop already running"
+        )
+    
+    return jsonify(
+        message="Backup tasks stopped"
+    )
+
+
+###################
+###################
+###################
 
 
 
@@ -66,11 +236,11 @@ def fqdn_endpoint():
                 fqdn_thread.start_Task()
     else:
         return jsonify(
-            message="fqdn task already running"
+            message="FQDN task already running"
         )
     
     return jsonify(
-        message="fqdn task queued"
+        message="FQDN task queued"
     )
 
 
@@ -374,36 +544,16 @@ def log_collection_download_terminal_log_endpoint():
         as_attachment=True,
         download_name="log_collection_terminal_logs.zip"
     )
-
-    
-@app.route('/clear_Collected_Log_Files',methods = ['POST', 'GET'])
-def clear_Collected_Log_Files():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    response = delete_folder(root_log_collection_folder)
-    
-    return jsonify(
-        message=f"Collected Log Files Response: {response}"
-    )
     
 
-@app.route('/clear_Log_Collection_Log_Files',methods = ['POST', 'GET'])
-def clear_Log_Collection_Log_Files():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    log_collection_logger_streamer.clear_File_Content()
+# @app.route('/clear_Log_Collection_Log_Files',methods = ['POST', 'GET'])
+# def clear_Log_Collection_Log_Files():
+#     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+#     log_collection_logger_streamer.clear_File_Content()
     
-    return jsonify(
-        message="Log contents are cleared"
-    )
-    
-
-@app.route('/clear_Log_Buffer',methods = ['POST', 'GET'])
-def clear_Log_Buffer():
-    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    log_collection_logger_streamer.clear_Buffer()
-    
-    return jsonify(
-        message="Log buffer cleared"
-    )
+#     return jsonify(
+#         message="Log contents are cleared"
+#     )
     
 
 @app.route('/log_collection_stop_endpoint',methods = ['POST', 'GET'])
@@ -432,6 +582,30 @@ def log_collection_stop_endpoint():
 ### ENDPOINTS ###
 #################
 
+    
+@app.route('/clear_action_files/<endpoint>',methods = ['POST', 'GET'])
+def clear_action_files(endpoint):
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    
+    if endpoint == "fqdn":
+        folder_path = root_fqdn_folder
+    elif endpoint == "cleanup":
+        folder_path= "not-found"
+    elif endpoint == "log_collection":
+        folder_path = root_log_collection_folder
+    elif endpoint == "backup":
+        folder_path = "not-found"
+    else:
+        return jsonify(
+            message=f"Endpoint {endpoint} not found"
+        )
+    
+    response = delete_folder(folder_path)
+    
+    return jsonify(
+        message=f"Clear Action Files Response: {response}"
+    )
+
 
 @app.route('/file_table_download/<endpoint>/<foldername>',methods = ['POST', 'GET'])
 def file_table_download(endpoint, foldername):
@@ -443,26 +617,27 @@ def file_table_download(endpoint, foldername):
         folder_path= ""
     elif endpoint == "log_collection":
         folder_path = log_collection_thread.get_Collected_Log_Folder()
+    elif endpoint == "backup":
+        folder_path = ""
     else:
         return jsonify(
             message=f"Endpoint {endpoint} not found"
         )
-
+    
     folders = list_dir(folder_path)
     
-    
     if foldername in folders:
+        archive_name = f"{endpoint}_files"
         archive_directory(
-            archive_name="collected_logs",
+            archive_name=archive_name,
             directory_to_compress=folder_path + foldername,
             output_directory=root_path_archives,
         )
-        
         return send_from_directory(
-            path="collected_logs.zip",
+            path=f"{archive_name}.zip",
             directory=root_path_archives,
             as_attachment=True,
-            download_name="collected_logs.zip"
+            download_name=f"{endpoint}_files_{foldername}.zip"
         )
     else:
         return jsonify(
@@ -476,6 +651,8 @@ def folder_info(endpoint):
     directory_paths = {
         "log_collection": log_collection_thread.get_Collected_Log_Folder(),
         "fqdn": fqdn_thread.get_hosts_folder(),
+        "cleanup": "",
+        "backup": "",
     }
     
     if endpoint in directory_paths.keys():

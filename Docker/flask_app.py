@@ -70,16 +70,12 @@ def backup_endpoint():
             else:
                 ip_addresses = []
             
-            print(f"Checking {ip_addresses}")
-            print(f"ssh_username {ssh_username}")
-            print(f"ssh_password {ssh_password}")
-            
             backup_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path="./daily_backup_mapr.sh",
-                script_run_command="chmod +x daily_backup_mapr.sh &&",
+                script_path="./daily_backup_mapr_differential.sh",
+                script_run_command="chmod +x daily_backup_mapr_differential.sh &&",
                 script_parameters="",
             )
             
@@ -131,9 +127,6 @@ def backup_control_endpoint():
             }
             
             for ip_address in ip_addresses:
-                print(f"Checking {ip_address}")
-                print(f"ssh_username {ssh_username}")
-                print(f"ssh_password {ssh_password}")
                 response, output = ssh_execute_command(
                     ssh_client=ip_address, 
                     username=ssh_username, 

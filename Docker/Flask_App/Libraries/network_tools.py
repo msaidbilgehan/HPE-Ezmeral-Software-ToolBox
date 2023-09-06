@@ -33,8 +33,9 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         return ""
     
     remote_file_path = remote_file_path if remote_file_path[-1] == "/" else remote_file_path + "/"
-    remote_tmp_path = "/tmp/" + os.path.basename(local_file_path)
-    uploaded_location = remote_file_path + os.path.basename(local_file_path)
+    filename = os.path.basename(local_file_path)
+    remote_tmp_path = "/tmp/" + filename
+    uploaded_location = remote_file_path + filename
     
     response_upload = False
     response_command = False
@@ -59,7 +60,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
-                command=f'sudo rm -f {remote_file_path}', 
+                command=f'sudo rm -f {remote_file_path + filename}', 
                 port=port, 
                 reboot=False
             )

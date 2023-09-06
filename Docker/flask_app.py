@@ -75,7 +75,7 @@ def backup_endpoint():
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
                 script_path="Docker/Upload_Files/daily_backup_mapr_differential.sh",
-                script_run_command="chmod +x daily_backup_mapr_differential.sh &&",
+                script_run_command="chmod +x /tmp/daily_backup_mapr_differential.sh &&",
                 script_parameters="",
             )
             

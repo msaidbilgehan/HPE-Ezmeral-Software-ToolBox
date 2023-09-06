@@ -1,36 +1,21 @@
-import { terminal_source_url } from './page_specific_urls.js';
+import { endpoint_action_2_url } from './page_specific_urls.js';
+import { get_ip_addresses, get_ssh_credentials } from './ssh_credentials.js';
 
 
 function backup_cron_control() {
-    var ipInput = document.getElementById('input_IP_Addresses').value;
-    var ssh_username = document.getElementById('input_SSH_Username').value;
-    var ssh_password = document.getElementById('input_SSH_Password').value;
-
-    // Split the IP addresses by a newline or comma
-    var ipAddresses = ipInput.split(/\s*[,|\n]\s*/);
-
-    // You can further validate each IP if needed
-    ipAddresses = ipAddresses.filter(function (ip) {
-        return /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/.test(ip);
-    });
-
-    // Now you have an array of IP addresses, you can send them to the server or process them as needed
-    // console.log(ipAddresses);
 
     // Encode the IP addresses array into a JSON string
-    var ipAddressesJson = JSON.stringify(ipAddresses);
-    var ssh_usernameJson = JSON.stringify(ssh_username);
-    var ssh_passwordJson = JSON.stringify(ssh_password);
+    var ipAddressesJson = get_ip_addresses(true);
+    var ssh_usernameJson, ssh_passwordJson = get_ssh_credentials();
 
     // Append the IP addresses as a query parameter
-    var url = '/log_collection_endpoint'
+    var url = endpoint_action_2_url
     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
     url = url + '&ip_addresses=' + encodeURIComponent(ipAddressesJson);
 
     if (!terminal_source || terminal_source.readyState === 2) {
-        var pageType = document.body.getAttribute('data-page-type');
-        terminal_EventSource_Start(terminal_source_url + "/" + pageType);
+        terminal_EventSource_Start();
     }
 
     // Call Endpoint

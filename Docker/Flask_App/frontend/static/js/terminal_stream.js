@@ -1,6 +1,6 @@
 import { terminal_source_url, endpoint_stop_url } from './page_specific_urls.js';
 
-var terminal_source;
+export var terminal_source;
 
 function terminal_EventSource_Start() {
     clear_Terminal();

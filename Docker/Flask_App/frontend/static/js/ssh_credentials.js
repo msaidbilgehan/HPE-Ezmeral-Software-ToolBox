@@ -8,14 +8,18 @@ document.getElementById('ipForm').addEventListener('submit', function (event) {
 
     // Encode the IP addresses array into a JSON string
 
+    var ipAddressesHostnamesJson;
+
     if (pageType === 'fqdn') {
         // You can further validate each IP with Hostname if needed
-        ipAddressesHostnamesJson = get_ip_addresses(false);
+        ipAddressesHostnamesJson = get_ip_host_addresses(false);
 
     } else {
-        ipAddressesHostnamesJson = get_ip_addresses(true);
+        ipAddressesHostnamesJson = get_ip_host_addresses(true);
     }
-    var ssh_usernameJson, ssh_passwordJson = get_ssh_credentials();
+    var credentials = get_ssh_credentials();
+    var ssh_usernameJson = credentials[0];
+    var ssh_passwordJson = credentials[1];
 
     // Append the IP addresses as a query parameter
     var url = endpoint_action_url
@@ -44,7 +48,7 @@ export function get_ssh_credentials(){
     return [ssh_usernameJson, ssh_passwordJson]
 }
 
-export function get_ip_addresses(only_ip) {
+export function get_ip_host_addresses(only_ip) {
     var input_ipAddressesHostnames = document.getElementById('input_IP_Addresses_Hostnames').value;
 
     // Split the IP addresses by a newline or comma

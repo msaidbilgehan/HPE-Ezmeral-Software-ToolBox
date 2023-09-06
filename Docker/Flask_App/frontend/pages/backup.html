@@ -16,9 +16,9 @@
     <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade active show" id="control" role="tabpanel" aria-labelledby="control-tab">
             <div class="col-sm-12 col-xl-12 align_item_center">
-                <!-- <a href="{{ url_for('backup_control_endpoint') }}", type="button" class="btn-xlg-square btn-success m-2" id="backup-control-btn">
+                <button type="button" class="btn-xlg-square btn-success m-2" id="backup-control-btn" onclick="backup_cron_control()">
                     Backup Control Endpoint
-                </a> -->
+                </button>
             </div>
             <div class="col-sm-12 col-xl-12 align_item_center">
                 <div class="bg-secondary rounded">
@@ -48,6 +48,7 @@
 
 <script src="{{ url_for('static', filename='js/terminal_stream.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/ssh_credentials.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/backup.js') }}" type="module"></script>
 
 <!-- Recent Sales End -->
 {% endblock %}

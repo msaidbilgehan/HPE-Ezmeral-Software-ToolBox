@@ -74,7 +74,7 @@ def backup_endpoint():
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path="./daily_backup_mapr_differential.sh",
+                script_path="Docker/Upload_Files/daily_backup_mapr_differential.sh",
                 script_run_command="chmod +x daily_backup_mapr_differential.sh &&",
                 script_parameters="",
             )
@@ -273,7 +273,7 @@ def cleanup_endpoint():
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path="./cleanup.py"
+                script_path="Docker/Upload_Files/Upload_Files/cleanup.py"
             )
             
             if not cleanup_thread.is_Running():

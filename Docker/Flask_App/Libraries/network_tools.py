@@ -74,8 +74,10 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
             raise Exception("Error opening SFTP Client")
 
         local_logger.info(f"Uploading file to {remote_tmp_path}...")
+        print("daily_backup_mapr_differential.sh")
         # upload file to temporary location
         sftp.put(local_file_path, remote_tmp_path)
+        # sftp.put(os.path.abspath(local_file_path), remote_tmp_path)
         sftp.close()
         response_upload = True
         
@@ -592,6 +594,7 @@ def send_hostfile_to_device_ssh(ssh_client:str, username:str, password:str, loca
         # upload file to temporary location
         tmp_path = "/tmp/" + os.path.basename(local_file_path)
         sftp.put(local_file_path, tmp_path)
+        # sftp.put(os.path.abspath(local_file_path), tmp_path)
         sftp.close()
 
         # move file to final location with sudo

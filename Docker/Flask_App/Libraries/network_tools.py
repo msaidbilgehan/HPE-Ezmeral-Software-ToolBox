@@ -74,7 +74,6 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
             raise Exception("Error opening SFTP Client")
 
         local_logger.info(f"Uploading file to {remote_tmp_path}...")
-        print("daily_backup_mapr_differential.sh")
         # upload file to temporary location
         sftp.put(local_file_path, remote_tmp_path)
         # sftp.put(os.path.abspath(local_file_path), remote_tmp_path)

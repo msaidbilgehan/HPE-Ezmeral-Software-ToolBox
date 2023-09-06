@@ -120,13 +120,13 @@ def backup_control_endpoint():
             else:
                 ip_addresses = []
             
-            ip_response_list = list()
-            response_structure = {
+            ip_response_list: list[dict[str, str]] = list()
+            response_structure: dict[str, str] = {
                 "ip_address": "",
                 "message": "",
             }
-            
             for ip_address in ip_addresses:
+                
                 response, output = ssh_execute_command(
                     ssh_client=ip_address, 
                     username=ssh_username, 

@@ -7,7 +7,10 @@ function backup_cron_control() {
 
     // Encode the IP addresses array into a JSON string
     var ipAddressesJson = get_ip_host_addresses(true);
-    var ssh_usernameJson, ssh_passwordJson = get_ssh_credentials();
+
+    var credentials = get_ssh_credentials();
+    var ssh_usernameJson = credentials[0];
+    var ssh_passwordJson = credentials[1];
 
     console.log("ipAddressesJson:", ipAddressesJson);
     console.log("ssh_usernameJson, ssh_passwordJson:", ssh_usernameJson, ssh_passwordJson);
@@ -16,7 +19,7 @@ function backup_cron_control() {
     var url = endpoint_action_2_url
     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
-    url = url + '&ip_addresses=' + encodeURIComponent(ipAddressesJson);
+    url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesJson);
 
     if (!terminal_source || terminal_source.readyState === 2) {
         terminal_EventSource_Start();
@@ -24,8 +27,13 @@ function backup_cron_control() {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
-        // console.log(data.message);
-        showNotification(data.message, "info");
+        console.log(data);
+        data.message.forEach(item => {
+            var notification = "IP: " + item.ip_address + " | " + "Message: " + item.message;
+            showNotification(notification, "info");
+        });
+
+        // showNotification(notification, "info");
     }).catch(error => {
         console.error(error);
         showNotification(error, "error");

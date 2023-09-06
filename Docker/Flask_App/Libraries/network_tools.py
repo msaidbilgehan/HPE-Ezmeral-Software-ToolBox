@@ -261,6 +261,7 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
         local_logger = logger
     
     
+    local_logger.info(f"Connecting to {ssh_client}!")
     try:
         client.connect(ssh_client, port, username, password, timeout=timeout)
         local_logger.info("Connection Established!")

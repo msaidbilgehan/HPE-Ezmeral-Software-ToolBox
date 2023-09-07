@@ -7,7 +7,7 @@ from Flask_App.Classes.Task_Handler import Task_Handler_Class
 from Flask_App.Libraries.network_tools import ssh_execute_command
 
 from Flask_App.Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
-from Flask_App.paths import app_path, root_path_archives, root_log_collection_folder, root_fqdn_folder
+from Flask_App.paths import app_path, root_path_archives, root_upload_path, root_log_collection_folder, root_fqdn_folder
 from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer, backup_thread, backup_logger_streamer
 from Flask_App.Libraries.logger_module import global_logger
 
@@ -74,8 +74,9 @@ def backup_endpoint():
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path="Upload_Files/daily_backup_mapr_differential.sh",
-                script_run_command="chmod +x /tmp/daily_backup_mapr_differential.sh &&",
+                script_path=root_upload_path + "daily_backup_mapr_differential.sh",
+                script_upload_path="/home/mapr",
+                script_run_command="sudo chmod +x /home/mapr/daily_backup_mapr_differential.sh &&",
                 script_parameters="",
             )
             
@@ -273,7 +274,7 @@ def cleanup_endpoint():
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path="Upload_Files/cleanup.py"
+                script_path=root_upload_path + "cleanup.py"
             )
             
             if not cleanup_thread.is_Running():

@@ -21,19 +21,20 @@ class Backup_Class(Task_Handler_Class):
         self.parameters = self.__parameters_template.copy()
 
 
-    def set_Parameters(self, script_path: str, script_run_command:str, script_parameters:str, ssh_username: str, ssh_password: str, ip_addresses: list[str]) -> int:
+    def set_Parameters(self, script_path: str, script_upload_path:str, script_run_command:str, script_parameters:str, ssh_username: str, ssh_password: str, ip_addresses: list[str]) -> int:
         self.parameters = self.__parameters_template.copy()
         
         self.parameters["ssh_username"] = ssh_username
         self.parameters["ssh_password"] = ssh_password
         self.parameters["ip_addresses"] = ip_addresses
         self.parameters["script_path"] = script_path
+        self.parameters["script_upload_path"] = script_upload_path
         self.parameters["script_run_command"] = script_run_command
         self.parameters["script_parameters"] = script_parameters
         return 0
    
 
-    def task(self, script_path:str, script_run_command:str, script_parameters:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> int:
+    def task(self, script_path:str, script_upload_path:str, script_run_command:str, script_parameters:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> int:
         self.logger.info(f"Backup Job Adding to {ip_addresses} ...")
         
         failed_ip_addresses:list[str] = list()
@@ -54,7 +55,7 @@ class Backup_Class(Task_Handler_Class):
                     username=ssh_username, 
                     password=ssh_password, 
                     local_file_path=script_path,
-                    # remote_file_path="/tmp/", 
+                    remote_file_path=script_upload_path, 
                     overwrite=True,
                     logger_hook=self.logger
                 )

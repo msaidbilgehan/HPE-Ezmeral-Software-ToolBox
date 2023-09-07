@@ -3,14 +3,17 @@ import os
 app_path = os.path.dirname(__file__) + "/"
 
 # Folder for all Thread/Endpoint files
-root_path = app_path + "Files/"
+root_files_path = app_path + "Files/"
+
+# Folder for all Thread/Endpoint Action Script files
+root_upload_path = app_path + "Upload_Files/"
 
 # Log Download Path
-root_log_collection_folder = root_path + "log_collection/"
-root_fqdn_folder = root_path + "fqdn/"
+root_log_collection_folder = root_files_path + "log_collection/"
+root_fqdn_folder = root_files_path + "fqdn/"
 
 # Files will be sent to Client 
-root_path_archives = root_path + "archives/"
+root_path_archives = root_files_path + "archives/"
 
 # Logger Paths
 root_path_log = app_path + "app_logs/"

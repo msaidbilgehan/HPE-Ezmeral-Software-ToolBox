@@ -26,10 +26,14 @@
             </div>
 
             <div class="bg-secondary rounded">
-                <input type="submit" class="btn btn-lg btn-outline-success m-2" value="Run"
-                    id="run-btn">
-                <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action()"
-                    id="stop-btn">Stop</button>
+                <button type="submit" class="btn btn-lg btn-outline-success m-2 align-items-center" id="run-btn">
+                    RUN
+                    <i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action()" id="stop-btn">
+                    <i class="fa fa-times fa-lg"></i>
+                    Stop
+                </button>
             </div>
         </div>
     </div>
@@ -49,10 +53,22 @@
 <div class="col-sm-12 col-xl-12">
     <div class="bg-secondary rounded p-4">
         <div class="fakeMenu align_item_center">
-            <a class="btn btn-info p-2 m-1" id="download_terminal_logs-btn" href="javascript:window.location.href=window.terminal_log_download_source_url + '/' + document.body.getAttribute('data-page-type');">Download Terminal Log</a>
-            <button type="button" class="btn btn-success m-2" id="listen_logs-btn" onclick="terminal_EventSource_Start()">Watch Logs</button>
-            <button type="button" class="btn btn-warning m-2" id="stop_logs-btn" onclick="terminal_EventSource_Stop()">Stop Log Watching</button>
-            <button type="button" class="btn btn-info p-2 m-1" id="clear_terminal_logs-btn" onclick="clear_Terminal()">Clear Terminal</button>
+            <a class="btn btn-info p-2 m-1" id="download_terminal_logs-btn" href="javascript:window.location.href=window.terminal_log_download_source_url + '/' + document.body.getAttribute('data-page-type');">
+                Download Terminal Log 
+                <i class="fa fa-download m-1" aria-hidden="true"></i>
+            </a>
+            <button type="button" class="btn btn-success m-2" id="listen_logs-btn" onclick="terminal_EventSource_Start()">
+                Watch Logs
+                <i class="fa fa-eye m-1" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-warning m-2" id="stop_logs-btn" onclick="terminal_EventSource_Stop()">
+                Stop Log Watching
+                <i class="fa fa-stop m-1" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="btn btn-info p-2 m-1" id="clear_terminal_logs-btn" onclick="clear_Terminal()">
+                Clear Terminal
+                <i class="fa fa-eraser m-1" aria-hidden="true"></i>
+            </button>
         </div>
         <div class="fakeScreen">
             <p class="terminal_text" id="stream_content" class="line2"></p>

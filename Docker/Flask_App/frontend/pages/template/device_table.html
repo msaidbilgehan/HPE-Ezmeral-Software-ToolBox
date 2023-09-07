@@ -1,0 +1,66 @@
+<head>
+    <script src="{{ url_for('static', filename='js/device_table.js') }}" type="module"></script>
+</head>
+
+<div class="col-sm-12 col-xl-12 align_item_center">
+    <div>
+        <input type="text" class="form-control" id="device_ip" placeholder="Device IP">
+    </div>
+    <button class="btn btn-lg btn-outline-info m-2" id="add_device-btn" onclick="add_device()">
+        Add Device
+    </button>
+    <button class="btn btn-lg btn-outline-danger m-2" id="listen_logs-btn" onclick="clear_all_devices()">
+        Clear All Devices
+    </button>
+</div>
+
+<!-- <h6 class="mb-4">Hover Table</h6> -->
+<table class="table table-dark table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Device</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody id="device_list">
+    </tbody>
+</table>
+
+<div class="col-sm-12 col-md-12 col-xl-4">
+    <div class="h-100 bg-secondary rounded p-4">
+        <div class="d-flex align-items-center justify-content-around mb-4">
+            <h4 class="mb-0">
+                Device List
+                <i class="fa fa-network-wired m-1" aria-hidden="true"></i>
+            </h4>
+            <button class="btn btn-md btn-outline-danger m-2" id="listen_logs-btn" onclick="clear_all_devices()">
+                Clear All Devices
+                <i class="fa fa-eraser m-1" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="d-flex mb-2">
+            <input class="form-control bg-transparent" type="text" placeholder="Enter IP">
+            <button type="button" class="btn btn-success ms-2">Add</button>
+        </div>
+        <div class="d-flex align-items-center border-bottom py-2">
+            <button class="btn btn-sm"><i class="fa fa-times"></i></button>
+            <div class="w-100 m-3">
+                <div class="d-flex w-100 align-items-center justify-content-around">
+                    <span>DEVICE</span>
+                    <span>STATUS</span>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex align-items-center border-bottom p-2">
+            <!-- <input class="form-check-input m-0" type="checkbox"> -->
+            <button class="btn btn-sm"><i class="fa fa-trash fa-lg"></i></button>
+            <div class="w-100 m-1">
+                <div class="d-flex w-100 align-items-center justify-content-around">
+                    <span>10.34.2.122</span>
+                    <i class="fa fa-spinner fa-pulse fa-3x fa-fw margin-bottom"></i>
+                    <button class="btn btn-sm"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

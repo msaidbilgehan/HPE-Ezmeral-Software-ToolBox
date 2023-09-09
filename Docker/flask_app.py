@@ -104,6 +104,7 @@ def backup_control_endpoint():
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
+            print("ip_addresses_json", ip_addresses_json)
             
             
             if ssh_username_json is not None:
@@ -120,6 +121,7 @@ def backup_control_endpoint():
                 ip_addresses = json.loads(ip_addresses_json)
             else:
                 ip_addresses = []
+            print("ip_addresses", ip_addresses)
             
             ip_response_list: list[dict[str, str]] = list()
             response_structure: dict[str, str] = {

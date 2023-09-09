@@ -12,11 +12,15 @@ function start_Action () {
 
     if (pageType === 'fqdn') {
         // You can further validate each IP with Hostname if needed
-        ipAddressesHostnamesJson = get_ip_host_addresses(false);
+        ipAddressesHostnames = get_ip_host_addresses(false);
 
     } else {
-        ipAddressesHostnamesJson = get_ip_host_addresses(true);
+        ipAddressesHostnames = get_ip_host_addresses(true);
     }
+
+    // Encode the IP addresses array into a JSON string
+    var ipAddressesHostnamesJson = JSON.stringify(ipAddressesHostnames);
+
     var credentials = get_ssh_credentials();
     var ssh_usernameJson = credentials[0];
     var ssh_passwordJson = credentials[1];

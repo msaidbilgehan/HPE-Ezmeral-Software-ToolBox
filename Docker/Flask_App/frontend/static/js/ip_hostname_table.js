@@ -28,8 +28,5 @@ export function get_ip_host_addresses(only_ip) {
         });
     }
 
-    // Encode the IP addresses array into a JSON string
-    var ipAddressesHostnamesJson = JSON.stringify(ipAddressesHostnames);
-
-    return ipAddressesHostnamesJson
+    return ipAddressesHostnames
 }

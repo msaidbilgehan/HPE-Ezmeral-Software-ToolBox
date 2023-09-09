@@ -8,7 +8,7 @@ function add_device() {
     var input_device_ip = document.getElementById('device_ip').value;
 
     // Split the IP addresses by a newline or comma
-    var device_ip = input_device_ip.split(/\s*[,|\n]\s*/);
+    var device_ip = input_device_ip.split(/\s*[,|\n| ]\s*/);
 
     // You can further validate each IP if needed
     device_ip = device_ip.map(function (entry) {

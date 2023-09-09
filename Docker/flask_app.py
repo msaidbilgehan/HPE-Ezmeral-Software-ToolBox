@@ -53,7 +53,8 @@ def backup_endpoint():
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
-            
+            backup_type_json = request.args.get('backup_type', "differential")
+            print("backup type:", backup_type_json)
             
             if ssh_username_json is not None:
                 ssh_username = json.loads(ssh_username_json)
@@ -70,11 +71,22 @@ def backup_endpoint():
             else:
                 ip_addresses = []
             
+            if backup_type_json == "differential":
+                backup_script = "daily_backup_mapr_differential.sh"
+            elif backup_type_json == "partition":
+                backup_script = "daily_backup_mapr_partition.sh"
+            elif backup_type_json == "incremental":
+                backup_script = "daily_backup_mapr_incremental.sh"
+            else:
+                # Default Differential
+                backup_script = "daily_backup_mapr_differential.sh"
+            print("backup_script:", backup_script)
+            
             backup_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path=root_upload_path + "daily_backup_mapr_differential.sh",
+                script_path=root_upload_path + backup_script,
                 script_upload_path="/home/mapr",
                 script_run_command="sudo chmod +x /home/mapr/daily_backup_mapr_differential.sh &&", # One-Shot Run Command
                 add_to_cron=True, # Cron Parameters

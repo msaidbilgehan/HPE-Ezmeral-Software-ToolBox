@@ -1,6 +1,7 @@
 import { endpoint_action_url, endpoint_stop_url } from './page_specific_urls.js';
 import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
+import { get_Backup_Type } from './backup.js';
 
 
 function start_Action () {
@@ -9,6 +10,9 @@ function start_Action () {
     // Encode the IP addresses array into a JSON string
 
     var ipAddressesHostnamesJson;
+    var ipAddressesHostnames;
+    var extra_parameter;
+    var extra_parameter_value;
 
     if (pageType === 'fqdn') {
         // You can further validate each IP with Hostname if needed
@@ -30,6 +34,13 @@ function start_Action () {
     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesHostnamesJson);
+
+    if (pageType === 'backup') {
+        // You can further validate each IP with Hostname if needed
+        extra_parameter = "backup_type";
+        extra_parameter_value = get_Backup_Type();
+        url = url + '&' + extra_parameter + '=' + encodeURIComponent(extra_parameter_value);
+    }
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {

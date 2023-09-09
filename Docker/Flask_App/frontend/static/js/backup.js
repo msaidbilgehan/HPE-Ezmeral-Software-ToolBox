@@ -16,7 +16,6 @@ function backup_cron_control() {
     let ssh_usernameJson = credentials[0];
     let ssh_passwordJson = credentials[1];
 
-
     // Append the IP addresses as a query parameter
     let url = endpoint_action_2_url
     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
@@ -44,3 +43,13 @@ function backup_cron_control() {
     });
 };
 window.backup_cron_control = backup_cron_control;
+
+export function get_Backup_Type(){
+    let selectedRadio = document.querySelector('input[name="backup_type"]:checked');
+    if (selectedRadio) {
+        let selectedBackupType = selectedRadio.id;
+        return selectedBackupType;
+    } else {
+        console.error("Backup type should be selected!");
+    }
+}

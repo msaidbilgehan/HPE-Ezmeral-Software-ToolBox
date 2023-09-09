@@ -89,3 +89,8 @@
     background-color: transparent;
     border-color: transparent
 }
+
+.align-items-center {
+    align-items: center !important;
+    text-align: center !important;
+}

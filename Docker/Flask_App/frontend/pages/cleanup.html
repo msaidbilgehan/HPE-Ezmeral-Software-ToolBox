@@ -2,10 +2,12 @@
 
 {% block content %}
 
-{% include 'template/ip_hostname_table.html' %}
-{% include 'template/ssh.html' %}
-{% include 'template/general_action_buttons.html' %}
-{% include 'template/terminal.html' %}
+<div class="p-4">
+    {% include 'template/ip_hostname_table.html' %}
+    {% include 'template/ssh.html' %}
+    {% include 'template/general_action_buttons.html' %}
+    {% include 'template/terminal.html' %}
+</div>
 
 <!-- Recent Sales End -->
 {% endblock %}

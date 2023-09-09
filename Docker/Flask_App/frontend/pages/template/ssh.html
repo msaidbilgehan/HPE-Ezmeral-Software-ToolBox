@@ -1,17 +1,4 @@
 <form class="input-group" id="ipForm">
-    <!-- IP Addresses -->
-    <div class="col-sm-12 col-xl-6 full_width">
-        <div class="bg-secondary rounded p-4 h-100">
-            <div class="form-floating mb-3 form_area_auto_fit">
-                <span class="input-group-text">IP Addresses / Hostnames</span>
-                <textarea class="form-control text_area_height_100" aria-label="IP Addresses"
-                    spellcheck="false" id="input_IP_Addresses_Hostnames"
-                    placeholder="Enter IP address [- (dash), \t (tab), \s (space)] Hostname or only IP Addresses separated by a new line or comma. Example: '1.1.1.1, 1.1.1.2' or '1.1.1.1 node0.example.com, 1.1.1.2 node1.example.com'"
-                    required></textarea>
-            </div>
-        </div>
-    </div>
-
     <!-- SSH Credentials -->
     <div class="col-sm-12 col-xl-6 full_width">
         <div class="bg-secondary rounded p-4 h-100">
@@ -26,11 +13,11 @@
             </div>
 
             <div class="bg-secondary rounded">
-                <button type="submit" class="btn btn-lg btn-outline-success m-2 align-items-center" id="run-btn">
+                <button type="submit" class="btn btn-lg btn-outline-success m-2 align-items-center">
                     RUN
                     <i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i>
                 </button>
-                <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action()" id="stop-btn">
+                <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action()">
                     <i class="fa fa-times fa-lg"></i>
                     Stop
                 </button>
@@ -39,42 +26,4 @@
     </div>
 </form>
 
-<!-- <div class="col-sm-12 col-xl-12">
-    <div class="bg-secondary rounded m-4">
-        <div class="pg-bar mb-3">
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped bg-info" role="progressbar" aria-valuenow="50" aria-valuemin="0"
-                    aria-valuemax="100" style="width: 50%;"></div>
-            </div>
-        </div>
-    </div>
-</div> -->
-
-<div class="col-sm-12 col-xl-12">
-    <div class="bg-secondary rounded p-4">
-        <div class="fakeMenu align_item_center">
-            <a class="btn btn-info p-2 m-1" id="download_terminal_logs-btn" href="javascript:window.location.href=window.terminal_log_download_source_url + '/' + document.body.getAttribute('data-page-type');">
-                Download Terminal Log 
-                <i class="fa fa-download m-1" aria-hidden="true"></i>
-            </a>
-            <button type="button" class="btn btn-success m-2" id="listen_logs-btn" onclick="terminal_EventSource_Start()">
-                Watch Logs
-                <i class="fa fa-eye m-1" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="btn btn-warning m-2" id="stop_logs-btn" onclick="terminal_EventSource_Stop()">
-                Stop Log Watching
-                <i class="fa fa-stop m-1" aria-hidden="true"></i>
-            </button>
-            <button type="button" class="btn btn-info p-2 m-1" id="clear_terminal_logs-btn" onclick="clear_Terminal()">
-                Clear Terminal
-                <i class="fa fa-eraser m-1" aria-hidden="true"></i>
-            </button>
-        </div>
-        <div class="fakeScreen">
-            <p class="terminal_text" id="stream_content" class="line2"></p>
-        </div>
-    </div>
-</div>
-
-<script src="{{ url_for('static', filename='js/terminal_stream.js') }}" type="module"></script>
 <script src="{{ url_for('static', filename='js/ssh_credentials.js') }}" type="module"></script>

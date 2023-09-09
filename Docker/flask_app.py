@@ -76,7 +76,9 @@ def backup_endpoint():
                 ip_addresses=ip_addresses,
                 script_path=root_upload_path + "daily_backup_mapr_differential.sh",
                 script_upload_path="/home/mapr",
-                script_run_command="sudo chmod +x /home/mapr/daily_backup_mapr_differential.sh &&",
+                script_run_command="sudo chmod +x /home/mapr/daily_backup_mapr_differential.sh &&", # One-Shot Run Command
+                add_to_cron=True, # Cron Parameters
+                cron_parameters="", # Cron Parameters
                 script_parameters="",
             )
             
@@ -104,8 +106,6 @@ def backup_control_endpoint():
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
-            print("ip_addresses_json", ip_addresses_json)
-            
             
             if ssh_username_json is not None:
                 ssh_username = json.loads(ssh_username_json)

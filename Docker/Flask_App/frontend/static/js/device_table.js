@@ -71,7 +71,7 @@ function addDeviceToDeviceList(deviceInfo) {
     
     let newIcon2 = document.createElement("i");
     if (deviceInfo.status === "start") {
-        newIcon2.className = "fa fa-play fa-2x fa-fw margin-bottom color-green";
+        newIcon2.className = "fa fa-play fa-2x fa-fw margin-bottom color-gray";
     } else if (deviceInfo.status === "waiting") {
         newIcon2.className = "fa fa-spinner fa-pulse fa-2x fa-fw margin-bottom color-yellow";
     } else if (deviceInfo.status === "completed") {

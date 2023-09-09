@@ -18,12 +18,9 @@
 
             <div class="col-sm-12 col-xl-12 align_item_center">
                 <div class="bg-secondary rounded">
-                    <!-- <div class="input-group mb-3">
-                        <input type="text" class="form-control" placeholder="IP Address" aria-label="Username">
-                        <span class="input-group-text">@</span>
-                        <input type="text" class="form-control" placeholder="Hostname" aria-label="Server">
-                    </div> -->
+                    {% include 'template/ip_hostname_table.html' %}
                     {% include 'template/ssh.html' %}
+                    {% include 'template/terminal.html' %}
                 </div>
             </div>
         </div>
@@ -44,8 +41,6 @@
 
 </div>
 
-<script src="{{ url_for('static', filename='js/terminal_stream.js') }}" type="module"></script>
-<script src="{{ url_for('static', filename='js/ssh_credentials.js') }}" type="module"></script>
 
 <!-- Recent Sales End -->
 {% endblock %}

@@ -54,7 +54,6 @@ def backup_endpoint():
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
             backup_type_json = request.args.get('backup_type', "differential")
-            print("backup type:", backup_type_json)
             
             if ssh_username_json is not None:
                 ssh_username = json.loads(ssh_username_json)
@@ -80,7 +79,6 @@ def backup_endpoint():
             else:
                 # Default Differential
                 backup_script = "daily_backup_mapr_differential.sh"
-            print("backup_script:", backup_script)
             
             backup_thread.set_Parameters(
                 ssh_username=ssh_username,

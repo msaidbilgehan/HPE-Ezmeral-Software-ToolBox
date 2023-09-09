@@ -3,9 +3,9 @@
 from datetime import datetime
 import os
 import time
-from FQDN_Tools.tools import get_local_IP, ping_sweeping_threaded
-from Libraries.network_tools import ping_sweeping_threaded, select_ip_addresses, ssh_send_file, ssh_execute_command, get_local_IP, ssh_receive_file
-from Libraries.logger_module import cleanup_logger, log_collection_logger
+from Flask_App.FQDN_Tools.tools import get_local_IP, ping_sweeping_threaded
+from Flask_App.Libraries.network_tools import ping_sweeping_threaded, select_ip_addresses, ssh_send_file, ssh_execute_command, get_local_IP, ssh_receive_file
+from Flask_App.Libraries.logger_module import cleanup_logger, log_collection_logger
 
 
 
@@ -76,7 +76,7 @@ def cleanup():
                 logger_hook=cleanup_logger
             )
         else:
-            cleanup_logger.info("ERROR: File transfer failed!")
+            cleanup_logger.info("File transfer failed!")
             return -1
     return 0
 
@@ -124,7 +124,7 @@ def log_collection(ssh_username, ssh_password, ip_addresses):
                 )
                 time.sleep(1)  # Wait for new content
                 if remote_file_path == "":
-                    log_collection_logger.info(f"ERROR: File transfer failed! Remote '{ip_address}' Path is '{log_folder}'")
+                    log_collection_logger.info(f"File transfer failed! Remote '{ip_address}' Path is '{log_folder}'")
     except Exception as e:
         log_collection_logger.error(f"An error occurred: {e}")
     

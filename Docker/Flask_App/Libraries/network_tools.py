@@ -29,7 +29,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
     try:
         transport = paramiko.Transport((ssh_client, port))
     except Exception as error:
-        local_logger.error(f"Error creating Transport: {error}")
+        local_logger.error(f"Can not creating Transport: {error}")
         return ""
     
     remote_file_path = remote_file_path if remote_file_path[-1] == "/" else remote_file_path + "/"
@@ -54,7 +54,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 reboot=False
             )
             if response_command_tmp == False:
-                local_logger.warn(f"Error deleting file 'sudo rm -f {remote_tmp_path}'")
+                local_logger.warn(f"Can not deleting file 'sudo rm -f {remote_tmp_path}'")
                 
             response_command_remote = ssh_execute_command(
                 ssh_client=ssh_client, 
@@ -65,13 +65,13 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 reboot=False
             )
             if response_command_remote == False:
-                local_logger.warn(f"Error deleting file 'sudo rm -f {remote_file_path}'")
+                local_logger.warn(f"Can not deleting file 'sudo rm -f {remote_file_path}'")
         
         transport.connect(username=username, password=password)
         sftp = transport.open_sftp_client()
 
         if sftp is None:
-            raise Exception("Error opening SFTP Client")
+            raise Exception("Can not opening SFTP Client")
 
         local_logger.info(f"Uploading file to {remote_tmp_path}...")
         # upload file to temporary location
@@ -102,7 +102,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 reboot=False
             )
             if response_command == False:
-                raise Exception("Error moving file to desired location")
+                raise Exception("Can not moved file to desired location")
 
     except paramiko.AuthenticationException:
         local_logger.error("Authentication failed")
@@ -143,7 +143,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
     try:
         transport = paramiko.Transport((ssh_client, port))
     except Exception as error:
-        local_logger.error(f"Error creating Transport: {error}")
+        local_logger.error(f"Can not creating Transport: {error}")
         return ""
     
     try:
@@ -151,7 +151,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
         sftp = transport.open_sftp_client()
 
         if sftp is None:
-            raise Exception("Error opening SFTP Client")
+            raise Exception("Can not opening SFTP Client")
     
         if sleep_time:
             time.sleep(sleep_time)
@@ -206,7 +206,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
                                     reboot=False
                                 )
                                 if status == False:
-                                    local_logger.error(f"Error changing permissions of file '{last_download_path}'")
+                                    local_logger.error(f"Can not changing permissions of file '{last_download_path}'")
                                 else:
                                     local_logger.info(f"Permissions changed to 777 of file '{last_download_path}'")
                                     local_logger.info(f"Re-Trying to Download file from '{last_download_path}' to '{local_folder_path + remote_path_cache[1:]}'")
@@ -580,7 +580,7 @@ def send_hostfile_to_device_ssh(ssh_client:str, username:str, password:str, loca
     try:
         transport = paramiko.Transport((ssh_client, port))
     except Exception as error:
-        local_logger.error(f"Error creating Transport: {error}")
+        local_logger.error(f"Can not creating Transport: {error}")
         return False
 
     try:
@@ -588,7 +588,7 @@ def send_hostfile_to_device_ssh(ssh_client:str, username:str, password:str, loca
         sftp = transport.open_sftp_client()
 
         if sftp is None:
-            local_logger.error("Error opening SFTP Client")
+            local_logger.error("Can not opening SFTP Client")
             return False
 
         # upload file to temporary location
@@ -606,7 +606,7 @@ def send_hostfile_to_device_ssh(ssh_client:str, username:str, password:str, loca
         if exit_status == 0:
             local_logger.info(f"File {local_file_path} successfully sent to {remote_file_path}")
         else:
-            local_logger.error(f"Error moving file to final location, status code {exit_status}")
+            local_logger.error(f"Can not moving file to final location, status code {exit_status}")
             local_logger.error(f"Detail: {stderr.read().decode()}")
 
     except paramiko.AuthenticationException:
@@ -651,7 +651,7 @@ def update_hostname_ssh(ssh_client:str, username:str, password:str, new_hostname
             else:
                 local_logger.info("Reboot skipped.")
         else:
-            local_logger.error("Error", exit_status)
+            local_logger.error(f"Unexpected exit code: {exit_status}")
             local_logger.error("Detail:", stderr.read().decode())
             return exit_status
         

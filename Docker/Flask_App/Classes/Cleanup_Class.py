@@ -73,7 +73,7 @@ class Cleanup_Class(Task_Handler_Class):
                         logger_hook=self.logger
                     )
                 else:
-                    self.logger.info("ERROR: File transfer failed!")
+                    self.logger.info("File transfer failed!")
                     failed_ip_addresses.append(ip_address)
                 
                 # Check Thread State

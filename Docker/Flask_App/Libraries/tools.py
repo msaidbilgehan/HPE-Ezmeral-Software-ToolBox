@@ -68,7 +68,7 @@ def delete_folder(path):
         try:
             shutil.rmtree(path)
         except OSError as e:
-            response = f"Error: {e.filename} - {e.strerror}."
+            response = f"Can not delete folder: {e.filename} - {e.strerror}."
     else:
         response = "No Log Collection Folder Found!"
     

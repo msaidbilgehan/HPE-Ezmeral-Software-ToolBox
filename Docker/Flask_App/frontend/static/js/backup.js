@@ -1,12 +1,25 @@
 import { endpoint_action_2_url } from './page_specific_urls.js';
-import { get_ip_host_addresses, get_ssh_credentials } from './ssh_credentials.js';
+import { get_ssh_credentials } from './ssh_credentials.js';
 import { terminal_source } from './terminal_stream.js';
+import { get_Devices } from './device_table.js';
 
 
 function backup_cron_control() {
 
     // Encode the IP addresses array into a JSON string
-    var ipAddressesJson = get_ip_host_addresses(true);
+    // var ipAddressesJson = get_ip_host_addresses(true);
+    var ipAddressesJson = "";
+    var devices = get_Devices();
+    console.log("devices:", devices);
+    devices.forEach(device => {
+        if (ipAddressesJson) {
+            ipAddressesJson = ipAddressesJson + ", " + device.name;
+        } else {
+            ipAddressesJson = device.name;
+        }
+    });
+    ipAddressesJson = JSON.stringify(ipAddressesJson);
+
 
     var credentials = get_ssh_credentials();
     var ssh_usernameJson = credentials[0];

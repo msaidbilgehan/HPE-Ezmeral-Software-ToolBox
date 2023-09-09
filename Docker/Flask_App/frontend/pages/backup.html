@@ -24,22 +24,27 @@
         <div class="tab-pane fade active show" id="control" role="tabpanel" aria-labelledby="control-tab">
             <div class="col-sm-12 col-xl-12 align_item_center">
                 <div class="bg-secondary rounded">
+                    {% include 'template/ip_hostname_table.html' %}
                     {% include 'template/ssh.html' %}
+                    {% include 'template/terminal.html' %}
                 </div>
             </div>
         </div>
         <div class="tab-pane fade" id="file-browser" role="tabpanel" aria-labelledby="backup-cron-tab">
             <div class="col-sm-12 col-xl-12 align_item_center">
-                <button type="button" class="btn-xlg-square btn-success m-2" id="backup-control-btn"
-                    onclick="backup_cron_control()">
-                    Backup Control Endpoint
-                </button>
+                <div class="bg-secondary rounded p-4 border border-primary">
+                    <button type="button" class="btn-xlg-square btn-success m-2" onclick="backup_cron_control()">
+                        Backup Control Endpoint
+                    </button>
+                </div>
             </div>
             <div class="col-sm-12 col-xl-12 align_item_center">
                 <div class="bg-secondary rounded p-4">
                     <div class="col-sm-12 col-xl-12 align_item_center">
                         <div class="bg-secondary rounded p-4">
                             {% include 'template/device_table.html' %}
+                            {% include 'template/ssh.html' %}
+                            {% include 'template/terminal.html' %}
                         </div>
                     </div>
                 </div>

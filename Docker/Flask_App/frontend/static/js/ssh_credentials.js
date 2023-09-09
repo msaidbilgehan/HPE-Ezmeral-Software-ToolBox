@@ -5,11 +5,11 @@
 // document.getElementById('ipForm').addEventListener('submit', function (event) {
 //     event.preventDefault();
 
-//     var pageType = document.body.getAttribute('data-page-type');
+//     let pageType = document.body.getAttribute('data-page-type');
 
 //     // Encode the IP addresses array into a JSON string
 
-//     var ipAddressesHostnamesJson;
+//     let ipAddressesHostnamesJson;
 
 //     if (pageType === 'fqdn') {
 //         // You can further validate each IP with Hostname if needed
@@ -18,12 +18,12 @@
 //     } else {
 //         ipAddressesHostnamesJson = get_ip_host_addresses(true);
 //     }
-//     var credentials = get_ssh_credentials();
-//     var ssh_usernameJson = credentials[0];
-//     var ssh_passwordJson = credentials[1];
+//     let credentials = get_ssh_credentials();
+//     let ssh_usernameJson = credentials[0];
+//     let ssh_passwordJson = credentials[1];
 
 //     // Append the IP addresses as a query parameter
-//     var url = endpoint_action_url
+//     let url = endpoint_action_url
 //     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
 //     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
 //     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesHostnamesJson);
@@ -37,14 +37,30 @@
 //         showNotification(error, "error");
 //     });
 // });
+function getActiveTabInputs() {
+    // Aktif tabı belirleyin (örneğin, 'active' class'ına sahip olan tab)
+    let activeTab = document.querySelector('.tab-content .active');
+
+    // Aktif tab içindeki inputları seçin
+    let sshUsernameInput = activeTab.querySelector('.ssh-username-input');
+    let sshPasswordInput = activeTab.querySelector('.ssh-password-input');
+
+    return {
+        username: sshUsernameInput.value,
+        password: sshPasswordInput.value
+    };
+}
 
 export function get_ssh_credentials(){
+    let activeTab = document.querySelector('.tab-content .active');
+    let sshUsernameInput = activeTab.querySelector('#input_SSH_Username');
+    let sshPasswordInput = activeTab.querySelector('#input_SSH_Password');
 
-    var ssh_username = document.getElementById('input_SSH_Username').value;
-    var ssh_password = document.getElementById('input_SSH_Password').value;
+    let ssh_username = sshUsernameInput.value;
+    let ssh_password = sshPasswordInput.value;
 
-    var ssh_usernameJson = JSON.stringify(ssh_username);
-    var ssh_passwordJson = JSON.stringify(ssh_password);
+    let ssh_usernameJson = JSON.stringify(ssh_username);
+    let ssh_passwordJson = JSON.stringify(ssh_password);
 
     return [ssh_usernameJson, ssh_passwordJson]
 }

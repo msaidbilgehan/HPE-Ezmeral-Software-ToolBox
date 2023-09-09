@@ -1,18 +1,16 @@
-<form class="input-group" id="ipForm">
-    <!-- SSH Credentials -->
-    <div class="col-sm-12 col-xl-12 full_width">
-        <div class="bg-secondary rounded p-4 h-100">
-            <div class="form-floating mb-3">
-                <input type="username" class="form-control" id="input_SSH_Username"
-                    aria-describedby="emailHelp">
-                <label for="floatingInput" class="form-label">SSH User</label>
-            </div>
-            <div class="form-floating">
-                <input type="password" class="form-control" id="input_SSH_Password">
-                <label for="floatingInput" class="form-label">SSH Password</label>
-            </div>
+<!-- SSH Credentials -->
+<div class="col-sm-12 col-xl-12 full_width">
+    <div class="bg-secondary rounded p-4 h-100">
+        <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="input_SSH_Username"
+                aria-describedby="emailHelp">
+            <label for="floatingInput" class="form-label">SSH User</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="input_SSH_Password">
+            <label for="floatingInput" class="form-label">SSH Password</label>
         </div>
     </div>
-</form>
+</div>
 
 <script src="{{ url_for('static', filename='js/ssh_credentials.js') }}" type="module"></script>

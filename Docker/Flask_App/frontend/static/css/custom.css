@@ -53,3 +53,39 @@
     font-size: medium;
     font-family: "Roboto", sans-serif;
 } */
+
+.color-red {
+    color: red ;
+    background-color: transparent ;
+    border-color: transparent 
+}
+
+.color-yellow {
+    color: yellow ;
+    background-color: transparent ;
+    border-color: transparent 
+}
+
+.color-green {
+    color: green ;
+    background-color: transparent ;
+    border-color: transparent 
+}
+
+.color-black {
+    color: black ;
+    background-color: transparent ;
+    border-color: transparent 
+}
+
+.color-black {
+    color: black;
+    background-color: transparent;
+    border-color: transparent
+}
+
+.color-white {
+    color: white;
+    background-color: transparent;
+    border-color: transparent
+}

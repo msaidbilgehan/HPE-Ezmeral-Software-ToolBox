@@ -1,22 +1,20 @@
+import { getActiveTabElement } from './general_action_buttons.js';
 
-function getActiveTabInputs() {
-    // Aktif tabı belirleyin (örneğin, 'active' class'ına sahip olan tab)
-    let activeTab = document.querySelector('.tab-content .active');
-
-    // Aktif tab içindeki inputları seçin
-    let sshUsernameInput = activeTab.querySelector('.ssh-username-input');
-    let sshPasswordInput = activeTab.querySelector('.ssh-password-input');
-
-    return {
-        username: sshUsernameInput.value,
-        password: sshPasswordInput.value
-    };
-}
 
 export function get_ssh_credentials(){
-    let activeTab = document.querySelector('.tab-content .active');
-    let sshUsernameInput = activeTab.querySelector('#input_SSH_Username');
-    let sshPasswordInput = activeTab.querySelector('#input_SSH_Password');
+    let activeTab = getActiveTabElement();
+
+    let sshUsernameInput;
+    let sshPasswordInput;
+
+    if (activeTab !== null) {
+        sshUsernameInput = activeTab.querySelector('.ssh-username-input');
+        sshPasswordInput = activeTab.querySelector('.ssh-password-input');
+    } else {
+        sshUsernameInput = document.querySelector('#input_SSH_Username');
+        sshPasswordInput = document.querySelector('#input_SSH_Password');
+    }
+    
 
     let ssh_username = sshUsernameInput.value;
     let ssh_password = sshPasswordInput.value;

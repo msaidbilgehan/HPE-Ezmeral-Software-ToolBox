@@ -1,96 +1,86 @@
-.form_area_auto_fit {
+.form_area_auto_fit{
     display: flex;
     height: 100%;
     flex-direction: column;
 }
 
-.text_area_height_100 {
+.text_area_height_100{
     height: 100% !important;
 }
 
-.box_height_150px {
+.box_height_150px{
     height: 150px !important;
 }
 
-.box_height_200px {
+.box_height_200px{
     height: 200px !important;
 }
 
-.box_height_250px {
+.box_height_250px{
     height: 250px !important;
 }
 
-.align_item_center {
+.align_item_center{
     text-align: center;
 }
 
-.logo-container {
+.logo-container{
     padding: 10px;
     align-items: center;
     text-align: center;
     width: 100%;
 }
 
-.logo {
+.logo{
     width: 100px;
     height: auto;
     margin: 0 auto;
     display: block;
 }
 
-@media (max-width: 576px) {
-    .full_width {
+@media (max-width: 576px){
+    .full_width{
         width: 100%;
     }
 }
 
-/* p {
-    position: relative;
-    height: 100%;
-    text-align: left;
-    white-space: normal;
-    width: auto;
-    font-size: medium;
-    font-family: "Roboto", sans-serif;
-} */
-
-.color-red {
+.color-red{
     color: red ;
     background-color: transparent ;
     border-color: transparent 
 }
 
-.color-yellow {
+.color-yellow{
     color: yellow ;
     background-color: transparent ;
     border-color: transparent 
 }
 
-.color-green {
+.color-green{
     color: green ;
     background-color: transparent ;
     border-color: transparent 
 }
 
-.color-black {
+.color-black{
     color: black ;
     background-color: transparent ;
     border-color: transparent 
 }
 
-.color-gray {
+.color-gray{
     color: gray;
     background-color: transparent;
     border-color: transparent
 }
 
-.color-white {
+.color-white{
     color: white;
     background-color: transparent;
     border-color: transparent
 }
 
-.align-items-center {
+.align-items-center{
     align-items: center !important;
     text-align: center !important;
 }

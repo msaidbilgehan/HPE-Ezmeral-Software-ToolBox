@@ -1,11 +1,37 @@
-import { download_action_files_url, action_folder_info_url } from './page_specific_urls.js';
+import { getActiveTabElement } from './general_action_buttons.js';
 
 
-const deviceListElement = document.getElementById("device_list");
+function get_deviceListElement(){
+    let active_tab = getActiveTabElement();
+    let deviceListElement;
+
+    if (active_tab !== null) {
+        deviceListElement = active_tab.querySelector('#device_list');
+    }
+    else {
+        deviceListElement = document.getElementById('device_list');
+    }
+    return deviceListElement;
+}
 
 
-function add_device() {
-    var input_device_ip = document.getElementById('device_ip').value;
+export function add_device(ip_addresses) {
+    let input_device_ip;
+
+    if (ip_addresses === undefined || ip_addresses === null || ip_addresses === "") {
+
+        let active_tab = getActiveTabElement();
+
+        if (active_tab === null) {
+            input_device_ip = document.querySelector('#device_ip').value;
+        }
+        else {
+            input_device_ip = active_tab.querySelector('#device_ip').value;
+        }
+    }
+    else{
+        input_device_ip = ip_addresses;
+    }
 
     // Split the IP addresses by a newline or comma
     var device_ip = input_device_ip.split(/\s*[,|\n| ]\s*/);
@@ -32,7 +58,7 @@ window.add_device = add_device;
 
 function clear_all_devices() {
     // 'device_list' ID'sine sahip ana div elementini al
-    let deviceListElement = document.getElementById('device_list');
+    let deviceListElement = get_deviceListElement();
 
     // Bu div'in içindeki 'device_x.x.x.x' pattern'ine uyan cihaz elementlerini al
     let deviceElements = deviceListElement.querySelectorAll('div[id^="device_"]');
@@ -84,13 +110,16 @@ function addDeviceToDeviceList(deviceInfo) {
     newDiv3.appendChild(newIcon2);
     newDiv2.appendChild(newDiv3);
     newDiv.appendChild(newDiv2);
+
+    let deviceListElement = get_deviceListElement();
+
     deviceListElement.appendChild(newDiv);
 
 }
 
 export function get_Devices() {
     // 'device_list' ID'sine sahip ana div elementini al
-    let deviceListElement = document.getElementById('device_list');
+    let deviceListElement = get_deviceListElement();
 
     // Bu div'in içindeki her bir cihazı temsil eden div elementlerini al
     let deviceDivs = Array.from(deviceListElement.querySelectorAll('div.d-flex.align-items-center.border-bottom.p-2'));
@@ -122,23 +151,45 @@ export function get_Devices() {
     });
 }
 
-function __removeDevice(event) {
-    // 'device_list' ID'sine sahip ana div elementini al
-    let deviceListElement = document.getElementById('device_list');
+export function set_Device_Property(deviceElement, propertyName, propertyValue) {
+    // Assuming deviceElement is the root element of the device in the DOM
+    switch (propertyName) {
+        case 'status':
+            // Find the status icon element within the deviceElement
+            let statusIcon = deviceElement.querySelector('i.fa.fa-play, i.fa.fa-spinner, i.fa.fa-check-circle, i.fa.fa-exclamation-triangle');
+            if (statusIcon) {
+                // Remove existing status classes
+                statusIcon.classList.remove('fa-play', 'fa-spinner', 'fa-check-circle', 'fa-exclamation-triangle', 'fa-pulse');
+                statusIcon.classList.remove('color-gray', 'color-yellow', 'color-green', 'color-red');
 
-    // Bu div'in içindeki 'device_x.x.x.x' pattern'ine uyan cihaz elementlerini al
-    let deviceElements = deviceListElement.querySelectorAll('div[id^="device_"]');
-
-    // Bu cihaz elementlerini tek tek sil
-    deviceElements.forEach(deviceElement => {
-        deviceElement.remove();
-    });
+                // Add the new status class based on propertyValue
+                switch (propertyValue) {
+                    case 'start':
+                        statusIcon.classList.add('fa-play', 'color-gray');
+                        break;
+                    case 'waiting':
+                        statusIcon.classList.add('fa-spinner', 'fa-pulse', 'color-yellow');
+                        break;
+                    case 'completed':
+                        statusIcon.classList.add('fa-check-circle', 'color-green');
+                        break;
+                    case 'error':
+                        statusIcon.classList.add('fa-exclamation-triangle', 'color-red');
+                        break;
+                }
+            }
+            break;
+        // Add more cases for other properties as needed
+        default:
+            console.warn(`Unknown property: ${propertyName}`);
+            break;
+    }
 }
+
 function removeDevice(event) {
     // Tıklanan elementi (çöp ikonunu veya butonunu) al
     let targetElement = event.target;
-    // console.log(targetElement.parentElement.id);
-    // console.log(targetElement.parentElement.parentElement.id);
+
     let buttonElement = targetElement.parentElement;
     let targetID = buttonElement.id;
     let parentDivElement = buttonElement.parentElement;

@@ -3,64 +3,35 @@
 {% block content %}
 
 <div class="container-fluid pt-4 px-4">
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-        <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="control-tab" data-bs-toggle="pill" data-bs-target="#control" type="button"
-                role="tab" aria-controls="control" aria-selected="false">
-                Control
-                <i class="fa fa-lightbulb fa-fw" aria-hidden="true"></i>
-                
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="file-browser-tab" data-bs-toggle="pill" data-bs-target="#file-browser"
-                type="button" role="tab" aria-controls="file-browser" aria-selected="true">
-                Backup Cron Job
-                <i class="fa fa-tasks fa-fw" aria-hidden="true"></i>
-            </button>
-        </li>
-    </ul>
     <div class="tab-content" id="pills-tabContent">
-        <div class="tab-pane fade active show" id="control" role="tabpanel" aria-labelledby="control-tab">
-            <div class="col-sm-12 col-xl-12 align_item_center">
-                <div class="bg-secondary rounded">
-                    {% include 'template/ip_hostname_table.html' %}
-                    {% include 'template/ssh.html' %}
-
-                    <div id="backup_type" class="btn-group-horizontal" role="group">
-                        <input type="radio" class="btn-check" name="backup_type" id="differential" autocomplete="off" checked="">
-                        <label class="btn btn-outline-warning m-1" for="differential">Differential Backup</label>
-
-                        <input type="radio" class="btn-check" name="backup_type" id="incremental" autocomplete="off">
-                        <label class="btn btn-outline-warning m-1" for="incremental">Incremental Backup</label>
-
-                        <input type="radio" class="btn-check" name="backup_type" id="partition" autocomplete="off">
-                        <label class="btn btn-outline-warning m-1" for="partition">Partition Backup</label>
-                    </div>
-
-                    {% include 'template/general_action_buttons.html' %}
+        <div class="col-sm-12 col-xl-12 align_item_center">
+            <div class="bg-secondary rounded">
+                {% include 'template/ip_hostname_table.html' %}
+                {% include 'template/ssh.html' %}
+        
+                <div id="backup_type" class="btn-group-horizontal" role="group">
+                    <input type="radio" class="btn-check" name="backup_type" id="differential" autocomplete="off" checked="">
+                    <label class="btn btn-outline-warning m-1" for="differential">Differential Backup</label>
+        
+                    <input type="radio" class="btn-check" name="backup_type" id="incremental" autocomplete="off">
+                    <label class="btn btn-outline-warning m-1" for="incremental">Incremental Backup</label>
+        
+                    <input type="radio" class="btn-check" name="backup_type" id="partition" autocomplete="off">
+                    <label class="btn btn-outline-warning m-1" for="partition">Partition Backup</label>
                 </div>
-            </div>
-        </div>
-        <div class="tab-pane fade" id="file-browser" role="tabpanel" aria-labelledby="backup-cron-tab">
-            <div class="col-sm-12 col-xl-12 align_item_center">
-                <div class="bg-secondary rounded p-4">
-                    <div class="col-sm-12 col-xl-12 align_item_center">
-                        <div class="bg-secondary rounded p-4">
-                            {% include 'template/device_table.html' %}
-                            {% include 'template/ssh.html' %}
-
-                            <div class="col-sm-12 col-xl-12 align_item_center">
-                                <div class="bg-secondary rounded p-4">
-                                    <button type="button" class="btn-xlg-square btn-success m-2" onclick="backup_cron_control()">
-                                        Backup Control Endpoint
-                                    </button>
-                                </div>
-                            </div>
-
-                        </div>
+        
+                {% include 'template/general_action_buttons.html' %}
+        
+                <div class="col-sm-12 col-xl-12 align_item_center">
+                    <div class="bg-secondary rounded p-4">
+                        <button type="button" class="btn-xlg-square btn-success m-2" onclick="backup_cron_control()">
+                            Backup Control Endpoint
+                        </button>
                     </div>
                 </div>
+        
+                {% include 'template/device_table.html' %}
+        
             </div>
         </div>
         {% include 'template/terminal.html' %}

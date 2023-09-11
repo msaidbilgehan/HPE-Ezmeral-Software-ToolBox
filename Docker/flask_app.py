@@ -136,6 +136,8 @@ def backup_control_endpoint():
             ip_response_list: list[dict[str, str]] = list()
             response_structure: dict[str, str] = {
                 "ip_address": "",
+                "response": "",
+                "check": "",
                 "message": "",
             }
             for ip_address in ip_addresses:
@@ -148,16 +150,15 @@ def backup_control_endpoint():
                     reboot=False,
                     logger_hook=backup_thread.logger
                 )
-                if response:
-                    print(f"{ip_address} -> {output}")
-                    
-                    temp_response = response_structure.copy()
-                    temp_response["ip_address"] = ip_address
-                    temp_response["message"] = output
-                    
-                    ip_response_list.append(
-                        temp_response
-                    )
+                temp_response = response_structure.copy()
+                temp_response["ip_address"] = ip_address
+                temp_response["response"] = str(response)
+                temp_response["check"] = str(True if output else False)
+                temp_response["message"] = output
+                
+                ip_response_list.append(
+                    temp_response
+                )
             return jsonify(
                 message=ip_response_list,
             )

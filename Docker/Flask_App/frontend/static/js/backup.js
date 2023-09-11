@@ -1,12 +1,38 @@
 import { endpoint_action_2_url } from './page_specific_urls.js';
 import { get_ssh_credentials } from './ssh_credentials.js';
 import { terminal_source } from './terminal_stream.js';
-import { get_Devices } from './device_table.js';
+import { add_device, get_Devices, set_Device_Property } from './device_table.js';
+import { get_ip_host_addresses } from './ip_hostname_table.js';
 
 
 function backup_cron_control() {
 
+    let ip_table_input = get_ip_host_addresses(true);
+
+    let tmp_ip_addresses = "";
+    ip_table_input.forEach(element => {
+        if (tmp_ip_addresses === "") {
+            tmp_ip_addresses = element;
+        }
+        else {
+            tmp_ip_addresses = tmp_ip_addresses + ", " + element;
+        }
+    });
+    ip_table_input = tmp_ip_addresses;
+
+    if (ip_table_input !== "") {
+        add_device(ip_table_input);
+    }
+
     let devices = get_Devices();
+
+    devices.forEach(device => {
+        let deviceElement = document.getElementById(device.element.id);
+        let propertyName = "status";
+        let propertyValue = "waiting";
+        set_Device_Property(deviceElement, propertyName, propertyValue);
+    })
+
     let ipAddresses = devices.map(device => device.name);
     
     let ipAddressesJson = JSON.stringify(ipAddresses);
@@ -17,12 +43,10 @@ function backup_cron_control() {
     let ssh_passwordJson = credentials[1];
 
     // Append the IP addresses as a query parameter
-    let url = endpoint_action_2_url
+    let url = endpoint_action_2_url;
     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesJson);
-    console.log("ipAddressesJson", ipAddressesJson);
-    console.log("url", url);
 
     if (!terminal_source || terminal_source.readyState === 2) {
         terminal_EventSource_Start();
@@ -30,10 +54,27 @@ function backup_cron_control() {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
-        console.log(data);
         data.message.forEach(item => {
-            let notification = "IP: " + item.ip_address + " | " + "Message: " + item.message;
-            showNotification(notification, "info");
+            // let notification = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
+            devices.forEach(device => {
+                if (device.name === item.ip_address) {
+
+                    let deviceElement = document.getElementById(device.element.id);
+                    let propertyName = "status";
+
+                    let propertyValue;
+                    if (item.check === "True") {
+                        propertyValue = "completed";
+                    } else if (item.check === "False") {
+                        propertyValue = "error";
+                    } else {
+                        console.warn(`Unexpected value for item.check: ${item.check}`);
+                    }
+
+                    set_Device_Property(deviceElement, propertyName, propertyValue);
+                }
+            })
+            // showNotification(notification, "info");
         });
 
         // showNotification(notification, "info");

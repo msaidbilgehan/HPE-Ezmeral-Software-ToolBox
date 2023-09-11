@@ -99,7 +99,7 @@ class Backup_Class(Task_Handler_Class):
                         else:
                             hour, minute, month, day_of_month, day_of_week = cron_parameters.split(" ")
                         
-                        ssh_command = f"echo '{hour} {minute} {month} {day_of_month} {day_of_week} {remote_file_path}' | crontab -l - | crontab -"
+                        ssh_command = f"echo \"$(crontab -l; echo '{hour} {minute} {month} {day_of_month} {day_of_week} {remote_file_path}')\" | crontab -"
                         
                         response, stout = ssh_execute_command(
                             ssh_client=ip_address, 

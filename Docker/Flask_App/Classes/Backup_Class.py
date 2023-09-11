@@ -88,6 +88,12 @@ class Backup_Class(Task_Handler_Class):
                             reboot=False,
                             logger_hook=self.logger
                         )
+
+                    # Check Thread State
+                    time.sleep(1)
+                    if self.stop_Action_Control():
+                        self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
+                        return -1
                         
                     if add_to_cron:
                         if cron_parameters == "":
@@ -99,7 +105,30 @@ class Backup_Class(Task_Handler_Class):
                         else:
                             hour, minute, month, day_of_month, day_of_week = cron_parameters.split(" ")
                         
-                        ssh_command = f"echo \"$(crontab -l; echo '{hour} {minute} {month} {day_of_month} {day_of_week} {remote_file_path}')\" | crontab -"
+                        # If cron exist, remove first
+                        ssh_command = f"sudo crontab -l | grep -v '{remote_file_path}' | crontab -"
+                        
+                        response, stout = ssh_execute_command(
+                            ssh_client=ip_address, 
+                            username=ssh_username, 
+                            password=ssh_password, 
+                            command=ssh_command,
+                            reboot=False,
+                            logger_hook=self.logger
+                        )
+                        if response != 0:
+                            self.logger.warn(f"Cron remove failed -> {ip_address}")
+                            self.logger.warn(f"{ip_address} :: {stout}")
+                            failed_ip_addresses.append(ip_address)
+
+                        # Check Thread State
+                        time.sleep(1)
+                        if self.stop_Action_Control():
+                            self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
+                            return -1
+                        
+                        # Add new cron job
+                        ssh_command = f"echo \"$(sudo crontab -l; echo '{hour} {minute} {month} {day_of_month} {day_of_week} {remote_file_path}')\" | sudo crontab -"
                         
                         response, stout = ssh_execute_command(
                             ssh_client=ip_address, 

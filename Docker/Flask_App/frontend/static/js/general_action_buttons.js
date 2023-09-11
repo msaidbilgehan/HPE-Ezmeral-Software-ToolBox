@@ -35,12 +35,11 @@ function start_Action () {
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesHostnamesJson);
 
-    if (pageType === 'backup') {
-        // You can further validate each IP with Hostname if needed
-        extra_parameter = "backup_type";
-        extra_parameter_value = get_Backup_Type();
-        url = url + '&' + extra_parameter + '=' + encodeURIComponent(extra_parameter_value);
-    }
+    // if (pageType === 'backup') {
+    //     extra_parameter = "backup_type";
+    //     extra_parameter_value = get_Backup_Type();
+    //     url = url + '&' + extra_parameter + '=' + encodeURIComponent(extra_parameter_value);
+    // }
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {

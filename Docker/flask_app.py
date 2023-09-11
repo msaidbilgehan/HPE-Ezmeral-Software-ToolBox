@@ -31,6 +31,84 @@ endpoint_streamer_mapping: dict[str, File_Content_Streamer_Thread] = {
 
 
 
+###################
+### RESTORE API ###
+###################
+
+
+# @app.route('/restore',methods = ['POST', 'GET'])
+# def restore_page():
+#     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+#     return render_template(
+#         'restore.html',
+#         page_id="restore"
+#     )
+    
+# @app.route('/restore_endpoint',methods = ['POST', 'GET'])
+# def restore_endpoint():
+#     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    
+#     if not restore_thread.safe_task_lock.locked():
+#         with restore_thread.safe_task_lock:
+#             ssh_username_json = request.args.get('ssh_username')
+#             ssh_password_json = request.args.get('ssh_password')
+#             ip_addresses_json = request.args.get('ip_addresses_hostnames')
+#             restore_type_json = request.args.get('restore_type', "differential")
+            
+#             if ssh_username_json is not None:
+#                 ssh_username = json.loads(ssh_username_json)
+#             else:
+#                 ssh_username = ""
+                
+#             if ssh_password_json is not None:
+#                 ssh_password = json.loads(ssh_password_json)
+#             else:
+#                 ssh_password = ""
+            
+#             if ip_addresses_json is not None:
+#                 ip_addresses = json.loads(ip_addresses_json)
+#             else:
+#                 ip_addresses = []
+            
+#             if restore_type_json == "differential":
+#                 restore_script = "restore_mapr_differential.sh"
+#             elif restore_type_json == "partition":
+#                 restore_script = "restore_mapr_partition.sh"
+#             elif restore_type_json == "incremental":
+#                 restore_script = "restore_mapr_incremental.sh"
+#             else:
+#                 # Default Differential
+#                 restore_script = "restore_mapr_differential.sh"
+            
+#             restore_thread.set_Parameters(
+#                 ssh_username=ssh_username,
+#                 ssh_password=ssh_password,
+#                 ip_addresses=ip_addresses,
+#                 script_path=root_upload_path + restore_script,
+#                 script_upload_path=f"/home/{ssh_username}",
+#                 script_run_command=f"sudo chmod +x /home/{ssh_username}/{restore_script} &&", # One-Shot Run Command
+#                 add_to_cron=True, # Cron Parameters
+#                 cron_parameters="", # Cron Parameters
+#                 script_parameters="",
+#             )
+            
+#             if not restore_thread.is_Running():
+#                 restore_thread.start_Task()
+#             else:
+#                 restore_thread.stop_Task()
+#                 restore_thread.wait_To_Stop_Once_Task()
+#                 restore_thread.start_Task()
+#     else:
+#         return jsonify(
+#             message="Restore task already running"
+#         )
+    
+#     return jsonify(
+#         message="Restore task queued"
+#     )
+
+
+
 ##################
 ### BACKUP API ###
 ##################
@@ -53,7 +131,7 @@ def backup_endpoint():
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
-            backup_type_json = request.args.get('backup_type', "differential")
+            # backup_type_json = request.args.get('backup_type', "differential")
             
             if ssh_username_json is not None:
                 ssh_username = json.loads(ssh_username_json)
@@ -70,23 +148,25 @@ def backup_endpoint():
             else:
                 ip_addresses = []
             
-            if backup_type_json == "differential":
-                backup_script = "daily_backup_mapr_differential.sh"
-            elif backup_type_json == "partition":
-                backup_script = "daily_backup_mapr_partition.sh"
-            elif backup_type_json == "incremental":
-                backup_script = "daily_backup_mapr_incremental.sh"
-            else:
-                # Default Differential
-                backup_script = "daily_backup_mapr_differential.sh"
+            # if backup_type_json == "differential":
+            #     backup_script = "daily_backup_mapr_differential.sh"
+            # elif backup_type_json == "partition":
+            #     backup_script = "daily_backup_mapr_partition.sh"
+            # elif backup_type_json == "incremental":
+            #     backup_script = "daily_backup_mapr_incremental.sh"
+            # else:
+            #     # Default Differential
+            #     backup_script = "daily_backup_mapr_differential.sh"
+            backup_script = "daily_rotation_mapr_snapshot.sh"
+            remote_path_script = f"/home/{ssh_username}/"
             
             backup_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
                 script_path=root_upload_path + backup_script,
-                script_upload_path=f"/home/{ssh_username}",
-                script_run_command=f"sudo chmod +x /home/{ssh_username}/daily_backup_mapr_differential.sh &&", # One-Shot Run Command
+                script_upload_path=f"{remote_path_script}",
+                script_run_command=f"sudo chmod +x {remote_path_script}/{backup_script} &&", # One-Shot Run Command
                 add_to_cron=True, # Cron Parameters
                 cron_parameters="", # Cron Parameters
                 script_parameters="",

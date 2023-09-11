@@ -85,8 +85,8 @@ def backup_endpoint():
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
                 script_path=root_upload_path + backup_script,
-                script_upload_path="/home/mapr",
-                script_run_command="sudo chmod +x /home/mapr/daily_backup_mapr_differential.sh &&", # One-Shot Run Command
+                script_upload_path=f"/home/{ssh_username}",
+                script_run_command=f"sudo chmod +x /home/{ssh_username}/daily_backup_mapr_differential.sh &&", # One-Shot Run Command
                 add_to_cron=True, # Cron Parameters
                 cron_parameters="", # Cron Parameters
                 script_parameters="",

@@ -166,7 +166,7 @@ def backup_endpoint():
                 ip_addresses=ip_addresses,
                 script_path=root_upload_path + backup_script,
                 script_upload_path=f"{remote_path_script}",
-                script_run_command=f"sudo chmod +x {remote_path_script}/{backup_script} &&", # One-Shot Run Command
+                script_run_command=f"sudo chmod +x {remote_path_script}/{backup_script} && sudo", # One-Shot Run Command
                 add_to_cron=True, # Cron Parameters
                 cron_parameters="", # Cron Parameters
                 script_parameters="",

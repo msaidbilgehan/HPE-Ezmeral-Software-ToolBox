@@ -6,30 +6,11 @@
     <div class="tab-content" id="pills-tabContent">
         <div class="col-sm-12 col-xl-12 align_item_center">
             <div class="bg-secondary rounded">
-                {% include 'template/ip_hostname_table.html' %}
                 {% include 'template/ssh.html' %}
-        
-                <div id="backup_type" class="btn-group-horizontal" role="group">
-                    <input type="radio" class="btn-check" name="backup_type" id="differential" autocomplete="off" checked="">
-                    <label class="btn btn-outline-warning m-1" for="differential">Differential Backup</label>
-        
-                    <input type="radio" class="btn-check" name="backup_type" id="incremental" autocomplete="off">
-                    <label class="btn btn-outline-warning m-1" for="incremental">Incremental Backup</label>
-        
-                    <input type="radio" class="btn-check" name="backup_type" id="partition" autocomplete="off">
-                    <label class="btn btn-outline-warning m-1" for="partition">Partition Backup</label>
-                </div>
-        
                 {% include 'template/general_action_buttons.html' %}
-        
                 <div class="col-sm-12 col-xl-12 align_item_center">
-                    <div class="bg-secondary rounded p-4">
-                        <button type="button" class="btn-xlg-square btn-success m-2" onclick="backup_cron_control()">
-                            Backup Control Endpoint
-                        </button>
-                    </div>
+                    {% include 'template/file_table.html' %}
                 </div>
-        
                 {% include 'template/device_table.html' %}
         
             </div>

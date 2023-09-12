@@ -27,7 +27,6 @@ RSYNC=/usr/bin/rsync;
 
 BACKUP_SOURCE_DIR=/opt/mapr;
 SNAPSHOT_DIR=/root/snapshot;
-EXCLUDES=/usr/local/etc/backup_exclude;
 
 
 # ------------- the script itself --------------------------------------
@@ -40,13 +39,13 @@ if [ ! -d "$SNAPSHOT_DIR" ] ; then			\
 fi;
 
 # attempt to remount the RW mount point as RW; else abort
-$ECHO "Attempting to update permissions as writable for $SNAPSHOT_DIR..."
-if [ ! -w "$SNAPSHOT_DIR" ]; then
-	$SUDO chmod -R u+w $SNAPSHOT_DIR
-    $ECHO "$SNAPSHOT_DIR is now writable "
-else
-    $ECHO "No need to add write permission. $SNAPSHOT_DIR is already writable"
-fi
+# $ECHO "Attempting to update permissions as writable for $SNAPSHOT_DIR..."
+# if [ ! -w "$SNAPSHOT_DIR" ]; then
+# 	$SUDO chmod -R u+w $SNAPSHOT_DIR
+#     $ECHO "$SNAPSHOT_DIR is now writable "
+# else
+#     $ECHO "No need to add write permission. $SNAPSHOT_DIR is already writable"
+# fi
 
 
 # rotating snapshots of $BACKUP_SOURCE_DIR
@@ -91,8 +90,8 @@ fi;
 # snapshot(s) too!
 $ECHO "Running rsync..."
 $RSYNC								\
-	-va --delete --delete-excluded				\
-	--exclude-from="$EXCLUDES"				\
+	-va --delete					\
+	--perms --owner --group			\
 	$BACKUP_SOURCE_DIR $SNAPSHOT_DIR/daily.0 ;
 
 # step 5: update the mtime of daily.0 to reflect the snapshot time
@@ -103,10 +102,10 @@ $TOUCH $SNAPSHOT_DIR/daily.0 ;
 
 # now remount the RW snapshot mountpoint as readonly
 
-$ECHO "Attempting to update permissions as read-only for $SNAPSHOT_DIR..."
-if [ -e "$SNAPSHOT_DIR" ] && [ -w "$SNAPSHOT_DIR" ]; then
-	$SUDO chmod -R a-w $SNAPSHOT_DIR
-    $ECHO "$SNAPSHOT_DIR is now read-only "
-else
-    $ECHO "No need to remove append-write permissions. $SNAPSHOT_DIR is already read-only"
-fi
+# $ECHO "Attempting to update permissions as read-only for $SNAPSHOT_DIR..."
+# if [ -e "$SNAPSHOT_DIR" ] && [ -w "$SNAPSHOT_DIR" ]; then
+# 	$SUDO chmod -R a-w $SNAPSHOT_DIR
+#     $ECHO "$SNAPSHOT_DIR is now read-only "
+# else
+#     $ECHO "No need to remove append-write permissions. $SNAPSHOT_DIR is already read-only"
+# fi

@@ -1,7 +1,7 @@
 import { endpoint_action_url, endpoint_stop_url } from './page_specific_urls.js';
 import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
-import { get_Backup_Type } from './backup.js';
+// import { get_Backup_Type } from './backup.js';
 
 
 function start_Action () {

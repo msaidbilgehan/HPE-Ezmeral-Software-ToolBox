@@ -27,7 +27,7 @@ for ((i=BACKUP_NUM; i>=0; i--))
 do
     if [ -d $SNAPSHOT_DIR/daily.$i ]; then
         $ECHO "Restoring from backup $SNAPSHOT_DIR/daily.$i..."
-        $SUDO $RSYNC -av --delete $SNAPSHOT_DIR/daily.$i $BACKUP_SOURCE_DIR/
+        $SUDO $RSYNC -av --delete $SNAPSHOT_DIR/daily.$i/ $BACKUP_SOURCE_DIR/
     else
         $ECHO "Backup daily.$i not found!"
     fi

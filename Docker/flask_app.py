@@ -36,76 +36,68 @@ endpoint_streamer_mapping: dict[str, File_Content_Streamer_Thread] = {
 ###################
 
 
-# @app.route('/restore',methods = ['POST', 'GET'])
-# def restore_page():
-#     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-#     return render_template(
-#         'restore.html',
-#         page_id="restore"
-#     )
+@app.route('/restore',methods = ['POST', 'GET'])
+def restore_page():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    return render_template(
+        'restore.html',
+        page_id="restore"
+    )
     
-# @app.route('/restore_endpoint',methods = ['POST', 'GET'])
-# def restore_endpoint():
-#     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+@app.route('/restore_endpoint',methods = ['POST', 'GET'])
+def restore_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-#     if not restore_thread.safe_task_lock.locked():
-#         with restore_thread.safe_task_lock:
-#             ssh_username_json = request.args.get('ssh_username')
-#             ssh_password_json = request.args.get('ssh_password')
-#             ip_addresses_json = request.args.get('ip_addresses_hostnames')
-#             restore_type_json = request.args.get('restore_type', "differential")
+    if not backup_thread.safe_task_lock.locked():
+        with backup_thread.safe_task_lock:
+            ssh_username_json = request.args.get('ssh_username')
+            ssh_password_json = request.args.get('ssh_password')
+            ip_addresses_json = request.args.get('ip_addresses_hostnames')
+            restore_number_json = request.args.get('restore_number', "0")
             
-#             if ssh_username_json is not None:
-#                 ssh_username = json.loads(ssh_username_json)
-#             else:
-#                 ssh_username = ""
+            if ssh_username_json is not None:
+                ssh_username = json.loads(ssh_username_json)
+            else:
+                ssh_username = ""
                 
-#             if ssh_password_json is not None:
-#                 ssh_password = json.loads(ssh_password_json)
-#             else:
-#                 ssh_password = ""
+            if ssh_password_json is not None:
+                ssh_password = json.loads(ssh_password_json)
+            else:
+                ssh_password = ""
             
-#             if ip_addresses_json is not None:
-#                 ip_addresses = json.loads(ip_addresses_json)
-#             else:
-#                 ip_addresses = []
+            if ip_addresses_json is not None:
+                ip_addresses = json.loads(ip_addresses_json)
+            else:
+                ip_addresses = []
+
+            restore_script = "daily_rotation_mapr_restore.sh"
             
-#             if restore_type_json == "differential":
-#                 restore_script = "restore_mapr_differential.sh"
-#             elif restore_type_json == "partition":
-#                 restore_script = "restore_mapr_partition.sh"
-#             elif restore_type_json == "incremental":
-#                 restore_script = "restore_mapr_incremental.sh"
-#             else:
-#                 # Default Differential
-#                 restore_script = "restore_mapr_differential.sh"
+            backup_thread.set_Parameters(
+                ssh_username=ssh_username,
+                ssh_password=ssh_password,
+                ip_addresses=ip_addresses,
+                script_path=root_upload_path + restore_script,
+                script_upload_path=f"/home/{ssh_username}",
+                script_run_command=f"sudo chmod +x /home/{ssh_username}/{restore_script} &&", # One-Shot Run Command
+                add_to_cron=False, # Cron Parameters
+                cron_parameters="", # Cron Parameters
+                script_parameters=restore_number_json,
+            )
             
-#             restore_thread.set_Parameters(
-#                 ssh_username=ssh_username,
-#                 ssh_password=ssh_password,
-#                 ip_addresses=ip_addresses,
-#                 script_path=root_upload_path + restore_script,
-#                 script_upload_path=f"/home/{ssh_username}",
-#                 script_run_command=f"sudo chmod +x /home/{ssh_username}/{restore_script} &&", # One-Shot Run Command
-#                 add_to_cron=True, # Cron Parameters
-#                 cron_parameters="", # Cron Parameters
-#                 script_parameters="",
-#             )
-            
-#             if not restore_thread.is_Running():
-#                 restore_thread.start_Task()
-#             else:
-#                 restore_thread.stop_Task()
-#                 restore_thread.wait_To_Stop_Once_Task()
-#                 restore_thread.start_Task()
-#     else:
-#         return jsonify(
-#             message="Restore task already running"
-#         )
+            if not backup_thread.is_Running():
+                backup_thread.start_Task()
+            else:
+                backup_thread.stop_Task()
+                backup_thread.wait_To_Stop_Once_Task()
+                backup_thread.start_Task()
+    else:
+        return jsonify(
+            message="Restore task already running"
+        )
     
-#     return jsonify(
-#         message="Restore task queued"
-#     )
+    return jsonify(
+        message="Restore task queued"
+    )
 
 
 

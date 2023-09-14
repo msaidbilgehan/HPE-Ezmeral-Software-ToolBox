@@ -92,9 +92,11 @@ class Task_Handler_Class(ABC, Thread):
             self.is_running = True
             self.is_finished = False
             
+            self.before_task_call()
             response = self.task(
                   **self.get_Parameters()
             )
+            self.after_task_call()
             
             self.is_running = False
             
@@ -195,3 +197,12 @@ class Task_Handler_Class(ABC, Thread):
       # Re-Write Task Function
       raise NotImplementedError
    
+   
+   def before_task_call(self):
+      # Re-Write before_task_call Function
+      pass
+   
+   
+   def after_task_call(self):
+      # Re-Write after_task_call Function
+      pass

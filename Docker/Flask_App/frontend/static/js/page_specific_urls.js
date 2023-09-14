@@ -40,6 +40,11 @@ function pageSpecificFunction() {
             endpoint_action_clear_logs_url = "";
             endpoint_action_2_url = "/backup_control_endpoint";
             break;
+        case 'restore':
+            endpoint_action_url = '/restore_endpoint';
+            endpoint_action_clear_logs_url = "";
+            endpoint_action_2_url = "/restore_control_endpoint";
+            break;
         default:
             terminal_source_url = '/not-found';
             endpoint_action_url = '/not-found';

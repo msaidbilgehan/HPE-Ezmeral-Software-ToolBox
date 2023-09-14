@@ -273,9 +273,12 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
             # command = f'echo {password} | sudo -S sh -c "echo \'{command}\'"'
         
         local_logger.info(f"Executing command: {command}")
+        
         stdin, stdout, stderr = client.exec_command(command)
+        # local_logger.info(f"stdout: {stdout}")
+        
         client_stdout = stdout.read().decode()
-        local_logger.info(f"stdout: {client_stdout}")
+        local_logger.info(f"client_stdout: {client_stdout}")
         
         exit_status = stdout.channel.recv_exit_status() # Blocking call
         if exit_status==0:
@@ -283,11 +286,11 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
             status = True
             
             if reboot:
-                stdin_reboot, stdout_reboot, stderr_reboot = client.exec_command('echo {password} | sudo -S reboot -h now')
+                client.exec_command('echo {password} | sudo -S reboot -h now')
             else:
                 local_logger.info("Reboot skipped.")
         else:
-            local_logger.error(f"STDOUT Detail: {stdout.read().decode()}")
+            local_logger.error(f"STDOUT Detail: {client_stdout}")
             local_logger.error(f"STDERR Detail [Exit Status {exit_status}]: {stderr.read().decode()}")
             status = False
         

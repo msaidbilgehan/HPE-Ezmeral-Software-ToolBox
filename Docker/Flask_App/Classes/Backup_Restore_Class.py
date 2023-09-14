@@ -106,7 +106,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                             hour, minute, month, day_of_month, day_of_week = cron_parameters.split(" ")
                         
                         # If cron exist, remove first
-                        ssh_command = f"sudo crontab -l | grep -v '{remote_file_path}' | crontab -"
+                        ssh_command = f"sudo crontab -l | grep -v '{remote_file_path}' | sudo crontab -"
                         
                         response, stout = ssh_execute_command(
                             ssh_client=ip_address, 
@@ -205,12 +205,11 @@ class Backup_Restore_Class(Task_Handler_Class):
         self.logger.info(f"Backup Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
         
         return 0
-    
-    
-    def backup_cron_control(self, ssh_username:str, ssh_password:str, ip_addresses:list[str], script_name:str) -> list[dict[str, str]]:
+
+    def backup_cron_control(self, ssh_username: str, ssh_password: str, ip_addresses: list[str], script_name: str) -> list[dict[str, str]]:
         self.logger.info(f"Backup Cron Control running on {ip_addresses} ...")
-        
-        failed_ip_addresses:list[str] = list()
+
+        failed_ip_addresses: list[str] = list()
         ip_response_list: list[dict[str, str]] = list()
         response_structure: dict[str, str] = {
             "ip_address": "",
@@ -223,14 +222,14 @@ class Backup_Restore_Class(Task_Handler_Class):
             # Send command to remote devices
             for ip_address in ip_addresses:
                 self.logger.info("Connecting to " + ip_address + " ...")
-                
+
                 # If run command given, execute it
-                ssh_command = "crontab -l | awk '/{}.*\\.sh/ {print $1, $2, $3, $4, $5}'".format(script_name)
+                ssh_command = f"sudo crontab -l | awk '/{script_name}.*\\.sh/" + "{print $1, $2, $3, $4, $5}'"
 
                 response, stout = ssh_execute_command(
-                    ssh_client=ip_address, 
-                    username=ssh_username, 
-                    password=ssh_password, 
+                    ssh_client=ip_address,
+                    username=ssh_username,
+                    password=ssh_password,
                     command=ssh_command,
                     reboot=False,
                     logger_hook=self.logger
@@ -249,12 +248,6 @@ class Backup_Restore_Class(Task_Handler_Class):
                 ip_response_list.append(
                     temp_response
                 )
-
-                # Check Thread State
-                time.sleep(1)
-                if self.stop_Action_Control():
-                    self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
-                    return ip_response_list
                     
         except Exception as e:
             self.logger.error(f"An error occurred: {e}")

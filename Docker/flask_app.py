@@ -8,9 +8,14 @@ from Flask_App.Libraries.network_tools import ssh_execute_command
 
 from Flask_App.Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
 from Flask_App.paths import app_path, root_path_archives, root_upload_path, root_log_collection_folder, root_fqdn_folder
-from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer, backup_thread, backup_logger_streamer
+from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer, backup_restore_thread, backup_restore_logger_streamer
 from Flask_App.Libraries.logger_module import global_logger
 
+
+
+########################
+### GLOBAL VARIABLES ###
+########################
 
 
 app = Flask(__name__, template_folder=f'{app_path}frontend/pages', static_folder=f'{app_path}frontend/static')
@@ -19,15 +24,29 @@ endpoint_thread_mapping: dict[str, Task_Handler_Class] = {
     "cleanup": cleanup_thread,
     "log_collection": log_collection_thread,
     "fqdn": fqdn_thread,
-    "backup": backup_thread,
+    "backup": backup_restore_thread,
+    "restore": backup_restore_thread,
 }
 
 endpoint_streamer_mapping: dict[str, File_Content_Streamer_Thread] = {
     "cleanup": cleanup_logger_streamer,
     "log_collection": log_collection_logger_streamer,
     "fqdn": fqdn_logger_streamer,
-    "backup": backup_logger_streamer,
+    "backup": backup_restore_logger_streamer,
+    "restore": backup_restore_logger_streamer,
 }
+
+endpoint_directory_paths = {
+    "cleanup": "",
+    "log_collection": log_collection_thread.get_Collected_Log_Folder(),
+    "fqdn": fqdn_thread.get_hosts_folder(),
+    "backup": "",
+    "restore": "",
+}
+
+backup_script = "daily_rotation_mapr_snapshot.sh"
+restore_script = "daily_rotation_mapr_restore.sh"
+backup_script_upload_path="/home/{ssh_username}/"
 
 
 
@@ -48,8 +67,8 @@ def restore_page():
 def restore_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not backup_thread.safe_task_lock.locked():
-        with backup_thread.safe_task_lock:
+    if not backup_restore_thread.safe_task_lock.locked():
+        with backup_restore_thread.safe_task_lock:
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
@@ -70,26 +89,27 @@ def restore_endpoint():
             else:
                 ip_addresses = []
 
-            restore_script = "daily_rotation_mapr_restore.sh"
+            script_upload_path=backup_script_upload_path.format(ssh_username=ssh_username)
+            script_path = root_upload_path + restore_script
             
-            backup_thread.set_Parameters(
+            backup_restore_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path=root_upload_path + restore_script,
-                script_upload_path=f"/home/{ssh_username}",
-                script_run_command=f"sudo chmod +x /home/{ssh_username}/{restore_script} &&", # One-Shot Run Command
+                script_path=script_path,
+                script_upload_path=script_upload_path,
+                script_run_command=f"sudo chmod +x {script_upload_path + restore_script} &&", # One-Shot Run Command
                 add_to_cron=False, # Cron Parameters
                 cron_parameters="", # Cron Parameters
                 script_parameters=restore_number_json,
             )
             
-            if not backup_thread.is_Running():
-                backup_thread.start_Task()
+            if not backup_restore_thread.is_Running():
+                backup_restore_thread.start_Task()
             else:
-                backup_thread.stop_Task()
-                backup_thread.wait_To_Stop_Once_Task()
-                backup_thread.start_Task()
+                backup_restore_thread.stop_Task()
+                backup_restore_thread.wait_To_Stop_Once_Task()
+                backup_restore_thread.start_Task()
     else:
         return jsonify(
             message="Restore task already running"
@@ -118,8 +138,8 @@ def backup_page():
 def backup_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not backup_thread.safe_task_lock.locked():
-        with backup_thread.safe_task_lock:
+    if not backup_restore_thread.safe_task_lock.locked():
+        with backup_restore_thread.safe_task_lock:
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
@@ -140,36 +160,27 @@ def backup_endpoint():
             else:
                 ip_addresses = []
             
-            # if backup_type_json == "differential":
-            #     backup_script = "daily_backup_mapr_differential.sh"
-            # elif backup_type_json == "partition":
-            #     backup_script = "daily_backup_mapr_partition.sh"
-            # elif backup_type_json == "incremental":
-            #     backup_script = "daily_backup_mapr_incremental.sh"
-            # else:
-            #     # Default Differential
-            #     backup_script = "daily_backup_mapr_differential.sh"
-            backup_script = "daily_rotation_mapr_snapshot.sh"
-            remote_path_script = f"/home/{ssh_username}/"
-            
-            backup_thread.set_Parameters(
+            script_upload_path = backup_script_upload_path.format(ssh_username=ssh_username)
+            script_path = root_upload_path + backup_script
+
+            backup_restore_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
                 ip_addresses=ip_addresses,
-                script_path=root_upload_path + backup_script,
-                script_upload_path=f"{remote_path_script}",
-                script_run_command=f"sudo chmod +x {remote_path_script}/{backup_script} && sudo", # One-Shot Run Command
+                script_path=script_path,
+                script_upload_path=script_upload_path,
+                script_run_command=f"sudo chmod +x {script_upload_path + restore_script} && sudo", # One-Shot Run Command
                 add_to_cron=True, # Cron Parameters
                 cron_parameters="", # Cron Parameters
                 script_parameters="",
             )
             
-            if not backup_thread.is_Running():
-                backup_thread.start_Task()
+            if not backup_restore_thread.is_Running():
+                backup_restore_thread.start_Task()
             else:
-                backup_thread.stop_Task()
-                backup_thread.wait_To_Stop_Once_Task()
-                backup_thread.start_Task()
+                backup_restore_thread.stop_Task()
+                backup_restore_thread.wait_To_Stop_Once_Task()
+                backup_restore_thread.start_Task()
     else:
         return jsonify(
             message="Backup task already running"
@@ -183,8 +194,8 @@ def backup_endpoint():
 def backup_control_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not backup_thread.safe_task_lock.locked():
-        with backup_thread.safe_task_lock:
+    if not backup_restore_thread.safe_task_lock.locked():
+        with backup_restore_thread.safe_task_lock:
             ssh_username_json = request.args.get('ssh_username')
             ssh_password_json = request.args.get('ssh_password')
             ip_addresses_json = request.args.get('ip_addresses_hostnames')
@@ -203,36 +214,16 @@ def backup_control_endpoint():
                 ip_addresses = json.loads(ip_addresses_json)
             else:
                 ip_addresses = []
-            print("ip_addresses", ip_addresses)
             
-            ip_response_list: list[dict[str, str]] = list()
-            response_structure: dict[str, str] = {
-                "ip_address": "",
-                "response": "",
-                "check": "",
-                "message": "",
-            }
-            for ip_address in ip_addresses:
+            response = backup_restore_thread.backup_cron_control(
+                ssh_username=ssh_username,
+                ssh_password=ssh_password,
+                ip_addresses=ip_addresses,
+                script_name=backup_script.split(".")[0],
+            )
                 
-                response, output = ssh_execute_command(
-                    ssh_client=ip_address, 
-                    username=ssh_username, 
-                    password=ssh_password, 
-                    command="crontab -l | awk '/daily_backup_mapr.*\\.sh/ {print $1, $2, $3, $4, $5}'",
-                    reboot=False,
-                    logger_hook=backup_thread.logger
-                )
-                temp_response = response_structure.copy()
-                temp_response["ip_address"] = ip_address
-                temp_response["response"] = str(response)
-                temp_response["check"] = str(True if output else False)
-                temp_response["message"] = output
-                
-                ip_response_list.append(
-                    temp_response
-                )
             return jsonify(
-                message=ip_response_list,
+                message=response,
             )
     else:
         return jsonify(
@@ -242,6 +233,12 @@ def backup_control_endpoint():
     return jsonify(
         message="Backup Control task queued"
     )
+
+
+
+#################################
+### BACKUP/RESTORE COMMON API ###
+#################################
 
 
 ###################
@@ -575,15 +572,9 @@ def file_table_download(endpoint, foldername):
 @app.route('/folder_info/<endpoint>',methods = ['POST', 'GET'])
 def folder_info(endpoint):
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
-    directory_paths = {
-        "log_collection": log_collection_thread.get_Collected_Log_Folder(),
-        "fqdn": fqdn_thread.get_hosts_folder(),
-        "cleanup": "",
-        "backup": "",
-    }
     
-    if endpoint in directory_paths.keys():
-        folder_info = get_directory_info(directory_paths[endpoint])
+    if endpoint in endpoint_directory_paths.keys():
+        folder_info = get_directory_info(endpoint_directory_paths[endpoint])
         # for dir_info in folder_info:
         #     print(dir_info)
         if folder_info == []:
@@ -599,7 +590,7 @@ def folder_info(endpoint):
     else:
         folder_info = [
             {
-                "message": "No endpoint found",
+                "message": "No endpoint found for folder info",
                 "size": "0",
                 "name": "-",
                 "creation_date": "-",

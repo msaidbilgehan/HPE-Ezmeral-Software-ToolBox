@@ -70,7 +70,7 @@ class Log_Collection_Class(Task_Handler_Class):
                     reboot=False,
                     logger_hook=self.logger
                 )
-                if status != True:
+                if not status:
                     failed_ip_addresses.append(ip_address)
                     self.logger.error(f"Failed to run command in client: '{ip_address}''")
                     continue

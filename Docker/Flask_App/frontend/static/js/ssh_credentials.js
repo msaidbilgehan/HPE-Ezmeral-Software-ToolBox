@@ -8,8 +8,8 @@ export function get_ssh_credentials(){
     let sshPasswordInput;
 
     if (activeTab !== null) {
-        sshUsernameInput = activeTab.querySelector('.ssh-username-input');
-        sshPasswordInput = activeTab.querySelector('.ssh-password-input');
+        sshUsernameInput = activeTab.querySelector('#input_SSH_Username');
+        sshPasswordInput = activeTab.querySelector('#input_SSH_Password');
     } else {
         sshUsernameInput = document.querySelector('#input_SSH_Username');
         sshPasswordInput = document.querySelector('#input_SSH_Password');

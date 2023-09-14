@@ -45,7 +45,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
             # Delete file if exists
             local_logger.info(f"Deleting file {remote_tmp_path}...")
             # print(f"Deleting file {remote_tmp_path}...")
-            response_command_tmp = ssh_execute_command(
+            response_command, _ = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
@@ -53,10 +53,10 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 port=port, 
                 reboot=False
             )
-            if response_command_tmp == False:
+            if response_command == False:
                 local_logger.warn(f"Can not deleting file 'sudo rm -f {remote_tmp_path}'")
                 
-            response_command_remote = ssh_execute_command(
+            response_command, _ = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
@@ -64,7 +64,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 port=port, 
                 reboot=False
             )
-            if response_command_remote == False:
+            if response_command == False:
                 local_logger.warn(f"Can not deleting file 'sudo rm -f {remote_file_path}'")
         
         transport.connect(username=username, password=password)
@@ -76,14 +76,14 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         local_logger.info(f"Uploading file to {remote_tmp_path}...")
         # upload file to temporary location
         sftp.put(local_file_path, remote_tmp_path)
+        response_upload = True
         # sftp.put(os.path.abspath(local_file_path), remote_tmp_path)
         sftp.close()
-        response_upload = True
         
         if remote_tmp_path != uploaded_location:
             if overwrite:
                 local_logger.info(f"Deleting file {uploaded_location}...")
-                response_command = ssh_execute_command(
+                response_command, response_command = ssh_execute_command(
                     ssh_client=ssh_client, 
                     username=username, 
                     password=password, 
@@ -93,7 +93,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 )
             local_logger.info(f"Copying file to {uploaded_location}...")
             # Move file to the desired location
-            response_command = ssh_execute_command(
+            response_command, _ = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
@@ -196,7 +196,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
                                 local_logger.warn(f"Trying to change permissions of file '{last_download_path}'")
                                 if sleep_time:
                                     time.sleep(sleep_time)
-                                status, output = ssh_execute_command(
+                                status, _ = ssh_execute_command(
                                     ssh_client=ssh_client,
                                     username=username,
                                     password=password,

@@ -4,7 +4,7 @@ import os
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
 from Flask_App.Classes.File_Handler import File_Content_Streamer_Thread
 from Flask_App.Classes.Task_Handler import Task_Handler_Class
-from Flask_App.Libraries.network_tools import ssh_execute_command
+# from Flask_App.Libraries.network_tools import ssh_execute_command
 
 from Flask_App.Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
 from Flask_App.paths import app_path, root_path_archives, root_upload_path, root_log_collection_folder, root_fqdn_folder
@@ -45,8 +45,10 @@ endpoint_directory_paths = {
 }
 
 backup_script = "daily_rotation_mapr_snapshot.sh"
-restore_script = "daily_rotation_mapr_restore.sh"
 backup_script_upload_path="/home/{ssh_username}/"
+
+restore_script = "daily_rotation_mapr_restore.sh"
+restore_script_upload_path="/home/{ssh_username}/"
 
 
 
@@ -89,7 +91,7 @@ def restore_endpoint():
             else:
                 ip_addresses = []
 
-            script_upload_path=backup_script_upload_path.format(ssh_username=ssh_username)
+            script_upload_path=restore_script_upload_path.format(ssh_username=ssh_username)
             script_path = root_upload_path + restore_script
             
             backup_restore_thread.set_Parameters(
@@ -169,7 +171,7 @@ def backup_endpoint():
                 ip_addresses=ip_addresses,
                 script_path=script_path,
                 script_upload_path=script_upload_path,
-                script_run_command=f"sudo chmod +x {script_upload_path + restore_script} && sudo", # One-Shot Run Command
+                script_run_command=f"sudo chmod +x {script_upload_path + backup_script} && sudo", # One-Shot Run Command
                 add_to_cron=True, # Cron Parameters
                 cron_parameters="", # Cron Parameters
                 script_parameters="",

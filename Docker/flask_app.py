@@ -4,11 +4,11 @@ import os
 from flask import Flask, jsonify, request, send_from_directory, render_template, Response
 from Flask_App.Classes.File_Handler import File_Content_Streamer_Thread
 from Flask_App.Classes.Task_Handler import Task_Handler_Class
-# from Flask_App.Libraries.network_tools import ssh_execute_command
+from Flask_App.Classes.Notification_Handler import Notification_Status
 
 from Flask_App.Libraries.tools import delete_folder, archive_files, archive_directory, get_directory_info, list_dir
 from Flask_App.paths import app_path, root_path_archives, root_upload_path, root_log_collection_folder, root_fqdn_folder
-from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer, backup_restore_thread, backup_restore_logger_streamer
+from Flask_App.Threads.configurations import cleanup_thread, cleanup_logger_streamer, log_collection_logger_streamer, log_collection_thread, fqdn_thread, fqdn_logger_streamer, backup_restore_thread, backup_restore_logger_streamer, notification_thread
 from Flask_App.Libraries.logger_module import global_logger
 
 
@@ -52,6 +52,36 @@ restore_script_upload_path="/home/{ssh_username}/"
 
 
 
+#########################
+### GENERAL FUNCTIONS ###
+#########################
+
+
+def parameter_parser(args: dict):
+    ssh_username_json = args.get('ssh_username', "")
+    ssh_password_json = args.get('ssh_password', "")
+    ip_addresses_json = args.get('ip_addresses_hostnames', [])
+    
+    if ssh_username_json == "":
+        ssh_username = json.loads(ssh_username_json)
+    else:
+        ssh_username = ssh_username_json
+        
+    if ssh_password_json == "":
+        ssh_password = json.loads(ssh_password_json)
+    else:
+        ssh_password = ssh_password_json
+    
+    if ip_addresses_json == []:
+        ip_addresses = json.loads(ip_addresses_json)
+    else:
+        ip_addresses = ip_addresses_json
+        
+    return ssh_username, ssh_password, ip_addresses
+
+
+
+
 ###################
 ### RESTORE API ###
 ###################
@@ -65,31 +95,17 @@ def restore_page():
         page_id="restore"
     )
     
+    
 @app.route('/restore_endpoint',methods = ['POST', 'GET'])
 def restore_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
     if not backup_restore_thread.safe_task_lock.locked():
         with backup_restore_thread.safe_task_lock:
-            ssh_username_json = request.args.get('ssh_username')
-            ssh_password_json = request.args.get('ssh_password')
-            ip_addresses_json = request.args.get('ip_addresses_hostnames')
+            
+            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
+            
             restore_number_json = request.args.get('restore_number', "0")
-            
-            if ssh_username_json is not None:
-                ssh_username = json.loads(ssh_username_json)
-            else:
-                ssh_username = ""
-                
-            if ssh_password_json is not None:
-                ssh_password = json.loads(ssh_password_json)
-            else:
-                ssh_password = ""
-            
-            if ip_addresses_json is not None:
-                ip_addresses = json.loads(ip_addresses_json)
-            else:
-                ip_addresses = []
 
             script_upload_path=restore_script_upload_path.format(ssh_username=ssh_username)
             script_path = root_upload_path + restore_script
@@ -97,7 +113,7 @@ def restore_endpoint():
             backup_restore_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
-                ip_addresses=ip_addresses,
+                ip_addresses=ip_address_hostnames,
                 script_path=script_path,
                 script_upload_path=script_upload_path,
                 script_run_command=f"sudo chmod +x {script_upload_path + restore_script} &&", # One-Shot Run Command
@@ -136,31 +152,14 @@ def backup_page():
         page_id="backup"
     )
     
+    
 @app.route('/backup_endpoint',methods = ['POST', 'GET'])
 def backup_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
     if not backup_restore_thread.safe_task_lock.locked():
         with backup_restore_thread.safe_task_lock:
-            ssh_username_json = request.args.get('ssh_username')
-            ssh_password_json = request.args.get('ssh_password')
-            ip_addresses_json = request.args.get('ip_addresses_hostnames')
-            # backup_type_json = request.args.get('backup_type', "differential")
-            
-            if ssh_username_json is not None:
-                ssh_username = json.loads(ssh_username_json)
-            else:
-                ssh_username = ""
-                
-            if ssh_password_json is not None:
-                ssh_password = json.loads(ssh_password_json)
-            else:
-                ssh_password = ""
-            
-            if ip_addresses_json is not None:
-                ip_addresses = json.loads(ip_addresses_json)
-            else:
-                ip_addresses = []
+            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
             
             script_upload_path = backup_script_upload_path.format(ssh_username=ssh_username)
             script_path = root_upload_path + backup_script
@@ -168,7 +167,7 @@ def backup_endpoint():
             backup_restore_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
-                ip_addresses=ip_addresses,
+                ip_addresses=ip_address_hostnames,
                 script_path=script_path,
                 script_upload_path=script_upload_path,
                 script_run_command=f"sudo chmod +x {script_upload_path + backup_script} && sudo", # One-Shot Run Command
@@ -192,35 +191,19 @@ def backup_endpoint():
         message="Backup task queued"
     )
     
+    
 @app.route('/backup_control_endpoint',methods = ['POST', 'GET'])
 def backup_control_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
     if not backup_restore_thread.safe_task_lock.locked():
         with backup_restore_thread.safe_task_lock:
-            ssh_username_json = request.args.get('ssh_username')
-            ssh_password_json = request.args.get('ssh_password')
-            ip_addresses_json = request.args.get('ip_addresses_hostnames')
-            
-            if ssh_username_json is not None:
-                ssh_username = json.loads(ssh_username_json)
-            else:
-                ssh_username = ""
-                
-            if ssh_password_json is not None:
-                ssh_password = json.loads(ssh_password_json)
-            else:
-                ssh_password = ""
-            
-            if ip_addresses_json is not None:
-                ip_addresses = json.loads(ip_addresses_json)
-            else:
-                ip_addresses = []
+            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
             
             response = backup_restore_thread.backup_cron_control(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
-                ip_addresses=ip_addresses,
+                ip_addresses=ip_address_hostnames,
                 script_name=backup_script.split(".")[0],
             )
                 
@@ -235,17 +218,6 @@ def backup_control_endpoint():
     return jsonify(
         message="Backup Control task queued"
     )
-
-
-
-#################################
-### BACKUP/RESTORE COMMON API ###
-#################################
-
-
-###################
-###################
-###################
 
 
 
@@ -268,29 +240,12 @@ def fqdn_endpoint():
     
     if not fqdn_thread.safe_task_lock.locked():
         with fqdn_thread.safe_task_lock:
-            ssh_username_json = request.args.get('ssh_username')
-            ssh_password_json = request.args.get('ssh_password')
-            ip_address_hostnames_list_json = request.args.get('ip_addresses_hostnames')
-            
-            if ssh_username_json is not None:
-                ssh_username = json.loads(ssh_username_json)
-            else:
-                ssh_username = ""
-                
-            if ssh_password_json is not None:
-                ssh_password = json.loads(ssh_password_json)
-            else:
-                ssh_password = ""
-            
-            if ip_address_hostnames_list_json is not None:
-                ip_address_hostnames_list = json.loads(ip_address_hostnames_list_json)
-            else:
-                ip_address_hostnames_list = []
+            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
             
             fqdn_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
-                ip_address_hostnames_list=ip_address_hostnames_list
+                ip_address_hostnames_list=ip_address_hostnames
             )
             
             if not fqdn_thread.is_Running():
@@ -333,31 +288,13 @@ def cleanup_endpoint():
     
     if not cleanup_thread.safe_task_lock.locked():
         with cleanup_thread.safe_task_lock:
-            ssh_username_json = request.args.get('ssh_username')
-            ssh_password_json = request.args.get('ssh_password')
-            ip_addresses_json = request.args.get('ip_addresses_hostnames')
-            
-            
-            if ssh_username_json is not None:
-                ssh_username = json.loads(ssh_username_json)
-            else:
-                ssh_username = ""
-                
-            if ssh_password_json is not None:
-                ssh_password = json.loads(ssh_password_json)
-            else:
-                ssh_password = ""
-            
-            if ip_addresses_json is not None:
-                ip_addresses = json.loads(ip_addresses_json)
-            else:
-                ip_addresses = []
+            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
             
             
             cleanup_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
-                ip_addresses=ip_addresses,
+                ip_addresses=ip_address_hostnames,
                 script_path=root_upload_path + "cleanup.py"
             )
             
@@ -402,31 +339,12 @@ def log_collection_endpoint():
     
     if not log_collection_thread.safe_task_lock.locked():
         with log_collection_thread.safe_task_lock:
-            ssh_username_json = request.args.get('ssh_username')
-            ssh_password_json = request.args.get('ssh_password')
-            ip_addresses_json = request.args.get('ip_addresses_hostnames')
-            
-            
-            if ssh_username_json is not None:
-                ssh_username = json.loads(ssh_username_json)
-            else:
-                ssh_username = ""
-                
-            if ssh_password_json is not None:
-                ssh_password = json.loads(ssh_password_json)
-            else:
-                ssh_password = ""
-            
-            if ip_addresses_json is not None:
-                ip_addresses = json.loads(ip_addresses_json)
-            else:
-                ip_addresses = []
-            
+            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
             
             log_collection_thread.set_Parameters(
                 ssh_username=ssh_username,
                 ssh_password=ssh_password,
-                ip_addresses=ip_addresses
+                ip_addresses=ip_address_hostnames
             )
             
             if not log_collection_thread.is_Running():
@@ -453,6 +371,20 @@ def log_collection_endpoint():
 #################
 ### ENDPOINTS ###
 #################
+
+
+@app.route('/notification_endpoint/',methods = ['POST', 'GET'])
+def notification_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    return Response(
+        notification_thread.streamer(), 
+        mimetype='text/event-stream',
+        headers={
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive',
+            'X-Accel-Buffering': 'no' # Disable buffering
+        }
+    )
 
 
 @app.route('/terminal_endpoint/<endpoint>',methods = ['POST', 'GET'])

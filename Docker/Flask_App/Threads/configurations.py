@@ -5,11 +5,16 @@ from Flask_App.Classes.Cleanup_Class import Cleanup_Class
 from Flask_App.Classes.Backup_Restore_Class import Backup_Restore_Class
 from Flask_App.Classes.Log_Collection_Class import Log_Collection_Class
 from Flask_App.Classes.File_Handler import File_Content_Streamer_Thread
+from Flask_App.Classes.Notification_Handler import Notification_Handler_Thread
 
 from Flask_App.paths import root_path_log_collection_logs, root_log_collection_folder, root_fqdn_folder, root_path_cleanup_logs, root_path_fqdn_logs, root_path_backup_logs
 
 
 maxBytes = 64*1024
+
+
+notification_thread = Notification_Handler_Thread()
+# notification_thread.start()
 
 
 # Log Collection Thread

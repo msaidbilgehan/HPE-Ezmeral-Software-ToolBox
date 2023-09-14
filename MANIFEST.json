@@ -1,0 +1,43 @@
+{
+    "__version__": "2.2",
+    "__name__": "HPE-Ezmeral-Software-ToolBox",
+    "__author__": "Treo Information Technologies",
+    "__author_email__": "datascience@treo.com.tr",
+    "__description__": "HPE Ezmeral Software ToolBox is a collection of tools for HPE Ezmeral Data Fabric.",
+    "__company__": {
+        "name": "Treo Information Technologies",
+        "link": "https://www.treo.com.tr/",
+        "email": "info@treo.com.tr"
+    },
+    "__developer__": [
+        {
+            "name": "Muhammed Said Bilgehan",
+            "link": "https://www.linkedin.com/in/msaidbilgehan/",
+            "email": "m.said.bilgehan@treo.com.tr"
+        },
+        {
+            "name": "Mirza ÖZER",
+            "link": "https://www.linkedin.com/in/mirza-ozer/",
+            "email": "mirza.ozer@treo.com.tr"
+        },
+        {
+            "name": "Emre Komşal",
+            "link": "https://www.linkedin.com/in/ekomsal/",
+            "email": "emre.komsal@treo.com.tr"
+        }
+    ],
+    "__readme__": "README.md",
+    "__license__": "LICENSE",
+    "__link__": "https://github.com/msaidbilgehan/HPE-Ezmeral-Software-ToolBox",
+    "entry_points": {
+        "flask": [
+            "Flask_App/flask_app.py:main"
+        ],
+        "docker": [
+            "docker-compose.yaml:build"
+        ],
+        "update": [
+            "update.sh:update"
+        ]
+    }
+}

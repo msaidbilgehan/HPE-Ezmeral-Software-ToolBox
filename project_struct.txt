@@ -1,0 +1,81 @@
+HPE-Ezmeral-Software-ToolBox/
+│
+├── update.sh
+├── README.md
+├── DockerComposeCommands.txt
+├── MANIFEST.json
+├── DockerCommands.txt
+├── docker-compose.yaml
+├── LICENSE
+│
+└── Docker/
+    │
+    ├── requirements.txt
+    ├── flask_app.py
+    ├── Dockerfile
+    │
+    └── Flask_App/
+        │
+        ├── paths.py
+        ├── __init__.py
+        │
+        ├── app_logs/
+        │   ├── logs.log
+        │   ├── global.log
+        │   ├── cleanup.log
+        │   ├── log_collection.log
+        │   ├── fqdn.log
+        │   └── backup.log
+        │
+        ├── Upload_Files/
+        │   ├── daily_rotation_mapr_snapshot.sh
+        │   ├── daily_rotation_mapr_restore.sh
+        │   └── cleanup.py
+        │
+        ├── frontend/
+        │   │
+        │   ├── static/
+        │   │   ├── scss
+        │   │   ├── lib
+        │   │   ├── js
+        │   │   ├── img
+        │   │   └── css
+        │   │
+        │   └── pages/
+        │       ├── template
+        │       ├── log_collection.html
+        │       ├── example.html
+        │       ├── backup.html
+        │       ├── restore.html
+        │       ├── index.html
+        │       ├── cleanup.html
+        │       ├── about.html
+        │       ├── others
+        │       ├── fqdn.html
+        │       ├── base.html
+        │       └── 404.html
+        │
+        ├── Files/
+        │   ├── log_collection
+        │   ├── fqdn
+        │   └── archives
+        │
+        ├── Classes/
+        │   ├── __init__.py
+        │   ├── Restore_Class.py
+        │   ├── Log_Collection_Class.py
+        │   ├── FQDN_Class.py
+        │   ├── Backup_Restore_Class.py
+        │   ├── Task_Handler.py
+        │   ├── Notification_Handler.py
+        │   ├── File_Handler.py
+        │   └── Cleanup_Class.py
+        │
+        ├── Threads/
+        │   └── configurations.py
+        │
+        └── Libraries/
+            ├── tools.py
+            ├── network_tools.py
+            ├── logger_module.py
+            └── __init__.py

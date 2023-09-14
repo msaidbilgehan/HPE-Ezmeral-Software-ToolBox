@@ -23,7 +23,7 @@ class Notification_Handler_Thread(Task_Handler_Class):
         self.__notification_buffer: Queue[dict[str, str]] = Queue()
         self.__notification_structure: dict[str, str] = {
             "message": "",
-            "status": Notification_Status.INFO,
+            "status": Notification_Status.UNKNOWN,
         }
 
 
@@ -38,13 +38,14 @@ class Notification_Handler_Thread(Task_Handler_Class):
         )
         
 
-    def streamer(self, wait_thread=None, sleep_time=1.):
+    def streamer(self, wait_thread=None, sleep_time=0.3):
       self.is_running = False
       self.is_finished = False
+      self._flag_task_stop = False
       
       while not self.is_Thread_Stopped():
-         while not self.is_Task_Stopped():
-            
+        while not self.is_Task_Stopped():
+        
             self.is_running = True
             self.is_finished = False
 
@@ -62,7 +63,12 @@ class Notification_Handler_Thread(Task_Handler_Class):
                 continue
             
             # Get content from buffer and stream it
-            yield f"data: {self.queue_get()}\n\n"  # Format for SSE (data: at the start and 2 new line characters at the end)
+            notification = self.queue_get()
+            if notification != self.__notification_structure:
+                yield f'data: {notification}\n\n'  # Format for SSE (data: at the start and 2 new line characters at the end)
+
+      self.is_running = False
+      self.is_finished = True
 
         
     def queue_add(self, message: str="", status: str=Notification_Status.INFO):
@@ -70,7 +76,7 @@ class Notification_Handler_Thread(Task_Handler_Class):
         
         temp_nof["message"] = message
         
-        if status not in [Notification_Status.INFO, Notification_Status.INFO, Notification_Status.WARNING, Notification_Status.ERROR]:
+        if status not in [Notification_Status.INFO, Notification_Status.SUCCESS, Notification_Status.WARNING, Notification_Status.ERROR]:
             temp_nof["status"] = Notification_Status.UNKNOWN
             
         temp_nof["status"] = status
@@ -88,3 +94,10 @@ class Notification_Handler_Thread(Task_Handler_Class):
     
     def queue_get(self):
         return self.__notification_buffer.get()
+    
+    
+    def safe_queue_get(self):
+        if self.__notification_buffer.empty():
+            return self.__notification_buffer.get()
+        else:
+            return self.__notification_structure.copy()

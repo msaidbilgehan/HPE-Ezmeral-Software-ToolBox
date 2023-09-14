@@ -21,7 +21,7 @@ export function get_ip_host_addresses(only_ip) {
         // You can further validate each IP if needed
         ipAddressesHostnames = ipAddressesHostnames.map(function (entry) {
             let match = entry.match(/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/);
-            return match ? match[0] : null;
+            return match ? { ip: match[0] } : null;
         }).filter(Boolean);
     }
     else {
@@ -30,13 +30,15 @@ export function get_ip_host_addresses(only_ip) {
             return /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}[-\t\s]+\w+\b/.test(entry);
         });
         ipAddressesHostnames = ipAddressesHostnames.map(function (entry) {
-            let parts = entry.split(/[-\t\s]+/);
-            return {
-                ip: parts[0],
-                hostname: parts[1]
-            };
+            let match = entry.split(/[-\t\s]+/);
+            return match ? { ip: match[0], hostname: match[1] } : null;
+            // return {
+            //     ip: match[0],
+            //     hostname: match[1]
+            // };
         });
     }
+
 
     return ipAddressesHostnames
 }

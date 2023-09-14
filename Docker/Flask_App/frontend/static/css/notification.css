@@ -22,7 +22,7 @@
 }
 
 .info {
-    background-color: #4CAF50;
+    background-color: #1322f5;
     /* Green */
     color: white;
 }
@@ -35,6 +35,12 @@
 
 .error {
     background-color: #f44336;
+    /* Red */
+    color: white;
+}
+
+.error {
+    background-color: #2c2c2c;
     /* Red */
     color: white;
 }

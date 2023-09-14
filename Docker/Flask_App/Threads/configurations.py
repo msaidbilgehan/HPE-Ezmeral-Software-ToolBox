@@ -5,7 +5,7 @@ from Flask_App.Classes.Cleanup_Class import Cleanup_Class
 from Flask_App.Classes.Backup_Restore_Class import Backup_Restore_Class
 from Flask_App.Classes.Log_Collection_Class import Log_Collection_Class
 from Flask_App.Classes.File_Handler import File_Content_Streamer_Thread
-from Flask_App.Classes.Notification_Handler import Notification_Handler_Thread
+from Flask_App.Classes.Notification_Handler import Notification_Handler_Thread, Notification_Status
 
 from Flask_App.paths import root_path_log_collection_logs, root_log_collection_folder, root_fqdn_folder, root_path_cleanup_logs, root_path_fqdn_logs, root_path_backup_logs
 
@@ -29,6 +29,7 @@ log_collection_thread = Log_Collection_Class(
     maxBytes=maxBytes, 
     backupCount=2
 )
+log_collection_thread.after_task_call = lambda: notification_thread.queue_add("Log Collection Finished", Notification_Status.INFO)
 # log_collection_thread.set_Parameters(
 #     ssh_username="mapr",
 #     ssh_password="mapr",
@@ -56,6 +57,7 @@ cleanup_thread = Cleanup_Class(
     backupCount=2
 )
 cleanup_thread.start_Thread()
+cleanup_thread.after_task_call = lambda: notification_thread.queue_add("Cleanup finished", Notification_Status.INFO)
 
 cleanup_logger_streamer = File_Content_Streamer_Thread(
     path=root_path_cleanup_logs,
@@ -78,6 +80,7 @@ fqdn_thread = FQDN_Class(
     backupCount=2
 )
 fqdn_thread.start_Thread()
+fqdn_thread.after_task_call = lambda: notification_thread.queue_add("FQDN Setup finished", Notification_Status.INFO)
 
 fqdn_logger_streamer = File_Content_Streamer_Thread(
     path=root_path_fqdn_logs,
@@ -99,6 +102,7 @@ backup_restore_thread = Backup_Restore_Class(
     backupCount=2
 )
 backup_restore_thread.start_Thread()
+backup_restore_thread.after_task_call = lambda: notification_thread.queue_add("Backup / Restore finished", Notification_Status.INFO)
 
 backup_restore_logger_streamer = File_Content_Streamer_Thread(
     path=root_path_backup_logs,

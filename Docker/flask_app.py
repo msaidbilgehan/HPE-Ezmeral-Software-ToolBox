@@ -57,28 +57,35 @@ restore_script_upload_path="/home/{ssh_username}/"
 #########################
 
 
-def parameter_parser(args: dict):
+def parameter_parser_ssh_credentials(args: dict):
     ssh_username_json = args.get('ssh_username', "")
     ssh_password_json = args.get('ssh_password', "")
-    ip_addresses_json = args.get('ip_addresses_hostnames', [])
     
-    if ssh_username_json == "":
+    if ssh_username_json != "":
         ssh_username = json.loads(ssh_username_json)
     else:
         ssh_username = ssh_username_json
         
-    if ssh_password_json == "":
+    if ssh_password_json != "":
         ssh_password = json.loads(ssh_password_json)
     else:
         ssh_password = ssh_password_json
     
-    if ip_addresses_json == []:
-        ip_addresses = json.loads(ip_addresses_json)
-    else:
-        ip_addresses = ip_addresses_json
-        
-    return ssh_username, ssh_password, ip_addresses
+    return ssh_username, ssh_password
 
+
+def parameter_parser_ip_hostname(args: dict, only_ip: bool = False):
+    ip_hostname_json = args.get('ip_addresses_hostnames', [{"ip": "", "hostname": ""}])
+    
+    if ip_hostname_json != []:
+        ip_addresses_hostnames = json.loads(ip_hostname_json)
+    else:
+        ip_addresses_hostnames = ip_hostname_json
+    
+    if only_ip:
+        return [ip_address_hostname["ip"] for ip_address_hostname in ip_addresses_hostnames]
+    else:
+        return ip_addresses_hostnames
 
 
 
@@ -103,7 +110,8 @@ def restore_endpoint():
     if not backup_restore_thread.safe_task_lock.locked():
         with backup_restore_thread.safe_task_lock:
             
-            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
+            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
             
             restore_number_json = request.args.get('restore_number', "0")
 
@@ -159,8 +167,10 @@ def backup_endpoint():
     
     if not backup_restore_thread.safe_task_lock.locked():
         with backup_restore_thread.safe_task_lock:
-            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
             
+            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
+
             script_upload_path = backup_script_upload_path.format(ssh_username=ssh_username)
             script_path = root_upload_path + backup_script
 
@@ -198,7 +208,9 @@ def backup_control_endpoint():
     
     if not backup_restore_thread.safe_task_lock.locked():
         with backup_restore_thread.safe_task_lock:
-            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
+            
+            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
             
             response = backup_restore_thread.backup_cron_control(
                 ssh_username=ssh_username,
@@ -206,6 +218,7 @@ def backup_control_endpoint():
                 ip_addresses=ip_address_hostnames,
                 script_name=backup_script.split(".")[0],
             )
+            notification_thread.queue_add("Backup Control Finished", Notification_Status.INFO)
                 
             return jsonify(
                 message=response,
@@ -240,7 +253,9 @@ def fqdn_endpoint():
     
     if not fqdn_thread.safe_task_lock.locked():
         with fqdn_thread.safe_task_lock:
-            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
+            
+            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
             
             fqdn_thread.set_Parameters(
                 ssh_username=ssh_username,
@@ -288,7 +303,9 @@ def cleanup_endpoint():
     
     if not cleanup_thread.safe_task_lock.locked():
         with cleanup_thread.safe_task_lock:
-            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
+            
+            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
             
             
             cleanup_thread.set_Parameters(
@@ -339,7 +356,9 @@ def log_collection_endpoint():
     
     if not log_collection_thread.safe_task_lock.locked():
         with log_collection_thread.safe_task_lock:
-            ssh_username, ssh_password, ip_address_hostnames = parameter_parser(request.args)
+            
+            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
             
             log_collection_thread.set_Parameters(
                 ssh_username=ssh_username,

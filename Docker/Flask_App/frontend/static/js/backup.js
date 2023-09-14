@@ -12,10 +12,10 @@ function backup_cron_control() {
     let tmp_ip_addresses = "";
     ip_table_input.forEach(element => {
         if (tmp_ip_addresses === "") {
-            tmp_ip_addresses = element;
+            tmp_ip_addresses = element["ip"];
         }
         else {
-            tmp_ip_addresses = tmp_ip_addresses + ", " + element;
+            tmp_ip_addresses = tmp_ip_addresses + ", " + element["ip"];
         }
     });
     ip_table_input = tmp_ip_addresses;
@@ -36,7 +36,6 @@ function backup_cron_control() {
     let ipAddresses = devices.map(device => device.name);
     
     let ipAddressesJson = JSON.stringify(ipAddresses);
-
 
     let credentials = get_ssh_credentials();
     let ssh_usernameJson = credentials[0];

@@ -1,7 +1,7 @@
 import { endpoint_action_url, endpoint_stop_url } from './page_specific_urls.js';
 import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
-// import { get_Backup_Type } from './backup.js';
+import { showNotification } from './notification.js';
 
 
 function start_Action () {
@@ -11,8 +11,8 @@ function start_Action () {
 
     var ipAddressesHostnamesJson;
     var ipAddressesHostnames;
-    var extra_parameter;
-    var extra_parameter_value;
+    // var extra_parameter;
+    // var extra_parameter_value;
 
     if (pageType === 'fqdn') {
         // You can further validate each IP with Hostname if needed

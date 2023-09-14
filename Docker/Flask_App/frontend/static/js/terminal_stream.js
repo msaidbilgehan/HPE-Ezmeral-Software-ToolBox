@@ -1,6 +1,10 @@
-import { terminal_source_url, endpoint_stop_url } from './page_specific_urls.js';
+import { terminal_source_url } from './page_specific_urls.js';
+import { showNotification } from './notification.js';
+
+
 
 export var terminal_source;
+
 
 function terminal_EventSource_Start() {
     clear_Terminal();
@@ -13,8 +17,8 @@ function terminal_EventSource_Start() {
     terminal_source = new EventSource(terminal_source_url + "/" + pageType); // use the URL with the IP addresses
     
     terminal_source.onerror = function (error) {
-        console.error("EventSource failed:", error);
-        showNotification('EventSource failed: ' + error, "error");
+        console.error("EventSource ", pageType, " failed:", error);
+        showNotification('EventSource ' + pageType + ' failed: ' + error, "error");
         terminal_source.close(); // close the connection if an error occurs
     };
 
@@ -50,3 +54,8 @@ window.clear_Terminal = clear_Terminal;
 window.terminal_EventSource_Stop = terminal_EventSource_Stop;
 window.terminal_EventSource_Start = terminal_EventSource_Start;
 
+
+
+// if (!terminal_source || terminal_source.readyState === 2) {
+//     terminal_EventSource_Start();
+// }

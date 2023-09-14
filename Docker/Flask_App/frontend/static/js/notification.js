@@ -1,6 +1,5 @@
 
-
-window.showNotification = function (message, level) {
+export function showNotification (message, level) {
     var notification = document.createElement('div');
     notification.className = 'notification ' + level;
     notification.innerText = message;
@@ -25,7 +24,8 @@ window.showNotification = function (message, level) {
 
     addNotificationToNavbar(message, level);
     addNotificationToCache(message, level);
-};
+}
+window.showNotification = showNotification;
 
 // Function to add a notification
 function addNotificationToNavbar(message, small_message) {

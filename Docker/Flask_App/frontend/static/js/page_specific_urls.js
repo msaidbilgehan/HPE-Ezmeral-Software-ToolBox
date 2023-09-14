@@ -7,6 +7,7 @@ export var endpoint_action_2_url = "";
 export var terminal_log_download_source_url = "/download_terminal_log";
 window.terminal_log_download_source_url = terminal_log_download_source_url;
 
+export var notification_source_url = "/notification_endpoint";
 export var terminal_source_url = "/terminal_endpoint";
 export var endpoint_stop_url = "/endpoint_stop";
 export var eventsource_action_clear_files_url = "/clear_action_files";

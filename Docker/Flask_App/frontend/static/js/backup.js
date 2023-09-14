@@ -1,8 +1,8 @@
 import { endpoint_action_2_url } from './page_specific_urls.js';
 import { get_ssh_credentials } from './ssh_credentials.js';
-import { terminal_source } from './terminal_stream.js';
 import { add_device, get_Devices, set_Device_Property } from './device_table.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
+import { showNotification } from './notification.js';
 
 
 function backup_cron_control() {
@@ -47,10 +47,6 @@ function backup_cron_control() {
     url = url + '?ssh_username=' + encodeURIComponent(ssh_usernameJson);
     url = url + '&ssh_password=' + encodeURIComponent(ssh_passwordJson);
     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesJson);
-
-    if (!terminal_source || terminal_source.readyState === 2) {
-        terminal_EventSource_Start();
-    }
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {

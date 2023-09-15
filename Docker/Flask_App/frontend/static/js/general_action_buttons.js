@@ -21,8 +21,6 @@ function start_Action () {
     } else {
         ipAddressesHostnames = get_ip_host_addresses(true);
     }
-    console.log("PageType: " + pageType)
-    console.log("ip-hostname: " + JSON.stringify(ipAddressesHostnames))
 
     // Encode the IP addresses array into a JSON string
     var ipAddressesHostnamesJson = JSON.stringify(ipAddressesHostnames);

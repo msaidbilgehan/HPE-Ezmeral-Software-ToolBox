@@ -111,7 +111,7 @@ def restore_endpoint():
         with backup_restore_thread.safe_task_lock:
             
             ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
             
             restore_number_json = request.args.get('restore_number', "0")
 
@@ -169,7 +169,7 @@ def backup_endpoint():
         with backup_restore_thread.safe_task_lock:
             
             ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
 
             script_upload_path = backup_script_upload_path.format(ssh_username=ssh_username)
             script_path = root_upload_path + backup_script
@@ -210,7 +210,7 @@ def backup_control_endpoint():
         with backup_restore_thread.safe_task_lock:
             
             ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
             
             response = backup_restore_thread.backup_cron_control(
                 ssh_username=ssh_username,
@@ -305,7 +305,7 @@ def cleanup_endpoint():
         with cleanup_thread.safe_task_lock:
             
             ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
             
             
             cleanup_thread.set_Parameters(
@@ -358,7 +358,7 @@ def log_collection_endpoint():
         with log_collection_thread.safe_task_lock:
             
             ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
             
             log_collection_thread.set_Parameters(
                 ssh_username=ssh_username,

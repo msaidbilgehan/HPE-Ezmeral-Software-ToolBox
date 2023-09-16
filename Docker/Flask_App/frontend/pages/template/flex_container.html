@@ -1,0 +1,15 @@
+<div class="col-sm-12 col-xl-12 align_item_center">
+    <button class="btn btn-lg btn-outline-danger m-2" id="listen_logs-btn" onclick="clear_Action_Files()">
+        Clear All Files
+    </button>
+</div>
+
+
+<div class="menu-container" id="flex_container">
+    <ul class="menu" id="flex_container_content">
+    </ul>
+</div>
+
+<script src="{{ url_for('static', filename='js/flex_container.js') }}" type="module"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/draggable/1.0.0-beta.12/draggable.bundle.js"></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.7/umd/popper.min.js'></script>

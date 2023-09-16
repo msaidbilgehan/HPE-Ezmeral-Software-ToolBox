@@ -3,6 +3,8 @@ import os
 import time
 import shutil
 import zipfile
+import random
+import string
 
 
 def read_log_file(path, wait_thread=None):
@@ -103,3 +105,14 @@ def archive_files(files:list[str], output_archive_path:str, delete_exist:bool=Tr
             
     # print(f"ZIP File Created: {output_archive_path}")
     return output_archive_path
+
+
+def generate_unique_id(length:int=8, is_upper: bool=True) -> str:
+    """Generate a random unique ID using alphabet and numbers."""
+    if is_upper:
+        ascii_letters = string.ascii_letters.upper()
+    else:
+        ascii_letters = string.ascii_letters
+    characters = ascii_letters + string.digits  # Merge letters and digits
+    unique_id = ''.join(random.choice(characters) for i in range(length))
+    return unique_id

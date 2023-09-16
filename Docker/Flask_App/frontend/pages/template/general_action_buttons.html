@@ -1,14 +1,12 @@
-<div class="col-sm-12 col-xl-12 full_width">
-    <div class="bg-secondary rounded align-items-center">
-        <button class="btn btn-lg btn-outline-success m-2" onclick="start_Action()">
-            RUN
-            <i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i>
-        </button>
-        <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action()">
-            <i class="fa fa-times fa-lg"></i>
-            Stop
-        </button>
-    </div>
+<div class="bg-secondary rounded align-items-center">
+    <button class="btn btn-lg btn-outline-success m-2" onclick="start_Action()">
+        RUN
+        <i class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn btn-lg btn-outline-danger m-2" onclick="stop_Action()">
+        <i class="fa fa-times fa-lg"></i>
+        Stop
+    </button>
 </div>
 
 <script src="{{ url_for('static', filename='js/general_action_buttons.js') }}" type="module"></script>

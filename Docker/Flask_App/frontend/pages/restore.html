@@ -6,20 +6,25 @@
     <div class="tab-content" id="pills-tabContent">
         <div class="col-sm-12 col-xl-12 align_item_center">
             <div class="bg-secondary rounded">
+                {% include 'template/device_table.html' %}
                 {% include 'template/ssh.html' %}
-                {% include 'template/general_action_buttons.html' %}
+
                 <div class="col-sm-12 col-xl-12 align_item_center">
-                    {% include 'template/file_table.html' %}
-                    {% include 'template/device_table.html' %}
+                    <div class="bg-secondary rounded p-4">
+                        <button type="button" class="btn-xlg-square btn-success m-2" onclick="restore_control()">
+                            Backup Control Endpoint
+                        </button>
+                    </div>
                 </div>
+                {%include 'template/flex_container.html' %}
+                {% include 'template/general_action_buttons.html' %}
             </div>
         </div>
         {% include 'template/terminal.html' %}
     </div>
-    
 </div>
 
-<script src="{{ url_for('static', filename='js/backup.js') }}" type="module"></script>
+<script src="{{ url_for('static', filename='js/restore.js') }}" type="module"></script>
 
 <!-- Recent Sales End -->
 {% endblock %}

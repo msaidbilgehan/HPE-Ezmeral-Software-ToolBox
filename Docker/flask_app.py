@@ -44,6 +44,7 @@ endpoint_directory_paths = {
     "restore": "",
 }
 
+backup_path = "/root/snapshot"
 backup_script = "daily_rotation_mapr_snapshot.sh"
 backup_script_upload_path="/home/{ssh_username}/"
 
@@ -112,7 +113,6 @@ def restore_endpoint():
             
             ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
             ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
-            
             restore_number_json = request.args.get('restore_number', "0")
 
             script_upload_path=restore_script_upload_path.format(ssh_username=ssh_username)
@@ -143,6 +143,52 @@ def restore_endpoint():
     
     return jsonify(
         message="Restore task queued"
+    )
+    
+    
+@app.route('/restore_control_endpoint',methods = ['POST', 'GET'])
+def restore_control_endpoint():
+    global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+    
+    if not backup_restore_thread.safe_task_lock.locked():
+        with backup_restore_thread.safe_task_lock:
+            
+            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
+            
+            # response = backup_restore_thread.restore_control(
+            #     ssh_username=ssh_username,
+            #     ssh_password=ssh_password,
+            #     ip_addresses=ip_address_hostnames,
+            # )
+            response = backup_restore_thread.get_backup_information(
+                ssh_username=ssh_username,
+                ssh_password=ssh_password,
+                ip_addresses=ip_address_hostnames,
+                backup_dir=backup_path,
+            )
+            
+            folder_info = [
+                {
+                    # "message": "No content in folder found",
+                    "size": "0",
+                    "name": "-",
+                    "creation_date": "-",
+                }
+            ]
+            print(response)
+            notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
+            
+            return jsonify(
+                message=response,
+            )
+    else:
+        return jsonify(
+            message="Restore Control task already running"
+        )
+    
+    return jsonify(
+        message="Restore Control task queued"
     )
 
 

@@ -85,10 +85,12 @@
     text-align: center !important;
 }
 
-.image-container{
+.image-container-contain{
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    object-fit: contain;
+    background-size: contain;
 }

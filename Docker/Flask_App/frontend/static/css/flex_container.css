@@ -1,4 +1,8 @@
 
+.flex_container{
+    background-color: #eee;
+}
+
 .menu-container {
     display: flex;
     flex-flow: row wrap;
@@ -25,7 +29,7 @@
     display: inline-block;
     vertical-align: middle;
     width: 250px;
-    min-height: 40vh;
+    min-height: 25vh;
     border: 3px solid darkblue;
     margin: 5px;
     padding: 0;
@@ -34,6 +38,18 @@
     -webkit-box-shadow: 3px 3px 10px 0px rgba(51, 51, 51, 0.5);
     -moz-box-shadow: 3px 3px 10px 0px rgba(51, 51, 51, 0.5);
     box-shadow: 3px 3px 10px 0px rgba(51, 51, 51, 0.5);
+}
+
+.submenu_extra{
+    color: #37ff00;
+    background: #80808080;
+    border: 3px solid #5c5c5c;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: space-around;
+    justify-content: center;
+    align-items: stretch;
 }
 
 .icon-hand::before {
@@ -50,7 +66,7 @@
 .menu>li {
     display: flex;
     /* flex-basis: calc(50% - 40px); */
-    justify-content: center;
+    /* justify-content: center; */
     flex-direction: column;
 }
 

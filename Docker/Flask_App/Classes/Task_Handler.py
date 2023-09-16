@@ -145,6 +145,10 @@ class Task_Handler_Class(ABC, Thread):
 
    def is_Running(self) -> bool:
       return self.is_running
+
+
+   def overwrite_Running_Status(self, status: bool):
+      self.is_running = status
    
 
    def is_Thread_Stopped(self) -> bool:
@@ -161,6 +165,14 @@ class Task_Handler_Class(ABC, Thread):
 
    def is_Task_Stopped(self) -> bool:
       return self._flag_task_stop
+
+
+   def overwrite_Task_Stop_Status(self, status: bool):
+      self._flag_task_stop = status
+
+
+   def overwrite_Thread_Stop_Status(self, status: bool):
+      self._flag_thread_stop = status
 
 
    def get_Parameters(self) -> dict[str, str]:

@@ -15,19 +15,32 @@ function get_Flex_Container_Element(){
 }
 
 
-export function add_Element_to_Flex_Container(context) {
+export function add_Element_to_Flex_Container(context, classes = "", sub_contexts = "", sub_elements = []) {
     let flex_Container_Element = get_Flex_Container_Element();
     let flex_Container_Element_SubMenu = flex_Container_Element.querySelector("#flex_container_content");
 
     const li = document.createElement('li');
     
-    li.className = "submenu submenu_handle bg-info";
+    li.className = "submenu submenu_handle " + classes;
 
     li.setAttribute('data-toggle', 'tooltip');
     // li.setAttribute('title', 'Drag N Drop');
-    
-    console.log(context);
     li.textContent = context;
+
+    if (sub_contexts !== null) {
+        sub_contexts.forEach(sub_context => {
+            const sub_div = document.createElement('div');
+            sub_div.className = "bg-secondary color-green typewriter full_width text-center";
+            sub_div.textContent = sub_context;
+            li.appendChild(sub_div);
+        });
+    }
+
+    if (sub_elements !== null) {
+        sub_elements.forEach(sub_element => {
+            li.appendChild(sub_element);
+        });
+    }
 
     flex_Container_Element_SubMenu.appendChild(li);
 }

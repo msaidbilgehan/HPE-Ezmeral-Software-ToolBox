@@ -107,89 +107,97 @@ def restore_page():
 @app.route('/restore_endpoint',methods = ['POST', 'GET'])
 def restore_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+            
+    ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+    ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
+    restore_number_json = request.args.get('restore_number', "0")
     
-    if not backup_restore_thread.safe_task_lock.locked():
-        with backup_restore_thread.safe_task_lock:
-            
-            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
-            restore_number_json = request.args.get('restore_number', "0")
+    if ip_address_hostnames != []:
+        if not backup_restore_thread.safe_task_lock.locked():
+            with backup_restore_thread.safe_task_lock:
 
-            script_upload_path=restore_script_upload_path.format(ssh_username=ssh_username)
-            script_path = root_upload_path + restore_script
-            
-            backup_restore_thread.set_Parameters(
-                ssh_username=ssh_username,
-                ssh_password=ssh_password,
-                ip_addresses=ip_address_hostnames,
-                script_path=script_path,
-                script_upload_path=script_upload_path,
-                script_run_command=f"sudo chmod +x {script_upload_path + restore_script} &&", # One-Shot Run Command
-                add_to_cron=False, # Cron Parameters
-                cron_parameters="", # Cron Parameters
-                script_parameters=restore_number_json,
+                script_upload_path=restore_script_upload_path.format(ssh_username=ssh_username)
+                script_path = root_upload_path + restore_script
+                
+                backup_restore_thread.set_Parameters(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    script_path=script_path,
+                    script_upload_path=script_upload_path,
+                    script_run_command=f"sudo chmod +x {script_upload_path + restore_script} &&", # One-Shot Run Command
+                    add_to_cron=False, # Cron Parameters
+                    cron_parameters="", # Cron Parameters
+                    script_parameters=restore_number_json,
+                )
+                
+                if not backup_restore_thread.is_Running():
+                    print("Starting backup_restore_thread Task")
+                    backup_restore_thread.start_Task()
+                else:
+                    backup_restore_thread.stop_Task()
+                    backup_restore_thread.wait_To_Stop_Once_Task()
+                    backup_restore_thread.start_Task()
+        else:
+            return jsonify(
+                message="Restore task already running"
             )
-            
-            if not backup_restore_thread.is_Running():
-                backup_restore_thread.start_Task()
-            else:
-                backup_restore_thread.stop_Task()
-                backup_restore_thread.wait_To_Stop_Once_Task()
-                backup_restore_thread.start_Task()
+        
+        return jsonify(
+            message="Restore task queued"
+        )
     else:
         return jsonify(
-            message="Restore task already running"
+            message="Parameters missing!"
         )
-    
-    return jsonify(
-        message="Restore task queued"
-    )
     
     
 @app.route('/restore_control_endpoint',methods = ['POST', 'GET'])
 def restore_control_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not backup_restore_thread.safe_task_lock.locked():
-        with backup_restore_thread.safe_task_lock:
-            
-            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
-            
-            # response = backup_restore_thread.restore_control(
-            #     ssh_username=ssh_username,
-            #     ssh_password=ssh_password,
-            #     ip_addresses=ip_address_hostnames,
-            # )
-            response = backup_restore_thread.get_backup_information(
-                ssh_username=ssh_username,
-                ssh_password=ssh_password,
-                ip_addresses=ip_address_hostnames,
-                backup_dir=backup_path,
-            )
-            
-            folder_info = [
-                {
-                    # "message": "No content in folder found",
-                    "size": "0",
-                    "name": "-",
-                    "creation_date": "-",
-                }
-            ]
-            print(response)
-            notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
-            
+    ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+    ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
+    
+    if ip_address_hostnames != []:
+        if not backup_restore_thread.safe_task_lock.locked():
+            with backup_restore_thread.safe_task_lock:
+                
+                # response = backup_restore_thread.restore_control(
+                #     ssh_username=ssh_username,
+                #     ssh_password=ssh_password,
+                #     ip_addresses=ip_address_hostnames,
+                # )
+                
+                response = backup_restore_thread.get_backup_information(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    backup_dir=backup_path,
+                )
+                
+                folder_info = [
+                    {
+                        # "message": "No content in folder found",
+                        "size": "0",
+                        "name": "-",
+                        "creation_date": "-",
+                    }
+                ]
+                print(response)
+                notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
+                
+                return jsonify(
+                    message=response,
+                )
+        else:
             return jsonify(
-                message=response,
+                message="Restore Control task already running"
             )
     else:
         return jsonify(
-            message="Restore Control task already running"
+            message="Parameters missing!"
         )
-    
-    return jsonify(
-        message="Restore Control task queued"
-    )
 
 
 
@@ -211,36 +219,41 @@ def backup_page():
 def backup_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not backup_restore_thread.safe_task_lock.locked():
-        with backup_restore_thread.safe_task_lock:
-            
-            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
+    ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+    ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
+    
+    if ip_address_hostnames != []:
+        if not backup_restore_thread.safe_task_lock.locked():
+            with backup_restore_thread.safe_task_lock:
 
-            script_upload_path = backup_script_upload_path.format(ssh_username=ssh_username)
-            script_path = root_upload_path + backup_script
+                script_upload_path = backup_script_upload_path.format(ssh_username=ssh_username)
+                script_path = root_upload_path + backup_script
 
-            backup_restore_thread.set_Parameters(
-                ssh_username=ssh_username,
-                ssh_password=ssh_password,
-                ip_addresses=ip_address_hostnames,
-                script_path=script_path,
-                script_upload_path=script_upload_path,
-                script_run_command=f"sudo chmod +x {script_upload_path + backup_script} && sudo", # One-Shot Run Command
-                add_to_cron=True, # Cron Parameters
-                cron_parameters="", # Cron Parameters
-                script_parameters="",
+                backup_restore_thread.set_Parameters(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    script_path=script_path,
+                    script_upload_path=script_upload_path,
+                    script_run_command=f"sudo chmod +x {script_upload_path + backup_script} && sudo", # One-Shot Run Command
+                    add_to_cron=True, # Cron Parameters
+                    cron_parameters="", # Cron Parameters
+                    script_parameters="",
+                )
+                
+                if not backup_restore_thread.is_Running():
+                    backup_restore_thread.start_Task()
+                else:
+                    backup_restore_thread.stop_Task()
+                    backup_restore_thread.wait_To_Stop_Once_Task()
+                    backup_restore_thread.start_Task()
+        else:
+            return jsonify(
+                message="Backup task already running"
             )
-            
-            if not backup_restore_thread.is_Running():
-                backup_restore_thread.start_Task()
-            else:
-                backup_restore_thread.stop_Task()
-                backup_restore_thread.wait_To_Stop_Once_Task()
-                backup_restore_thread.start_Task()
     else:
         return jsonify(
-            message="Backup task already running"
+            message="Parameters missing!"
         )
     
     return jsonify(
@@ -252,31 +265,34 @@ def backup_endpoint():
 def backup_control_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not backup_restore_thread.safe_task_lock.locked():
-        with backup_restore_thread.safe_task_lock:
-            
-            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
-            
-            response = backup_restore_thread.backup_cron_control(
-                ssh_username=ssh_username,
-                ssh_password=ssh_password,
-                ip_addresses=ip_address_hostnames,
-                script_name=backup_script.split(".")[0],
-            )
-            notification_thread.queue_add("Backup Control Finished", Notification_Status.INFO)
+    ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+    ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
+    
+    if ip_address_hostnames != []:
+        if not backup_restore_thread.safe_task_lock.locked():
+            with backup_restore_thread.safe_task_lock:
                 
+                backup_restore_thread.overwrite_Task_Stop_Status(False)
+                response = backup_restore_thread.backup_cron_control(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    script_name=backup_script.split(".")[0],
+                )
+                backup_restore_thread.overwrite_Task_Stop_Status(True)
+                notification_thread.queue_add("Backup Control Finished", Notification_Status.INFO)
+                    
+                return jsonify(
+                    message=response,
+                )
+        else:
             return jsonify(
-                message=response,
+                message="Backup Control task already running"
             )
     else:
         return jsonify(
-            message="Backup Control task already running"
+            message="Parameters missing!"
         )
-    
-    return jsonify(
-        message="Backup Control task queued"
-    )
 
 
 
@@ -297,32 +313,38 @@ def fqdn_page():
 def fqdn_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not fqdn_thread.safe_task_lock.locked():
-        with fqdn_thread.safe_task_lock:
             
-            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
-            
-            fqdn_thread.set_Parameters(
-                ssh_username=ssh_username,
-                ssh_password=ssh_password,
-                ip_address_hostnames_list=ip_address_hostnames
+    ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+    ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=False)
+    
+    if ip_address_hostnames != []:
+        if not fqdn_thread.safe_task_lock.locked():
+            with fqdn_thread.safe_task_lock:
+                
+                fqdn_thread.set_Parameters(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_address_hostnames_list=ip_address_hostnames
+                )
+                
+                if not fqdn_thread.is_Running():
+                    fqdn_thread.start_Task()
+                else:
+                    fqdn_thread.stop_Task()
+                    fqdn_thread.wait_To_Stop_Once_Task()
+                    fqdn_thread.start_Task()
+        else:
+            return jsonify(
+                message="FQDN task already running"
             )
-            
-            if not fqdn_thread.is_Running():
-                fqdn_thread.start_Task()
-            else:
-                fqdn_thread.stop_Task()
-                fqdn_thread.wait_To_Stop_Once_Task()
-                fqdn_thread.start_Task()
+        
+        return jsonify(
+            message="FQDN task queued"
+        )
     else:
         return jsonify(
-            message="FQDN task already running"
+            message="Parameters missing!"
         )
-    
-    return jsonify(
-        message="FQDN task queued"
-    )
     
 
 ######################
@@ -347,34 +369,40 @@ def cleanup_page():
 def cleanup_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
     
-    if not cleanup_thread.safe_task_lock.locked():
-        with cleanup_thread.safe_task_lock:
-            
-            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
-            
-            
-            cleanup_thread.set_Parameters(
-                ssh_username=ssh_username,
-                ssh_password=ssh_password,
-                ip_addresses=ip_address_hostnames,
-                script_path=root_upload_path + "cleanup.py"
+                
+    ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+    ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
+    
+    if ip_address_hostnames != []:
+        if not cleanup_thread.safe_task_lock.locked():
+            with cleanup_thread.safe_task_lock:
+                
+                
+                cleanup_thread.set_Parameters(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    script_path=root_upload_path + "cleanup.py"
+                )
+                
+                if not cleanup_thread.is_Running():
+                    cleanup_thread.start_Task()
+                else:
+                    cleanup_thread.stop_Task()
+                    cleanup_thread.wait_To_Stop_Once_Task()
+                    cleanup_thread.start_Task()
+        else:
+            return jsonify(
+                message="Cleanup task already running"
             )
-            
-            if not cleanup_thread.is_Running():
-                cleanup_thread.start_Task()
-            else:
-                cleanup_thread.stop_Task()
-                cleanup_thread.wait_To_Stop_Once_Task()
-                cleanup_thread.start_Task()
+        
+        return jsonify(
+            message="Cleanup task queued"
+        )
     else:
         return jsonify(
-            message="Cleanup task already running"
+            message="Parameters missing!"
         )
-    
-    return jsonify(
-        message="Cleanup task queued"
-    )
 
 
 ###################
@@ -399,33 +427,38 @@ def log_collection_page():
 @app.route('/log_collection_endpoint',methods = ['POST', 'GET'])
 def log_collection_endpoint():
     global_logger.info(f'REQUEST INFORMATION > IP: {request.remote_addr}, Route: {request.path}, Params: {request.args.to_dict()}')
+            
+    ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
+    ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
     
-    if not log_collection_thread.safe_task_lock.locked():
-        with log_collection_thread.safe_task_lock:
-            
-            ssh_username, ssh_password = parameter_parser_ssh_credentials(request.args)
-            ip_address_hostnames = parameter_parser_ip_hostname(request.args, only_ip=True)
-            
-            log_collection_thread.set_Parameters(
-                ssh_username=ssh_username,
-                ssh_password=ssh_password,
-                ip_addresses=ip_address_hostnames
+    if ip_address_hostnames != []:
+        if not log_collection_thread.safe_task_lock.locked():
+            with log_collection_thread.safe_task_lock:
+                
+                log_collection_thread.set_Parameters(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames
+                )
+                
+                if not log_collection_thread.is_Running():
+                    log_collection_thread.start_Task()
+                else:
+                    log_collection_thread.stop_Task()
+                    log_collection_thread.wait_To_Stop_Once_Task()
+                    log_collection_thread.start_Task()
+        else:
+            return jsonify(
+                message="Log collection task already running"
             )
-            
-            if not log_collection_thread.is_Running():
-                log_collection_thread.start_Task()
-            else:
-                log_collection_thread.stop_Task()
-                log_collection_thread.wait_To_Stop_Once_Task()
-                log_collection_thread.start_Task()
+        
+        return jsonify(
+            message="Log collection task queued"
+        )
     else:
         return jsonify(
-            message="Log collection task already running"
+            message="Parameters missing!"
         )
-    
-    return jsonify(
-        message="Log collection task queued"
-    )
     
     
 ##########################

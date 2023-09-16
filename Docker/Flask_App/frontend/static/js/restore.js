@@ -42,16 +42,58 @@ function restore_control() {
                     let propertyName = "status";
 
                     let propertyValue;
+                    let flex_Element_classes = "bg-gif-lost";
+                    let flex_Element_color = "bg-info";
+                    let sub_div_color = "color-black text-shadow-black-0px";
+                    let status_emoji = "🔴";
+
                     if (item.check === "True") {
                         propertyValue = "completed";
+
+                        flex_Element_color = "bg-success";
+                        flex_Element_classes = "bg-gif-green-circle";
+                        sub_div_color = "color-white text-shadow-black-0px";
+                        status_emoji = "🟢";
+                    
                     } else if (item.check === "False") {
                         propertyValue = "error";
+                        
+                        flex_Element_color = "bg-danger";
+                        flex_Element_classes = "bg-gif-lost";
+                        sub_div_color = "color-black text-shadow-black-0px";
+                        status_emoji = "🔴";
+
                     } else {
+                        propertyValue = "error";
+
+                        flex_Element_color = "bg-danger";
+                        flex_Element_classes = "bg-gif-black-hole-red";
+                        sub_div_color = "color-white text-shadow-black-0px";
+                        status_emoji = "⚫";
+
                         console.warn(`Unexpected value for item.check: ${item.check}`);
                     }
 
                     set_Device_Property(deviceElement, propertyName, propertyValue);
-                    add_Element_to_Flex_Container(device.name);
+
+
+                    const sub_div_IP = document.createElement('div');
+                    sub_div_IP.className = "bg-transparent bg-blur-3px w-100 " + sub_div_color;
+                    sub_div_IP.innerHTML = "IP: " + device.name;
+
+                    const sub_div_Connection = document.createElement('div');
+                    sub_div_Connection.className = "bg-transparent bg-blur-3px w-100 " + sub_div_color;
+                    sub_div_Connection.innerHTML = "Connection Status: " + status_emoji;
+
+                    add_Element_to_Flex_Container(
+                        "", 
+                        flex_Element_classes, 
+                        [],
+                        [
+                            sub_div_IP,
+                            sub_div_Connection,
+                        ], 
+                    );
                 }
             })
             // showNotification(notification, "info");

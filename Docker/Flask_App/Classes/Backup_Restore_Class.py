@@ -178,6 +178,9 @@ class Backup_Restore_Class(Task_Handler_Class):
     
     
     def get_backup_information(self, backup_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> list[dict[str, str]]:
+        self.overwrite_Task_Stop_Status(False)
+        self.overwrite_Running_Status(True)
+        
         self.logger.info(f"Backup Information Fetch command running on {ip_addresses} ...")
         
         failed_ip_addresses:list[str] = list()
@@ -214,6 +217,9 @@ class Backup_Restore_Class(Task_Handler_Class):
                     
                 ssh_command = 'find {} -maxdepth 1 -type d -exec stat --format="%n %y %s" {} \\; | sort'.format(backup_dir, '{}')
 
+                # Sync Thread
+                time.sleep(0.1)
+                
                 response, stout = ssh_execute_command(
                     ssh_client=ip_address, 
                     username=ssh_username, 
@@ -235,10 +241,19 @@ class Backup_Restore_Class(Task_Handler_Class):
                 temp_response["message"] = stout
                 
                 response_list.append(temp_response)
-
+                
+                print("self.is_Thread_Stopped()", self.is_Thread_Stopped())
+                print("self.is_Task_Stopped()", self.is_Task_Stopped())
+                print("self.is_Running()", self.is_Running())
+                print("self.stop_Action_Control()", self.stop_Action_Control())
+                
                 # Check Thread State
                 time.sleep(1)
+                
                 if self.stop_Action_Control():
+                    self.overwrite_Task_Stop_Status(True)
+                    self.overwrite_Running_Status(False)
+                    
                     self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                     return response_list
                     
@@ -248,6 +263,9 @@ class Backup_Restore_Class(Task_Handler_Class):
         if len(failed_ip_addresses) > 0:
             self.logger.info(f"Backup Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
         self.logger.info(f"Backup Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
+        
+        self.overwrite_Task_Stop_Status(True)
+        self.overwrite_Running_Status(False)
         
         return response_list
 

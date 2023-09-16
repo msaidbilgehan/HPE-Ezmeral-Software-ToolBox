@@ -132,7 +132,6 @@ def restore_endpoint():
                 )
                 
                 if not backup_restore_thread.is_Running():
-                    print("Starting backup_restore_thread Task")
                     backup_restore_thread.start_Task()
                 else:
                     backup_restore_thread.stop_Task()

@@ -44,7 +44,7 @@ class Backup_Restore_Class(Task_Handler_Class):
    
 
     def task(self, script_path:str, script_upload_path:str, script_run_command:str, script_parameters:str, add_to_cron: bool, cron_parameters:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> int:
-        self.logger.info(f"Backup Job Adding to {ip_addresses} ...")
+        self.logger.info(f"Backup / Restore Task Running on {ip_addresses} ...")
         
         failed_ip_addresses:list[str] = list()
 
@@ -178,8 +178,9 @@ class Backup_Restore_Class(Task_Handler_Class):
     
     
     def get_backup_information(self, backup_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> list[dict[str, str]]:
-        self.overwrite_Task_Stop_Status(False)
-        self.overwrite_Running_Status(True)
+        # Removed because of the thread task and explicitly call to method conflict
+        # self.overwrite_Task_Stop_Status(False)
+        # self.overwrite_Running_Status(True)
         
         self.logger.info(f"Backup Information Fetch command running on {ip_addresses} ...")
         
@@ -242,20 +243,16 @@ class Backup_Restore_Class(Task_Handler_Class):
                 
                 response_list.append(temp_response)
                 
-                print("self.is_Thread_Stopped()", self.is_Thread_Stopped())
-                print("self.is_Task_Stopped()", self.is_Task_Stopped())
-                print("self.is_Running()", self.is_Running())
-                print("self.stop_Action_Control()", self.stop_Action_Control())
-                
                 # Check Thread State
                 time.sleep(1)
                 
-                if self.stop_Action_Control():
-                    self.overwrite_Task_Stop_Status(True)
-                    self.overwrite_Running_Status(False)
+                # Removed because of the thread task and explicitly call to method conflict
+                # if self.stop_Action_Control():
+                #     self.overwrite_Task_Stop_Status(True)
+                #     self.overwrite_Running_Status(False)
                     
-                    self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
-                    return response_list
+                #     self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
+                #     return response_list
                     
         except Exception as e:
             self.logger.error(f"An error occurred: {e}")

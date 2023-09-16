@@ -1,0 +1,65 @@
+
+/* Width - Height */
+.wh-100px {
+    width: 100px;
+    height: 100px;
+}
+
+.wh-150px {
+    width: 150px;
+    height: 150px;
+}
+
+.wh-200px {
+    width: 200px;
+    height: 200px;
+}
+
+.wh-250px {
+    width: 250px;
+    height: 250px;
+}
+
+/* Width */
+
+.w-100px {
+    width: 100px;
+}
+
+.w-150px {
+    width: 150px;
+}
+
+.w-200px {
+    width: 200px;
+}
+
+.w-250px {
+    width: 250px;
+}
+
+.full_width{
+    width: 100%;
+}
+
+/* Height */
+
+.h-100px {
+    height: 100px;
+}
+
+.h-150px {
+    height: 150px;
+}
+
+.h-200px {
+    height: 200px;
+}
+
+.h-250px {
+    height: 250px;
+}
+
+.full_height{
+    height: 100%;
+}

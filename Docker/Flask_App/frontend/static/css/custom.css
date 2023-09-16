@@ -85,77 +85,10 @@
     text-align: center !important;
 }
 
-.bg-gif-lost{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzh0djU4NHJia3B4bm4ycnZ1MXEycjc0d3pwdXZmaG9pZXAyNDRjbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l1J9EdzfOSgfyueLm/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-blue-waves{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcTRleDBycHVwMGZhd2xqYzBvOHlvMnRnNmVxaDFoYWxqNjY0bDhkMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QvMybzkScTcqHJiZx0/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-gray-circle-waves{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDVzb25nNG4xNW1tc294a3kwdGQ2cDZsaG9kaDBhdTllYmdzM2pxdiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/k9nsIRK8hUfLi/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-green-circle{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnNvZDRvOGM5ZmdqeGxncjVmM2VhMjExYWV5ajlxaWpndHZrdHR6ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3q2Ok1vk3K5BPX44/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-black-dot-waves{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeGIyeW1nazR6eTV2aGdweGJ4ZGJ5M2Jjc2tidHA0dXllc292bXRocSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l1J9uvaWYWkNLjiz6/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-purple-circle-hole{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGMyejYxazZ4ZGVyNHIzZHhjOHltdDcwemVuaDN0aTZ3NHI1emh2NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/27bY60liFpCScDJozd/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-purple-circle-hole{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWZ3MThzaGZzNjc5dmJxYzhyY2NmMnYyODZkd2R1emczOWxkdzAwNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zgS5Ld2gKPjLa/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-purple-circle-hole{
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWZ3MThzaGZzNjc5dmJxYzhyY2NmMnYyODZkd2R1emczOWxkdzAwNiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zgS5Ld2gKPjLa/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.blur-3px{
-    backdrop-filter: blur(3px);
-    filter: blur(3px);
-}
-
-.blur-5px{
-    backdrop-filter: blur(3px);
-    filter: blur(3px);
-}
-
-.full_width{
+.image-container{
     width: 100%;
-}
-
-.wh-100{
     height: 100%;
-    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

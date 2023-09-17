@@ -6,12 +6,16 @@
     <div class="tab-content" id="pills-tabContent">
         <div class="col-sm-12 col-xl-12 align_item_center">
             <div class="bg-secondary rounded">
-                {% include 'template/device_table.html' %}
-                {% include 'template/ssh.html' %}
+                <div class="col-sm-12 col-xl-12 align_item_center">
+                    {% include 'template/ip_hostname_table.html' %}
+                </div>
+                <div class="col-sm-12 col-xl-12 align_item_center">
+                    {% include 'template/ssh.html' %}
+                </div>
 
                 <div class="col-sm-12 col-xl-12 align_item_center">
                     <div class="bg-secondary rounded p-4">
-                        <button type="button" class="btn-xlg-square btn-success m-2" onclick="restore_control()">
+                        <button type="button" class="btn-xlg-square btn-success m-2" onclick="restore_control(this)">
                             Backup Control Endpoint
                         </button>
                     </div>

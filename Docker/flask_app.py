@@ -183,7 +183,7 @@ def restore_control_endpoint():
                         "creation_date": "-",
                     }
                 ]
-                print(response)
+                print("restore_control_endpoint response: ", response)
                 notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
                 
                 return jsonify(

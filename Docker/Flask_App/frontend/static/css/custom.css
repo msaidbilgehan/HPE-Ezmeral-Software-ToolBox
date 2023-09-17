@@ -44,45 +44,14 @@
     }
 }
 
-.color-red{
-    color: red ;
-    background-color: transparent ;
-    border-color: transparent 
-}
-
-.color-yellow{
-    color: yellow ;
-    background-color: transparent ;
-    border-color: transparent 
-}
-
-.color-green{
-    color: green ;
-    background-color: transparent ;
-    border-color: transparent 
-}
-
-.color-black{
-    color: black ;
-    background-color: transparent ;
-    border-color: transparent 
-}
-
-.color-gray{
-    color: gray;
-    background-color: transparent;
-    border-color: transparent
-}
-
-.color-white{
-    color: white;
-    background-color: transparent;
-    border-color: transparent
-}
-
 .align-items-center{
     align-items: center !important;
     text-align: center !important;
+}
+
+.align-items-left{
+    align-items: left !important;
+    text-align: left !important;
 }
 
 .image-container-contain{
@@ -94,3 +63,4 @@
     object-fit: contain;
     background-size: contain;
 }
+

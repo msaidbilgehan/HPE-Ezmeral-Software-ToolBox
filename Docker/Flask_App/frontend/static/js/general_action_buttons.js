@@ -72,6 +72,5 @@ window.stop_Action = stop_Action;
 
 
 export function getActiveTabElement() {
-    // Aktif tabı belirleyin (örneğin, 'active' class'ına sahip olan tab)
     return document.querySelector('.tab-content .active');
 }

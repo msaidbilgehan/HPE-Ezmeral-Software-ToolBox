@@ -1,29 +1,32 @@
 import { endpoint_action_2_url } from './page_specific_urls.js';
 import { get_ssh_credentials } from './ssh_credentials.js';
-import { get_Devices, set_Device_Property } from './device_table.js';
-import { add_Element_to_Flex_Container } from './flex_container.js';
+// import { get_Devices, set_Device_Property } from './device_table.js';
+import { get_ip_host_addresses } from './ip_hostname_table.js';
+import { flex_Element_Add_Device, flex_Element_Update_Device, flex_Element_Clear_Devices } from './flex_container.js';
 import { showNotification } from './notification.js';
 
 
-function restore_control() {
-    let devices = get_Devices();
 
-    devices.forEach(device => {
-        let deviceElement = document.getElementById(device.element.id);
-        let propertyName = "status";
-        let propertyValue = "waiting";
-        set_Device_Property(deviceElement, propertyName, propertyValue);
-    })
-
-    let ipAddresses = devices.map(device => {
-        return {"ip": device.name}
-    });
+function restore_control(button = null) {
+    if (button !== null || button !== undefined){
+        button.disabled = true;
+    }
     
-    let ipAddressesJson = JSON.stringify(ipAddresses);
+    flex_Element_Clear_Devices();
+    let device_ip_addresses = get_ip_host_addresses(true);
+    let device_elements = flex_Element_Add_Device(device_ip_addresses.map(device => device.ip));
+    
+    let ipAddressesJson = JSON.stringify(
+        device_ip_addresses.map(device => {
+            return { "ip": device.ip }
+        })
+    );
+    console.log(ipAddressesJson);
 
     let credentials = get_ssh_credentials();
     let ssh_usernameJson = credentials[0];
     let ssh_passwordJson = credentials[1];
+
 
     // Append the IP addresses as a query parameter
     let url = endpoint_action_2_url;
@@ -33,76 +36,94 @@ function restore_control() {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
+        let ip_list_connected = [];
+        let ip_list_not_connected = [];
+
         data.message.forEach(item => {
-            // let notification = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
-            devices.forEach(device => {
-                if (device.name === item.ip_address) {
+            // "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
+            let flex_Element_classes = [];
+            
+            let connection_status = [];
+            let backup_script_status = [];
+            let cron_job_status = [];
 
-                    let deviceElement = document.getElementById(device.element.id);
-                    let propertyName = "status";
+            let background_class =[];
 
-                    let propertyValue;
-                    let flex_Element_classes = "bg-gif-lost";
-                    let flex_Element_color = "bg-info";
-                    let sub_div_color = "color-black text-shadow-black-0px";
-                    let status_emoji = "🔴";
+            if (item.check === "True") {
+                flex_Element_classes = "bg-gif-green-circle";
+                
+                // TODO: Check if statuses are correct
+                connection_status.push("🟢");
+                backup_script_status.push("🟢");
+                cron_job_status.push("🟢");
 
-                    if (item.check === "True") {
-                        propertyValue = "completed";
+                background_class.push("bg-gif-data-center-1");
 
-                        flex_Element_color = "bg-success";
-                        flex_Element_classes = "bg-gif-green-circle";
-                        sub_div_color = "color-white text-shadow-black-0px";
-                        status_emoji = "🟢";
-                    
-                    } else if (item.check === "False") {
-                        propertyValue = "error";
-                        
-                        flex_Element_color = "bg-danger";
-                        flex_Element_classes = "bg-gif-lost";
-                        sub_div_color = "color-black text-shadow-black-0px";
-                        status_emoji = "🔴";
+                ip_list_connected.push(item.ip_address);
 
-                    } else {
-                        propertyValue = "error";
+            } else if (item.check === "False") {
+                flex_Element_classes = "bg-gif-lost";
+                
+                connection_status.push("🔴");
+                backup_script_status.push("🔴");
+                cron_job_status.push("🔴");
 
-                        flex_Element_color = "bg-danger";
-                        flex_Element_classes = "bg-gif-black-hole-red";
-                        sub_div_color = "color-white text-shadow-black-0px";
-                        status_emoji = "⚫";
+                background_class.push("bg-gif-no-connection");
 
-                        console.warn(`Unexpected value for item.check: ${item.check}`);
-                    }
+                ip_list_not_connected.push(item.ip_address);
+            } else {
+                flex_Element_classes = "bg-gif-black-hole-red";
+                
+                connection_status.push("⚫");
+                backup_script_status.push("⚫");
+                cron_job_status.push("⚫");
 
-                    set_Device_Property(deviceElement, propertyName, propertyValue);
+                background_class.push("bg-gif-no-connection");
 
+                console.warn(`Unexpected value for item.check: ${item.check}`);
+                ip_list_not_connected.push(item.ip_address);
+            }
 
-                    const sub_div_IP = document.createElement('div');
-                    sub_div_IP.className = "bg-transparent bg-blur-3px w-100 " + sub_div_color;
-                    sub_div_IP.innerHTML = "IP: " + device.name;
+            // elements: any[] | undefined,
+            // ip_list: any[] | undefined,
+            // connection_status: any,
+            // cron_job_status: any,
+            // backup_script_status: any,
+            // background_class: any
 
-                    const sub_div_Connection = document.createElement('div');
-                    sub_div_Connection.className = "bg-transparent bg-blur-3px w-100 " + sub_div_color;
-                    sub_div_Connection.innerHTML = "Connection Status: " + status_emoji;
-
-                    add_Element_to_Flex_Container(
-                        "", 
-                        flex_Element_classes, 
-                        [],
-                        [
-                            sub_div_IP,
-                            sub_div_Connection,
-                        ], 
-                    );
-                }
-            })
+            // Connected Flex Container Update
+            flex_Element_Update_Device(
+                device_elements, 
+                ip_list_connected, 
+                connection_status,
+                cron_job_status,
+                backup_script_status,
+                background_class,
+            );
+            // Not Connected Flex Container Update
+            flex_Element_Update_Device(
+                device_elements,
+                ip_list_not_connected,
+                device_elements.map(element => "⚫"),
+                device_elements.map(element => "⚫"),
+                device_elements.map(element => "⚫"),
+                device_elements.map(element => "bg-gif-no-connection"),
+            );
             // showNotification(notification, "info");
         });
 
         // showNotification(notification, "info");
+
+        if (button !== null || button !== undefined) {
+            button.disabled = false;
+        }
     }).catch(error => {
         console.error(error);
         showNotification(error, "error");
+
+        if (button !== null || button !== undefined) {
+            button.disabled = false;
+        }
     });
 };
 window.restore_control = restore_control;

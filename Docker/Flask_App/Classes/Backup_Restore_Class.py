@@ -178,10 +178,6 @@ class Backup_Restore_Class(Task_Handler_Class):
     
     
     def get_backup_information(self, backup_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> list[dict[str, str]]:
-        # Removed because of the thread task and explicitly call to method conflict
-        # self.overwrite_Task_Stop_Status(False)
-        # self.overwrite_Running_Status(True)
-        
         self.logger.info(f"Backup Information Fetch command running on {ip_addresses} ...")
         
         failed_ip_addresses:list[str] = list()
@@ -245,14 +241,6 @@ class Backup_Restore_Class(Task_Handler_Class):
                 
                 # Check Thread State
                 time.sleep(1)
-                
-                # Removed because of the thread task and explicitly call to method conflict
-                # if self.stop_Action_Control():
-                #     self.overwrite_Task_Stop_Status(True)
-                #     self.overwrite_Running_Status(False)
-                    
-                #     self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
-                #     return response_list
                     
         except Exception as e:
             self.logger.error(f"An error occurred: {e}")
@@ -260,9 +248,6 @@ class Backup_Restore_Class(Task_Handler_Class):
         if len(failed_ip_addresses) > 0:
             self.logger.info(f"Backup Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
         self.logger.info(f"Backup Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
-        
-        self.overwrite_Task_Stop_Status(True)
-        self.overwrite_Running_Status(False)
         
         return response_list
 

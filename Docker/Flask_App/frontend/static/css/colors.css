@@ -1,0 +1,95 @@
+.color-red {
+    color: red;
+}
+
+.color-yellow {
+    color: yellow;
+}
+
+.color-green {
+    color: green;
+}
+
+.color-black {
+    color: black;
+}
+
+.color-gray {
+    color: gray;
+}
+
+.color-white {
+    color: white;
+}
+
+.bg-color-red {
+    background-color: red;
+}
+
+.bg-color-yellow {
+    background-color: yellow;
+}
+
+.bg-color-green {
+    background-color: green;
+}
+
+.bg-color-black {
+    background-color: black;
+}
+
+.bg-color-black-10 {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.bg-color-black-25 {
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+.bg-color-black-50 {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.bg-color-black-75 {
+    background-color: rgba(0, 0, 0, 0.75);
+}
+
+.bg-color-gray {
+    background-color: gray;
+}
+
+.bg-color-gray-10 {
+    background-color: hsla(0, 0%, 50%, 0.1);
+}
+
+.bg-color-gray-25 {
+    background-color: hsla(0, 0%, 50%, 0.25);
+}
+
+.bg-color-gray-50 {
+    background-color: hsla(0, 0%, 50%, 0.5);
+}
+
+.bg-color-gray-75 {
+    background-color: hsla(0, 0%, 50%, 0.75);
+}
+
+.bg-color-white {
+    background-color: white;
+}
+
+.bg-color-white-10 {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bg-color-white-25 {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+.bg-color-white-50 {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.bg-color-white-75 {
+    background-color: rgba(255, 255, 255, 0.75);
+}

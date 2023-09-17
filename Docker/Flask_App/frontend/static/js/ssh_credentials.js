@@ -15,7 +15,6 @@ export function get_ssh_credentials(){
         sshPasswordInput = document.querySelector('#input_SSH_Password');
     }
     
-
     let ssh_username = sshUsernameInput.value;
     let ssh_password = sshPasswordInput.value;
 

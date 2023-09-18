@@ -26,12 +26,32 @@
     backdrop-filter: blur(15px);
 }
 
+.bg-blur-17px {
+    backdrop-filter: blur(17px);
+}
+
+.bg-blur-19px {
+    backdrop-filter: blur(19px);
+}
+
+.bg-blur-21px {
+    backdrop-filter: blur(21px);
+}
+
 .blur-3px{
     filter: blur(3px);
 }
 
 .blur-5px{
     filter: blur(5px);
+}
+
+.bg-transparent-red {
+    background-color: #eb16169e !important;
+}
+
+.bg-transparent-dark {
+    background-color: #1a1c24c7 !important;
 }
 
 .bg-gif-lost {

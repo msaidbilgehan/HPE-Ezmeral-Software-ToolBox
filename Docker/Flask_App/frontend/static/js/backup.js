@@ -59,12 +59,12 @@ function backup_cron_control(button) {
     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesJson);
 
     // Call Endpoint
-    fetchTimeout()
     fetch(url).then(response => response.json()).then(data => {
         // console.log(typeof data.message[Symbol.iterator]);
         // console.log(typeof data.message instanceof Array);
+        // console.log(Array.isArray(data.message));
 
-        if (typeof data.message instanceof Array){
+        if (Array.isArray(data.message)){
             data.message.forEach(item => {
                 // let notification = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
 

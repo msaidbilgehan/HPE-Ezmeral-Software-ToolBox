@@ -4,13 +4,12 @@ import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
 import { flex_Element_Add_Device, flex_Element_Update_Device, flex_Element_Clear_Devices } from './flex_container.js';
 import { showNotification } from './notification.js';
+import { button_disable_by_element } from './tools.js';
 
 
 
 function restore_control(button = null) {
-    if (button !== null || button !== undefined){
-        button.disabled = true;
-    }
+    button_disable_by_element(button, true);
     
     flex_Element_Clear_Devices();
     let device_ip_addresses = get_ip_host_addresses(true);
@@ -110,10 +109,7 @@ function restore_control(button = null) {
     }).catch(error => {
         console.error(error);
         showNotification(error, "error");
-
-        if (button !== null || button !== undefined) {
-            button.disabled = false;
-        }
+        button_disable_by_element(button, false);
     });
 };
 window.restore_control = restore_control;

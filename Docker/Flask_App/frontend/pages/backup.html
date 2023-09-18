@@ -24,13 +24,14 @@
         
                 <div class="col-sm-12 col-xl-12 align_item_center">
                     <div class="bg-secondary rounded p-4">
-                        <button type="button" class="btn-xlg-square btn-success m-2" onclick="backup_cron_control()">
+                        <button type="button" class="btn-xlg-square btn-success m-2" onclick="backup_cron_control(this)">
                             Backup Control Endpoint
                         </button>
                     </div>
                 </div>
         
-                {% include 'template/device_table.html' %}
+                <!-- {% include 'template/device_table.html' %} -->
+                {% include 'template/flex_container.html' %}
         
             </div>
         </div>

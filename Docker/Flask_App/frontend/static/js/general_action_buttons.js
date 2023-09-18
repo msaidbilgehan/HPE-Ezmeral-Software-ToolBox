@@ -2,9 +2,11 @@ import { endpoint_action_url, endpoint_stop_url } from './page_specific_urls.js'
 import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
 import { showNotification } from './notification.js';
+import { button_disable_by_element } from './tools.js';
 
 
-function start_Action () {
+function start_Action (button) {
+    button_disable_by_element(button, true);
     var pageType = document.body.getAttribute('data-page-type');
 
     // Encode the IP addresses array into a JSON string
@@ -49,12 +51,16 @@ function start_Action () {
         console.error(error);
         showNotification(error, "error");
     });
+    
+    button_disable_by_element(button, false);
 }
 window.start_Action = start_Action;
 
 
 
-function stop_Action() {
+function stop_Action(button) {
+    button_disable_by_element(button, true);
+
     var pageType = document.body.getAttribute('data-page-type');
     fetch(endpoint_stop_url + "/" + pageType)
         .then(response => response.json())
@@ -66,6 +72,8 @@ function stop_Action() {
             console.error('An error occurred:', error);
             showNotification('An error occurred: ' + error, "error");
         });
+
+    button_disable_by_element(button, false);
 }
 window.stop_Action = stop_Action;
 

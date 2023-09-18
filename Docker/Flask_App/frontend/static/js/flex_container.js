@@ -97,9 +97,15 @@ export function flex_Element_Update_Device(elements = [], ip_list = [], connecti
     });
 }
 
+export function get_Flex_Container_Devices(){
+    let flex_Container_Element = get_Flex_Container_Element();
+    let devices = flex_Container_Element.querySelectorAll(".submenu");
+    return devices;
+}
+
 
 // Get Flex Container Element
-function get_Flex_Container_Element(){
+function get_Flex_Container_Element(is_submenu = false){
     let active_tab = getActiveTabElement();
     let flex_Container_Element;
 
@@ -109,14 +115,19 @@ function get_Flex_Container_Element(){
     else {
         flex_Container_Element = active_tab.querySelector('#flex_container');
     }
-    return flex_Container_Element;
+
+    if (is_submenu){
+        return flex_Container_Element.querySelector("#flex_container_content");
+    }
+    else{
+        return flex_Container_Element;
+    }
 }
 
 
 // Add element to Flex Container
 export function flex_Container_Add_Element(context, classes = "", sub_contexts = "", sub_elements = []) {
-    let flex_Container_Element = get_Flex_Container_Element();
-    let flex_Container_Element_SubMenu = flex_Container_Element.querySelector("#flex_container_content");
+    let flex_Container_Element_SubMenu = get_Flex_Container_Element(true);
 
     const li = document.createElement('li');
     // li.setAttribute('id', 'flex_container_content_li');
@@ -146,8 +157,7 @@ export function flex_Container_Add_Element(context, classes = "", sub_contexts =
 }
 
 export function flex_Element_Clear_Devices(){
-    let flex_Container_Element = get_Flex_Container_Element();
-    let flex_Container_Element_SubMenu = flex_Container_Element.querySelector("#flex_container_content");
+    let flex_Container_Element_SubMenu = get_Flex_Container_Element(true);
     flex_Container_Element_SubMenu.innerHTML = "";
 }
 window.flex_Element_Clear_Devices = flex_Element_Clear_Devices;
@@ -155,8 +165,8 @@ window.flex_Element_Clear_Devices = flex_Element_Clear_Devices;
 
 // Draggable Enable
 document.addEventListener('DOMContentLoaded', () => {
-    let container = get_Flex_Container_Element();
-    var sortable = new Draggable.Sortable(container.querySelectorAll("#flex_container_content"), {
+    let container_submenu = get_Flex_Container_Element(true);
+    var sortable = new Draggable.Sortable(container_submenu, {
         draggable: ".submenu",
         handle: ".submenu_handle",
         swapAnimation: {

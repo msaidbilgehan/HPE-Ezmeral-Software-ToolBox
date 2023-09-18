@@ -271,14 +271,12 @@ def backup_control_endpoint():
         if not backup_restore_thread.safe_task_lock.locked():
             with backup_restore_thread.safe_task_lock:
                 
-                backup_restore_thread.overwrite_Task_Stop_Status(False)
                 response = backup_restore_thread.backup_cron_control(
                     ssh_username=ssh_username,
                     ssh_password=ssh_password,
                     ip_addresses=ip_address_hostnames,
                     script_name=backup_script.split(".")[0],
                 )
-                backup_restore_thread.overwrite_Task_Stop_Status(True)
                 notification_thread.queue_add("Backup Control Finished", Notification_Status.INFO)
                     
                 return jsonify(

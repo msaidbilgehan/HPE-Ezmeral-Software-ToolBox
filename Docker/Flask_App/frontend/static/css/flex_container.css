@@ -8,6 +8,7 @@
     flex-flow: row wrap;
     flex-wrap: wrap;
     align-items: flex-start;
+    justify-content: space-evenly;
 }
 
 .menu,
@@ -22,15 +23,20 @@
     -ms-user-select: none;
     /* ie */
     user-select: none;
+    padding: 3px !important;
+    margin: 3px !important;
 }
 
 .submenu {
     text-align: center;
     display: inline-block;
     vertical-align: middle;
-    width: 250px;
-    min-height: 25vh;
-    border: 3px solid darkblue;
+    /* width: 250px;
+    min-height: 25vh; */
+    width: 28vh;
+    min-height: 23vh;
+    width: 235px;
+    min-height: 190px;
     margin: 5px;
     padding: 0;
     list-style-type: none;

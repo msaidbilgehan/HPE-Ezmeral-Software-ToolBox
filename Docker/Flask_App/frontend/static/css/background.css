@@ -335,6 +335,300 @@
     background-position: center;
 }
 
+.bg-gif-computer-burn-1 {
+    background-image: url("https://media.giphy.com/media/l0DELAq175S4Zeobm/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-simpsons-hide-1 {
+    background-image: url("https://media.giphy.com/media/jUwpNzg9IcyrK/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-simpsons-scream-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdDZtN2E2b3o5Z2dqNGYzd3IyNnBrcmd1MDNuN3E5OTBiMWJlMTZraiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xU9TT471DTGJq/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-simpsons-scream-2 {
+    background-image: url("https://media.giphy.com/media/l2JedqLNIjkrEDxNS/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-404-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNzM1NWFvY3J6MDdiem44cmYzcHR6dmY1M2p0a211YnNiOHUxNWRqdSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/DHBGehJ3FSZEygszX3/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-noise-1 {
+    background-image: url("https://media.giphy.com/media/37mOxzzvUtI46oKxZ4/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-server-error-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbXAyd2ZxbTZ2bXhxOHI3Mm10NWJtYTluM3plODR2ZmJjbzl2NDQxMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qaDbEDavgvKBs5jJc5/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-404-2 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWdhODhheWJwOHo3bjd1MjgxcGR2ZWJ6dWF1ZzlnejB2Y2wyMjFpNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/S8rEAbtG4WA2ULH7CH/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-server-error-2 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGxhZ3BnM2NtZHJkNWM1cWNpc3hsMmVkdDBtNXFncGhjZXA0MnhoMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/0Dxuk20eU0bDYaxRR8/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-404-3 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGxhZ3BnM2NtZHJkNWM1cWNpc3hsMmVkdDBtNXFncGhjZXA0MnhoMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/0Dxuk20eU0bDYaxRR8/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-error-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjJkbXdzbWh0NTJ6MHhjbHF0d28xNnQxZGpsaTMxMm51b2x2MnI3MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Rkis28kMJd1aE/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-computer-malfunction-1 {
+    background-image: url("https://media.giphy.com/media/Nrzs481LzLEdy/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-noise-2 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNTB2OXAwdXQ4ajFlNmt1OWV0cDI0cjl6ZG50bzh1eWU1eG9jdzR0YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sC0vNYxuMYU24/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-computer-error-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGdtZ3puYWFqaDNseDVxN241d2dzbGo0bTNoMGcxOWoxMnp5ZGgxZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KA593kO0JvXMs/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-computer-programming-1 {
+    background-image: url("https://media.giphy.com/media/VF0WIRjfwvFERopBFY/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-noise-3 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOGdtZ3puYWFqaDNseDVxN241d2dzbGo0bTNoMGcxOWoxMnp5ZGgxZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KA593kO0JvXMs/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-where-1 {
+    background-image: url("https://media.tenor.com/CgNRCkFiioEAAAAd/where-is-the-tip-stackchain.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-file-not-found {
+    background-image: url("https://media.giphy.com/media/em3bw47RSsepEFcVLm/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-noise-4 {
+    background-image: url("https://media.giphy.com/media/MCooVAfKV86wuvnbDF/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-question {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMzZoNDB6M3I5dnp3aXBiY2Q5MTQyd2l4enExdWx2ZHppcDAxNDM2ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/URq7eUzYeeaHOPlO5I/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-1 {
+    background-image: url("https://i.gifer.com/7DcD.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-question-mark-1 {
+    background-image: url("https://cdn.dribbble.com/users/1144520/screenshots/2908827/media/87ac8ef27c8e0fd38bd7d1b743933a73.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-red-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjJqendrdmRpYWdveGRiNHZlaDZiaXZqODV0d2w1a2p3NTAwbXZ4eiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3ov9jL6YCEBtw9hF2o/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-red-2 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGtqdXphcWdmMm44NGJoN3BiMG9zNXViMG1scmpic3d1amI1aXFjbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3og0IOa1X349KZ8E1i/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-red-3 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGtqdXphcWdmMm44NGJoN3BiMG9zNXViMG1scmpic3d1amI1aXFjbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3og0IOa1X349KZ8E1i/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-yellow-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTdycm5nMnptZm05NWNpd254cW9yMmxjbGh6czdzYmZ5emNpZjdpMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HMGdYjz17uaUvp1nco/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-red-4 {
+    background-image: url("https://media.giphy.com/media/YO7P8VC7nlQlO/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-ok-green {
+    background-image: url("https://i.pinimg.com/originals/e8/06/52/e80652af2c77e3a73858e16b2ffe5f9a.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-thumb-up-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDkwajFub2RpbmxsMXJsamF3c3h5dnA3MHhrdjhna3ZkM3hwYWpmeSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/111ebonMs90YLu/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif- {
+    background-image: url("");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
 .bg-gif- {
     background-image: url("");
     background-repeat: no-repeat;

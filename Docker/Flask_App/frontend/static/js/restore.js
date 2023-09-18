@@ -21,7 +21,6 @@ function restore_control(button = null) {
             return { "ip": device.ip }
         })
     );
-    console.log(ipAddressesJson);
 
     let credentials = get_ssh_credentials();
     let ssh_usernameJson = credentials[0];
@@ -41,47 +40,38 @@ function restore_control(button = null) {
 
         data.message.forEach(item => {
             // "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
-            let flex_Element_classes = [];
-            
-            let connection_status = [];
-            let backup_script_status = [];
-            let cron_job_status = [];
-
-            let background_class =[];
 
             if (item.check === "True") {
-                flex_Element_classes = "bg-gif-green-circle";
                 
                 // TODO: Check if statuses are correct
-                connection_status.push("🟢");
-                backup_script_status.push("🟢");
-                cron_job_status.push("🟢");
 
-                background_class.push("bg-gif-data-center-1");
-
-                ip_list_connected.push(item.ip_address);
+                ip_list_connected.push({
+                    "ip": item.ip_address,
+                    "connection_status": "🟢",
+                    "backup_script_status": "🟢",
+                    "cron_job_status": "🟢",
+                    "background_class": "bg-gif-ok-green",
+                });
 
             } else if (item.check === "False") {
-                flex_Element_classes = "bg-gif-lost";
-                
-                connection_status.push("🔴");
-                backup_script_status.push("🔴");
-                cron_job_status.push("🔴");
 
-                background_class.push("bg-gif-no-connection");
-
-                ip_list_not_connected.push(item.ip_address);
+                ip_list_not_connected.push({
+                    "ip": item.ip_address,
+                    "connection_status": "🔴",
+                    "backup_script_status": "🔴",
+                    "cron_job_status": "🔴",
+                    "background_class": "bg-gif-alert-red-4",
+                });
             } else {
-                flex_Element_classes = "bg-gif-black-hole-red";
-                
-                connection_status.push("⚫");
-                backup_script_status.push("⚫");
-                cron_job_status.push("⚫");
-
-                background_class.push("bg-gif-no-connection");
 
                 console.warn(`Unexpected value for item.check: ${item.check}`);
-                ip_list_not_connected.push(item.ip_address);
+                ip_list_not_connected.push({
+                    "ip": item.ip_address,
+                    "connection_status": "⚫",
+                    "backup_script_status": "⚫",
+                    "cron_job_status": "⚫",
+                    "background_class": "bg-gif-noise-1",
+                });
             }
 
             // elements: any[] | undefined,
@@ -93,21 +83,21 @@ function restore_control(button = null) {
 
             // Connected Flex Container Update
             flex_Element_Update_Device(
-                device_elements, 
-                ip_list_connected, 
-                connection_status,
-                cron_job_status,
-                backup_script_status,
-                background_class,
+                device_elements,
+                ip_list_connected.map(item => item.ip),
+                ip_list_connected.map(item => item.connection_status),
+                ip_list_connected.map(item => item.cron_job_status),
+                ip_list_connected.map(item => item.backup_script_status),
+                ip_list_connected.map(item => item.background_class),
             );
             // Not Connected Flex Container Update
             flex_Element_Update_Device(
                 device_elements,
-                ip_list_not_connected,
-                device_elements.map(element => "⚫"),
-                device_elements.map(element => "⚫"),
-                device_elements.map(element => "⚫"),
-                device_elements.map(element => "bg-gif-no-connection"),
+                ip_list_not_connected.map(item => item.ip),
+                ip_list_not_connected.map(item => item.connection_status),
+                ip_list_not_connected.map(item => item.cron_job_status),
+                ip_list_not_connected.map(item => item.backup_script_status),
+                ip_list_not_connected.map(item => item.background_class),
             );
             // showNotification(notification, "info");
         });

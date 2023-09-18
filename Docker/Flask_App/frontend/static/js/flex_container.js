@@ -81,7 +81,6 @@ export function flex_Element_Update_Device(elements = [], ip_list = [], connecti
 
                 if (connection_status[ip_counter] !== null && connection_status[ip_counter] !== undefined) {
                     let sub_div_Connection = element.querySelector("#sub_div_Connection_" + ip);
-                    console.log("#sub_div_Connection_" + ip, sub_div_Connection)
                     sub_div_Connection.innerHTML = "Connection Status: " + connection_status[ip_counter];
                 }
                 if (cron_job_status[ip_counter] !== null && cron_job_status[ip_counter] !== undefined) {
@@ -162,8 +161,8 @@ document.addEventListener('DOMContentLoaded', () => {
         handle: ".submenu_handle",
         swapAnimation: {
             duration: 200,
-            easingFunction: "easeInBack",
-            vertical: true
+            easingFunction: "linear",
+            horizontal: true
         },
         plugins: [Draggable.Plugins.SwapAnimation]
     });

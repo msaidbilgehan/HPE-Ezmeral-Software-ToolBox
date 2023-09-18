@@ -131,16 +131,22 @@ class Task_Handler_Class(ABC, Thread):
 
    def wait_To_Stop_Once_Task(self) -> int:
       self.logger.warning("Waiting to stop task once...")
+
+      time.sleep(1) # Wait for the thread to start
       while self.is_Running():
          time.sleep(1)
+
       self.logger.warning("Task once stopped...")
       return 0
 
 
    def wait_To_Stop_Task(self) -> int:
       self.logger.warning("Waiting to stop task fully...")
+      
+      time.sleep(1) # Wait for the thread to start
       while self.is_Running() and self.is_Thread_Started():
          time.sleep(1)
+      
       self.logger.warning("Task fully stopped...")
       return 0
 

@@ -239,9 +239,10 @@ def backup_endpoint():
                     cron_parameters="", # Cron Parameters
                     script_parameters="",
                 )
-                
                 if not backup_restore_thread.is_Running():
                     backup_restore_thread.start_Task()
+                    backup_restore_thread.wait_To_Stop_Once_Task()
+                    
                 else:
                     backup_restore_thread.stop_Task()
                     backup_restore_thread.wait_To_Stop_Once_Task()
@@ -326,6 +327,7 @@ def fqdn_endpoint():
                 
                 if not fqdn_thread.is_Running():
                     fqdn_thread.start_Task()
+                    fqdn_thread.wait_To_Stop_Once_Task()
                 else:
                     fqdn_thread.stop_Task()
                     fqdn_thread.wait_To_Stop_Once_Task()
@@ -440,19 +442,23 @@ def log_collection_endpoint():
                 
                 if not log_collection_thread.is_Running():
                     log_collection_thread.start_Task()
+                    log_collection_thread.wait_To_Stop_Once_Task()
                 else:
                     log_collection_thread.stop_Task()
                     log_collection_thread.wait_To_Stop_Once_Task()
                     log_collection_thread.start_Task()
         else:
+            notification_thread.queue_add("Log collection task already running", Notification_Status.WARNING)
             return jsonify(
                 message="Log collection task already running"
             )
-        
+            
+        notification_thread.queue_add("Log collection task queued", Notification_Status.INFO)
         return jsonify(
             message="Log collection task queued"
         )
     else:
+        notification_thread.queue_add("Parameters missing!", Notification_Status.WARNING)
         return jsonify(
             message="Parameters missing!"
         )

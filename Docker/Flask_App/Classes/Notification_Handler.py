@@ -38,7 +38,7 @@ class Notification_Handler_Thread(Task_Handler_Class):
         )
         
 
-    def streamer(self, wait_thread=None, sleep_time=0.3):
+    def streamer(self, wait_thread=None, sleep_time: float=0.3):
       self.is_running = False
       self.is_finished = False
       self._flag_task_stop = False

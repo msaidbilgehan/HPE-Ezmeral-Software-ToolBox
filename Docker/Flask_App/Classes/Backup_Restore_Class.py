@@ -43,7 +43,7 @@ class Backup_Restore_Class(Task_Handler_Class):
         return 0
    
 
-    def task(self, script_path:str, script_upload_path:str, script_run_command:str, script_parameters:str, add_to_cron: bool, cron_parameters:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> int:
+    def task(self, id:str, script_path:str, script_upload_path:str, script_run_command:str, script_parameters:str, add_to_cron: bool, cron_parameters:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> int:
         self.logger.info(f"Backup / Restore Task Running on {ip_addresses} ...")
         
         failed_ip_addresses:list[str] = list()
@@ -64,6 +64,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                     ssh_client=ip_address, 
                     username=ssh_username, 
                     password=ssh_password, 
+                    timeout=3,
                     local_file_path=script_path,
                     remote_file_path=script_upload_path, 
                     overwrite=True,

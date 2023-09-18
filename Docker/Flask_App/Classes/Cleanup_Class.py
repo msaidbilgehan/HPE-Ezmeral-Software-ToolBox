@@ -51,6 +51,7 @@ class Cleanup_Class(Task_Handler_Class):
                     ssh_client=ip_address, 
                     username=ssh_username, 
                     password=ssh_password, 
+                    timeout=3,
                     local_file_path=script_path,
                     # remote_file_path="/tmp/", 
                     overwrite=True,

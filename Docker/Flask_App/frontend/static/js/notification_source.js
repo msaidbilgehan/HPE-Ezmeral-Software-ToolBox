@@ -17,7 +17,7 @@ function notification_EventSource_Start() {
 
     notification_source.onerror = function (error) {
         console.error("EventSource ", pageType, " failed:", error);
-        showNotification('EventSource ' + pageType + ' failed: ' + error, "error");
+        showNotification('Connection Lost: ' + pageType, "error");
         notification_source.close(); // close the connection if an error occurs
     };
 

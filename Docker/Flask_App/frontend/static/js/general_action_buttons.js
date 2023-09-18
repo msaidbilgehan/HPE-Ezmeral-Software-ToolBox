@@ -47,12 +47,14 @@ function start_Action (button) {
     fetch(url).then(response => response.json()).then(data => {
         // console.log(data.message);
         showNotification(data.message, "info");
+        
+        button_disable_by_element(button, false);
     }).catch(error => {
         console.error(error);
         showNotification(error, "error");
+
+        button_disable_by_element(button, false);
     });
-    
-    button_disable_by_element(button, false);
 }
 window.start_Action = start_Action;
 

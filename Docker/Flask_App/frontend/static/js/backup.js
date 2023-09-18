@@ -4,6 +4,7 @@ import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_Flex_Container_Devices, flex_Element_Update_Device, flex_Element_Clear_Devices, flex_Element_Add_Device } from './flex_container.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
 import { showNotification } from './notification.js';
+import { button_disable_by_element } from './tools.js';
 
 
 function backup_cron_control(button) {
@@ -58,6 +59,7 @@ function backup_cron_control(button) {
     url = url + '&ip_addresses_hostnames=' + encodeURIComponent(ipAddressesJson);
 
     // Call Endpoint
+    fetchTimeout()
     fetch(url).then(response => response.json()).then(data => {
         // console.log(typeof data.message[Symbol.iterator]);
         // console.log(typeof data.message instanceof Array);

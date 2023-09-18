@@ -19,7 +19,7 @@ def isdir(st_mode):
 
 
 
-def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:str, remote_file_path:str="/tmp/", port:int=22, overwrite=False, logger_hook=None) -> str:
+def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:str, remote_file_path:str="/tmp/", port:int=22, timeout=5, overwrite=False, logger_hook=None) -> str:
     
     if logger_hook is not None:
         local_logger = logger_hook
@@ -28,6 +28,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
     
     try:
         transport = paramiko.Transport((ssh_client, port))
+        transport.settimeout(timeout)
     except Exception as error:
         local_logger.error(f"Can not creating Transport: {error}")
         return ""
@@ -120,7 +121,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
 
 
 
-def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str, local_folder_path:str="./received_files", port:int=22, sleep_time=0, logger_hook=None) -> str:
+def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str, local_folder_path:str="./received_files", port:int=22, timeout=5, sleep_time=0, logger_hook=None) -> str:
     
     if logger_hook is not None:
         local_logger = logger_hook
@@ -142,6 +143,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
     
     try:
         transport = paramiko.Transport((ssh_client, port))
+        transport.settimeout(timeout)
     except Exception as error:
         local_logger.error(f"Can not creating Transport: {error}")
         return ""

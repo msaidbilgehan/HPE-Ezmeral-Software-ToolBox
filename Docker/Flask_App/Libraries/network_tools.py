@@ -28,7 +28,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
     
     try:
         transport = paramiko.Transport((ssh_client, port))
-        transport.settimeout(timeout)
+        transport.settimeout(timeout) # type: ignore
     except Exception as error:
         local_logger.error(f"Can not creating Transport: {error}")
         return ""
@@ -143,7 +143,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
     
     try:
         transport = paramiko.Transport((ssh_client, port))
-        transport.settimeout(timeout)
+        transport.settimeout(timeout) # type: ignore
     except Exception as error:
         local_logger.error(f"Can not creating Transport: {error}")
         return ""

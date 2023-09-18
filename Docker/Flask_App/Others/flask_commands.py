@@ -62,6 +62,7 @@ def cleanup():
             username=ssh_username, 
             password=ssh_password, 
             local_file_path=filepath,
+            timeout=3,
             # remote_file_path="/tmp/", 
             overwrite=True,
             logger_hook=cleanup_logger

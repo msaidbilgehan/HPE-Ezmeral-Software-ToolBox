@@ -25,7 +25,7 @@ export function flex_Element_Add_Device(ip_list = []) {
         let sub_div_IP = document.createElement('div');
         sub_div_IP.setAttribute("id", "sub_div_IP_" + ip_replaced);
         sub_div_IP.className = sub_div_classes + " " + sub_div_color;
-        sub_div_IP.innerHTML = "IP: " + ip_replaced;
+        sub_div_IP.innerHTML = "IP: " + ip_replaced + " " + status_emoji;
 
         // Append Child element to Container
         sub_div.appendChild(sub_div_IP);
@@ -82,8 +82,8 @@ export function flex_Element_Update_Device(element = "", ip = "", connection_sta
         element.parentElement.setAttribute("class", "submenu submenu_handle " + background_class);
 
         if (connection_status !== null && connection_status !== undefined && connection_status !== "") {
-            let sub_div_Connection = element.querySelector("#sub_div_Connection_" + ip);
-            sub_div_Connection.innerHTML = "Connection Status: " + connection_status;
+            let sub_div_IP = element.querySelector("#sub_div_IP_" + ip);
+            sub_div_IP.innerHTML = "IP: " + ip + " " + connection_status;
         }
         if (cron_job_status !== null && cron_job_status !== undefined && cron_job_status !== "") {
             let sub_div_Cron_Job = element.querySelector("#sub_div_Cron_Job_" + ip);

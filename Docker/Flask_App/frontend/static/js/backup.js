@@ -70,14 +70,11 @@ function backup_cron_control(button) {
 
                 // flex_Element_Update_Device:
                 // element: str,
-                // ip_list: str,
+                // ip: str,
                 // connection_status: str,
                 // cron_job_status: str,
                 // backup_script_status: str,
                 // background_class: str
-
-                let ip_list_connected = [];
-                let ip_list_not_connected = [];
 
                 if (item.check === "True") {
 

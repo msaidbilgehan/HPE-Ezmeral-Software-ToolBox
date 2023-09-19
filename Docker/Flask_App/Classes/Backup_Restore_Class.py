@@ -184,8 +184,10 @@ class Backup_Restore_Class(Task_Handler_Class):
         failed_ip_addresses:list[str] = list()
         response_list: list[dict[str, str]] = list()
         response_structure: dict[str, str] = {
-            "ip_address": "",
-            "response": "",
+            "ip_address": "", # IP Information
+            "response": "", # Response of command
+            "check": "", # Check if command executed successfully
+            "message": "" # Message of command
         }
 
         try:

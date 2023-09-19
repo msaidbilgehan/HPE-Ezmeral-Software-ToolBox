@@ -19,6 +19,7 @@ from Flask_App.Libraries.logger_module import global_logger
 
 
 app = Flask(__name__, template_folder=f'{app_path}frontend/pages', static_folder=f'{app_path}frontend/static')
+app.secret_key = bytes(f'salsaT.reOs01{os.urandom(16)}', encoding='utf-8')
 
 endpoint_thread_mapping: dict[str, Task_Handler_Class] = {
     "cleanup": cleanup_thread,
@@ -168,26 +169,53 @@ def restore_control_endpoint():
                 #     ip_addresses=ip_address_hostnames,
                 # )
                 
-                response = backup_restore_thread.get_backup_information(
+                responses = backup_restore_thread.get_backup_information(
                     ssh_username=ssh_username,
                     ssh_password=ssh_password,
                     ip_addresses=ip_address_hostnames,
                     backup_dir=backup_path,
                 )
                 
-                folder_info = [
-                    {
-                        # "message": "No content in folder found",
-                        "size": "0",
-                        "name": "-",
-                        "creation_date": "-",
-                    }
-                ]
-                print("restore_control_endpoint response: ", response)
-                notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
+                # temp_response["ip_address"] = ip_address
+                # temp_response["response"] = str(response)
+                # temp_response["check"] = str(True if stout else False)
+                # temp_response["message"] = stout
                 
+                response_to_client: dict[str, dict] = dict()
+                for response in responses:
+                    response_to_client[response["ip_address"]] = dict()
+                    response_to_client[response["ip_address"]]["backup_information"] = list()
+                    response_to_client[response["ip_address"]]["response"] = response["response"]
+                    response_to_client[response["ip_address"]]["check"] = response["check"]
+                    response_to_client[response["ip_address"]]["message"] = response["message"]
+                    
+                    lines = response["message"].split("\n")
+                    if "" in lines:
+                        lines.remove("")
+
+                    for line in lines:
+                        parts = line.rsplit(' ')
+                        if "" in parts:
+                            parts.remove("")
+                            
+                        if len(parts) == 5:
+                            path, date, timestamp, ownership, size = parts
+                            response_to_client[response["ip_address"]]["backup_information"].append(
+                                {
+                                    "path": path,
+                                    "date": date,
+                                    "timestamp": timestamp,
+                                    "ownership": ownership,
+                                    "size": size
+                                }
+                            )
+                        else:
+                            response_to_client[response["ip_address"]]["backup_information"].append(parts)
+
+                notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
+
                 return jsonify(
-                    message=response,
+                    message=response_to_client,
                 )
         else:
             return jsonify(

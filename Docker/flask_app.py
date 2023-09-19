@@ -45,6 +45,7 @@ endpoint_directory_paths = {
     "restore": "",
 }
 
+backup_id_path = "/home/{ssh_username}/backup.id"
 backup_path = "/root/snapshot"
 backup_script = "daily_rotation_mapr_snapshot.sh"
 backup_script_upload_path="/home/{ssh_username}/"
@@ -163,57 +164,88 @@ def restore_control_endpoint():
         if not backup_restore_thread.safe_task_lock.locked():
             with backup_restore_thread.safe_task_lock:
                 
-                # response = backup_restore_thread.restore_control(
-                #     ssh_username=ssh_username,
-                #     ssh_password=ssh_password,
-                #     ip_addresses=ip_address_hostnames,
-                # )
+                # Backup ID Control
+                responses_backup_id = backup_restore_thread.get_file_information(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    file_dir=backup_id_path.format(ssh_username=ssh_username),
+                )
                 
-                responses = backup_restore_thread.get_backup_information(
+                # Backup Cron Control
+                responses_backup_cron = backup_restore_thread.get_backup_cron_control(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    script_name=backup_script.split(".")[0],
+                )
+                
+                # Backup Script Control
+                responses_backup_script = backup_restore_thread.get_file_information(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    file_dir=backup_script_upload_path.format(ssh_username=ssh_username) + backup_script,
+                )
+                
+                # Restore Script Control
+                responses_restore_script = backup_restore_thread.get_file_information(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    file_dir=restore_script_upload_path.format(ssh_username=ssh_username) + restore_script,
+                )
+                
+                # Backups Information Control
+                responses_backups = backup_restore_thread.get_backup_information(
                     ssh_username=ssh_username,
                     ssh_password=ssh_password,
                     ip_addresses=ip_address_hostnames,
                     backup_dir=backup_path,
                 )
                 
-                # temp_response["ip_address"] = ip_address
-                # temp_response["response"] = str(response)
-                # temp_response["check"] = str(True if stout else False)
-                # temp_response["message"] = stout
+                print("responses_backup_id", responses_backup_id)
+                print("responses_backup_cron", responses_backup_cron)
+                print("responses_backup_script", responses_backup_script)
+                print("responses_restore_script", responses_restore_script)
+                print("responses_backups", responses_backups)
                 
                 response_to_client: dict[str, dict] = dict()
-                for response in responses:
-                    response_to_client[response["ip_address"]] = dict()
-                    response_to_client[response["ip_address"]]["backup_information"] = list()
-                    response_to_client[response["ip_address"]]["response"] = response["response"]
-                    response_to_client[response["ip_address"]]["check"] = response["check"]
-                    response_to_client[response["ip_address"]]["message"] = response["message"]
+                
+                for ip_address in ip_address_hostnames:
+                    response_to_client[ip_address] = dict()
+                    response_to_client[ip_address]["responses_backup_id"] = responses_backup_id[ip_address]
+                    response_to_client[ip_address]["responses_backup_cron"] = responses_backup_cron[ip_address]
+                    response_to_client[ip_address]["responses_backup_script"] = responses_backup_script[ip_address]
+                    response_to_client[ip_address]["responses_backups"] = responses_backups[ip_address]
+                    response_to_client[ip_address]["responses_restore_script"] = responses_restore_script[ip_address]
                     
-                    lines = response["message"].split("\n")
-                    if "" in lines:
-                        lines.remove("")
+                    # lines = response_to_client[ip_address]["responses_backup_cron"]["message"].split("\n")
+                    # if "" in lines:
+                    #     lines.remove("")
 
-                    for line in lines:
-                        parts = line.rsplit(' ')
-                        if "" in parts:
-                            parts.remove("")
+                    # for line in lines:
+                    #     parts = line.rsplit(' ')
+                    #     if "" in parts:
+                    #         parts.remove("")
                             
-                        if len(parts) == 5:
-                            path, date, timestamp, ownership, size = parts
-                            response_to_client[response["ip_address"]]["backup_information"].append(
-                                {
-                                    "path": path,
-                                    "date": date,
-                                    "timestamp": timestamp,
-                                    "ownership": ownership,
-                                    "size": size
-                                }
-                            )
-                        else:
-                            response_to_client[response["ip_address"]]["backup_information"].append(parts)
+                    #     if len(parts) == 5:
+                    #         path, date, timestamp, ownership, size = parts
+                    #         response_to_client[ip_address]["backup_information"].append(
+                    #             {
+                    #                 "path": path,
+                    #                 "date": date,
+                    #                 "timestamp": timestamp,
+                    #                 "ownership": ownership,
+                    #                 "size": size
+                    #             }
+                    #         )
+                    #     else:
+                    #         response_to_client[ip_address]["backup_information"].append(parts)
+                    #         response_to_client[ip_address]["responses_backup_cron"]["message"]
+                    
 
                 notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
-
                 return jsonify(
                     message=response_to_client,
                 )

@@ -7,6 +7,7 @@ export function flex_Element_Add_Device(ip_list = []) {
     let status_emoji = "🔵";
     let sub_div_classes = "bg-color-black-25 bg-blur-5px w-100 align-items-left";
     let sub_div_color = "text-shadow-black-0px color-white";
+    let sub_div_classes_latest = sub_div_classes + " " + sub_div_color;
 
     let element_list = {};
     
@@ -19,43 +20,61 @@ export function flex_Element_Add_Device(ip_list = []) {
         // Container
         let sub_div = document.createElement('div');
         sub_div.setAttribute("id", "sub_div_" + ip_replaced);
-        sub_div.className = "d-flex flex-sm-column mb-2 " + sub_div_classes + " " + sub_div_color;
+        sub_div.className = "d-flex flex-sm-column mb-2 " + sub_div_classes_latest;
 
-        // IP Input Box
+        // IP Information
         let sub_div_IP = document.createElement('div');
         sub_div_IP.setAttribute("id", "sub_div_IP_" + ip_replaced);
-        sub_div_IP.className = sub_div_classes + " " + sub_div_color;
+        sub_div_IP.className = sub_div_classes_latest;
         sub_div_IP.innerHTML = "IP: " + ip_replaced + " " + status_emoji;
 
         // Append Child element to Container
         sub_div.appendChild(sub_div_IP);
 
-        // Connection Status Information
-        let sub_div_Connection = document.createElement('div');
-        sub_div_Connection.setAttribute("id", "sub_div_Connection_" + ip_replaced);
-        sub_div_Connection.className = sub_div_classes + " " + sub_div_color;
-        sub_div_Connection.innerHTML = "Connection Status: " + status_emoji;
+        // IP Information
+        let sub_div_Backup_ID = document.createElement('div');
+        sub_div_Backup_ID.setAttribute("id", "sub_div_Backup_ID_" + ip_replaced);
+        sub_div_Backup_ID.className = sub_div_classes_latest;
+        sub_div_Backup_ID.innerHTML = "ID: " + status_emoji;
 
         // Append Child element to Container
-        sub_div.appendChild(sub_div_Connection);
+        sub_div.appendChild(sub_div_Backup_ID);
 
         // Cron Job Status Information
         let sub_div_Cron_Job = document.createElement('div');
         sub_div_Cron_Job.setAttribute("id", "sub_div_Cron_Job_" + ip_replaced);
-        sub_div_Cron_Job.className = sub_div_classes + " " + sub_div_color;
-        sub_div_Cron_Job.innerHTML = "Cron Job Status: " + status_emoji;
+        sub_div_Cron_Job.className = sub_div_classes_latest;
+        sub_div_Cron_Job.innerHTML = "Cron Job: " + status_emoji;
 
         // Append Child element to Container
         sub_div.appendChild(sub_div_Cron_Job);
 
         // Backup Script File Status Information
         let sub_div_backup_script = document.createElement('div');
-        sub_div_backup_script.setAttribute("id", "sub_div_backup_script_" + ip_replaced);
-        sub_div_backup_script.className = sub_div_classes + " " + sub_div_color;
-        sub_div_backup_script.innerHTML = "Backup Script Status: " + status_emoji;
+        sub_div_backup_script.setAttribute("id", "sub_div_Backup_Script_" + ip_replaced);
+        sub_div_backup_script.className = sub_div_classes_latest;
+        sub_div_backup_script.innerHTML = "Backup Script: " + status_emoji;
 
         // Append Child element to Container
         sub_div.appendChild(sub_div_backup_script);
+
+        // Restore Script File Status Information
+        let sub_div_restore_script = document.createElement('div');
+        sub_div_restore_script.setAttribute("id", "sub_div_Restore_Script_" + ip_replaced);
+        sub_div_restore_script.className = sub_div_classes_latest;
+        sub_div_restore_script.innerHTML = "Restore Script: " + status_emoji;
+
+        // Append Child element to Container
+        sub_div.appendChild(sub_div_restore_script);
+
+        // Cron Job Status Information
+        let sub_div_Backups = document.createElement('div');
+        sub_div_Backups.setAttribute("id", "sub_div_Backups_" + ip_replaced);
+        sub_div_Backups.className = sub_div_classes_latest;
+        sub_div_Backups.innerHTML = "Backups: " + "-";
+
+        // Append Child element to Container
+        sub_div.appendChild(sub_div_Backups);
 
         element_list[ip] = sub_div;
 
@@ -70,7 +89,7 @@ export function flex_Element_Add_Device(ip_list = []) {
     return element_list;
 }
 
-export function flex_Element_Update_Device(element = "", ip = "", connection_status = "", cron_job_status = "", backup_script_status = "", background_class = "") {
+export function flex_Element_Update_Device(element = "", ip = "", connection_status = "", backup_id = "", cron_job_status = "", backup_script_status = "", restore_script_status = "", backups = "0", background_class = "") {
     if (element === "" || element === null || element === undefined) {
         console.error("No element provided!");
         return;
@@ -85,13 +104,25 @@ export function flex_Element_Update_Device(element = "", ip = "", connection_sta
             let sub_div_IP = element.querySelector("#sub_div_IP_" + ip);
             sub_div_IP.innerHTML = "IP: " + ip + " " + connection_status;
         }
+        if (backup_id !== null && backup_id !== undefined && backup_id !== "") {
+            let sub_div_Backup_ID = element.querySelector("#sub_div_Backup_ID_" + ip);
+            sub_div_Backup_ID.innerHTML = "ID: " + backup_id;
+        }
         if (cron_job_status !== null && cron_job_status !== undefined && cron_job_status !== "") {
             let sub_div_Cron_Job = element.querySelector("#sub_div_Cron_Job_" + ip);
-            sub_div_Cron_Job.innerHTML = "Cron Job Status: " + cron_job_status;
+            sub_div_Cron_Job.innerHTML = "Cron Job: " + cron_job_status;
         }
         if (backup_script_status !== null && backup_script_status !== undefined && backup_script_status !== "") {
-            let sub_div_backup_script = element.querySelector("#sub_div_backup_script_" + ip);
-            sub_div_backup_script.innerHTML = "Backup Script Status: " + backup_script_status;
+            let sub_div_backup_script = element.querySelector("#sub_div_Backup_Script_" + ip);
+            sub_div_backup_script.innerHTML = "Backup Script: " + backup_script_status;
+        }
+        if (restore_script_status !== null && restore_script_status !== undefined && restore_script_status !== "") {
+            let sub_div_restore_script = element.querySelector("#sub_div_Restore_Script_" + ip);
+            sub_div_restore_script.innerHTML = "Restore Script: " + restore_script_status;
+        }
+        if (backups !== null && backups !== undefined && backups !== "0") {
+            let sub_div_Backups = element.querySelector("#sub_div_Backups_" + ip);
+            sub_div_Backups.innerHTML = "Backups: " + backups;
         }
     };
 }

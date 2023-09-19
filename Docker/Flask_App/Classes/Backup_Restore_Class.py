@@ -178,189 +178,146 @@ class Backup_Restore_Class(Task_Handler_Class):
         return 0
     
     
-    def get_backup_information(self, backup_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> list[dict[str, str]]:
+    def get_backup_cron_control(self, script_name: str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> dict:
+        self.logger.info(f"Backup Cron Information Fetch command running on {ip_addresses} ...")
+        
+        failed_ip_addresses:list[str] = list()
+        responses: dict = dict()
+
+        if script_name == "":
+            self.logger.error(f"Script Name Parameter is empty!")
+            return responses
+        
+        # Send command to remote devices
+        for ip_address in ip_addresses:
+            self.logger.info("Connecting to " + ip_address + " ...")
+            
+            # If run command given, execute it
+            ssh_command = f"sudo crontab -l | awk '/{script_name}.*\\.sh/" + " {print $1, $2, $3, $4, $5}'"
+
+            response, stout = ssh_execute_command(
+                ssh_client=ip_address, 
+                username=ssh_username, 
+                password=ssh_password, 
+                command=ssh_command,
+                is_sudo=True,
+                reboot=False,
+                logger_hook=self.logger
+            )
+            if not response:
+                self.logger.warn(f"Backup Cron Information Fetch failed -> {ip_address}")
+                self.logger.warn(f"{ip_address} :: {stout}")
+                failed_ip_addresses.append(ip_address)
+            
+            responses[ip_address] = dict()
+            responses[ip_address]["response"] = str(response)
+            responses[ip_address]["check"] = str(True if stout else False)
+            responses[ip_address]["message"] = stout
+            
+            # Check Thread State
+            time.sleep(1)
+                
+        
+        if len(failed_ip_addresses) > 0:
+            self.logger.info(f"Backup Cron Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
+        self.logger.info(f"Backup Cron Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
+        
+        return responses
+    
+    
+    def get_backup_information(self, backup_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> dict:
         self.logger.info(f"Backup Information Fetch command running on {ip_addresses} ...")
         
         failed_ip_addresses:list[str] = list()
-        response_list: list[dict[str, str]] = list()
-        response_structure: dict[str, str] = {
-            "ip_address": "", # IP Information
-            "response": "", # Response of command
-            "check": "", # Check if command executed successfully
-            "message": "" # Message of command
-        }
+        responses: dict = dict()
 
-        try:
-            # Send command to remote devices
-            for ip_address in ip_addresses:
-                self.logger.info("Connecting to " + ip_address + " ...")
-                
-                # If run command given, execute it
-                if backup_dir == "":
-                    backup_dir = "/root/snapshot"
-                    
-                ssh_command = 'find {} -maxdepth 1 -type d -exec stat --format="%n %y %s" {} \\; | sort'.format(backup_dir, '{}')
+        if backup_dir == "":
+            self.logger.warn(f"Backup Directory Parameter is empty, using default value: /root/snapshot")
+            backup_dir = "/root/snapshot"
+        
+        # Send command to remote devices
+        for ip_address in ip_addresses:
+            self.logger.info("Connecting to " + ip_address + " ...")
+            
+            # If run command given, execute it
+            ssh_command = 'find {} -maxdepth 1 -type d -exec stat --format="%n %y %s" {} \\; | sort'.format(backup_dir, '{}')
 
-                response, stout = ssh_execute_command(
-                    ssh_client=ip_address, 
-                    username=ssh_username, 
-                    password=ssh_password, 
-                    command=ssh_command,
-                    is_sudo=True,
-                    reboot=False,
-                    logger_hook=self.logger
-                )
-                if not response:
-                    self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
-                    self.logger.warn(f"{ip_address} :: {stout}")
-                    failed_ip_addresses.append(ip_address)
-                    
-                ssh_command = 'find {} -maxdepth 1 -type d -exec stat --format="%n %y %s" {} \\; | sort'.format(backup_dir, '{}')
-
-                # Sync Thread
-                time.sleep(0.1)
+            response, stout = ssh_execute_command(
+                ssh_client=ip_address, 
+                username=ssh_username, 
+                password=ssh_password, 
+                command=ssh_command,
+                is_sudo=True,
+                reboot=False,
+                logger_hook=self.logger
+            )
+            if not response:
+                self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
+                self.logger.warn(f"{ip_address} :: {stout}")
+                failed_ip_addresses.append(ip_address)
                 
-                response, stout = ssh_execute_command(
-                    ssh_client=ip_address, 
-                    username=ssh_username, 
-                    password=ssh_password, 
-                    command=ssh_command,
-                    is_sudo=True,
-                    reboot=False,
-                    logger_hook=self.logger
-                )
-                if not response:
-                    self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
-                    self.logger.warn(f"{ip_address} :: {stout}")
-                    failed_ip_addresses.append(ip_address)
-                
-                temp_response = response_structure.copy()
-                temp_response["ip_address"] = ip_address
-                temp_response["response"] = str(response)
-                temp_response["check"] = str(True if stout else False)
-                temp_response["message"] = stout
-                
-                response_list.append(temp_response)
-                
-                # Check Thread State
-                time.sleep(1)
-                    
-        except Exception as e:
-            self.logger.error(f"An error occurred: {e}")
+            # Sync Thread
+            time.sleep(0.1)
+            
+            responses[ip_address] = dict()
+            responses[ip_address]["response"] = str(response)
+            responses[ip_address]["check"] = str(True if stout else False)
+            responses[ip_address]["message"] = stout
+            
+            # Check Thread State
+            time.sleep(1)
         
         if len(failed_ip_addresses) > 0:
             self.logger.info(f"Backup Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
         self.logger.info(f"Backup Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
         
-        return response_list
+        return responses
+    
+    
+    def get_file_information(self, file_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> dict:
+        self.logger.info(f"Backup Information Fetch command running on {ip_addresses} ...")
+        
+        failed_ip_addresses:list[str] = list()
+        responses: dict = dict()
 
+        if file_dir == "":
+            self.logger.error(f"Backup Script Directory Parameter is empty")
+            return responses
+        
+        # Send command to remote devices
+        for ip_address in ip_addresses:
+            self.logger.info("Connecting to " + ip_address + " ...")
+            
+            # If run command given, execute it
+            ssh_command = 'find {}'.format(file_dir)
 
-    def backup_cron_control(self, ssh_username: str, ssh_password: str, ip_addresses: list[str], script_name: str) -> list[dict[str, str]]:
-        self.logger.info(f"Backup Cron Control running on {ip_addresses} ...")
-
-        failed_ip_addresses: list[str] = list()
-        ip_response_list: list[dict[str, str]] = list()
-        response_structure: dict[str, str] = {
-            "ip_address": "",
-            "response": "",
-            "check": "",
-            "message": "",
-        }
-
-        try:
-            # Send command to remote devices
-            for ip_address in ip_addresses:
-                self.logger.info("Connecting to " + ip_address + " ...")
-
-                # If run command given, execute it
-                ssh_command = f"sudo crontab -l | awk '/{script_name}.*\\.sh/" + "{print $1, $2, $3, $4, $5}'"
-
-                response, stout = ssh_execute_command(
-                    ssh_client=ip_address,
-                    username=ssh_username,
-                    password=ssh_password,
-                    command=ssh_command,
-                    reboot=False,
-                    logger_hook=self.logger
-                )
-                temp_response = response_structure.copy()
-                temp_response["ip_address"] = ip_address
-                temp_response["response"] = str(response)
-                temp_response["check"] = str(True if stout else False)
-                temp_response["message"] = stout
+            response, stout = ssh_execute_command(
+                ssh_client=ip_address, 
+                username=ssh_username, 
+                password=ssh_password, 
+                command=ssh_command,
+                is_sudo=True,
+                reboot=False,
+                logger_hook=self.logger
+            )
+            if not response:
+                self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
+                self.logger.warn(f"{ip_address} :: {stout}")
+                failed_ip_addresses.append(ip_address)
                 
-                if not response:
-                    self.logger.warn(f"Backup Cron Control failed -> {ip_address}")
-                    self.logger.warn(f"{ip_address} :: {stout}")
-                    failed_ip_addresses.append(ip_address)
-                    
-                ip_response_list.append(
-                    temp_response
-                )
-                    
-        except Exception as e:
-            self.logger.error(f"An error occurred: {e}")
+            # Sync Thread
+            time.sleep(0.1)
+            
+            responses[ip_address] = dict()
+            responses[ip_address]["response"] = str(response)
+            responses[ip_address]["check"] = str(True if stout else False)
+            responses[ip_address]["message"] = stout
+            
+            # Check Thread State
+            time.sleep(1)
         
         if len(failed_ip_addresses) > 0:
-            self.logger.info(f"Backup Cron Control Failed for IP Addresses: {failed_ip_addresses}")
-        self.logger.info(f"Backup Cron Control Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
+            self.logger.info(f"Backup Script Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
+        self.logger.info(f"Backup Script Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
         
-        return ip_response_list
-
-
-    def restore_control(self, ssh_username: str, ssh_password: str, ip_addresses: list[str]) -> list[dict[str, str]]:
-        self.logger.info(f"Restore Control running on {ip_addresses} ...")
-
-        failed_ip_addresses: list[str] = list()
-        ip_response_list: list[dict[str, str]] = list()
-        response_structure: dict[str, str] = {
-            "ip_address": "",
-            "response": "",
-            "check": "",
-            "message": "",
-        }
-
-        try:
-            # Send command to remote devices
-            for ip_address in ip_addresses:
-                self.logger.info("Connecting to " + ip_address + " ...")
-
-                # If run command given, execute it
-                ssh_command = f"sudo ls -la /root/snapshot/"
-
-                response, stout = ssh_execute_command(
-                    ssh_client=ip_address,
-                    username=ssh_username,
-                    password=ssh_password,
-                    command=ssh_command,
-                    reboot=False,
-                    logger_hook=self.logger
-                )
-                temp_response = response_structure.copy()
-                temp_response["ip_address"] = ip_address
-                temp_response["response"] = str(response)
-                temp_response["check"] = str(True if stout else False)
-                temp_response["message"] = stout
-                
-                print("============" )
-                print("temp_response", temp_response)
-                print("============" )
-                
-                
-                if not response:
-                    self.logger.warn(f"Restore Control failed -> {ip_address}")
-                    self.logger.warn(f"{ip_address} :: {stout}")
-                    failed_ip_addresses.append(ip_address)
-                    
-                ip_response_list.append(
-                    temp_response
-                )
-                    
-        except Exception as e:
-            self.logger.error(f"An error occurred: {e}")
-        
-        if len(failed_ip_addresses) > 0:
-            self.logger.info(f"Restore Control Failed for IP Addresses: {failed_ip_addresses}")
-        self.logger.info(f"Restore Control Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
-        
-        return ip_response_list
+        return responses

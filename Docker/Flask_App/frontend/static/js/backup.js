@@ -87,6 +87,7 @@ function backup_cron_control(button) {
                         "🟢",
                         "🟢",
                         "🟢",
+                        "-",
                         "bg-gif-ok-green",
                     );
 
@@ -99,6 +100,7 @@ function backup_cron_control(button) {
                         "🔴",
                         "🔴",
                         "🔴",
+                        "-",
                         "bg-gif-alert-red-4",
                     );
                 } else {
@@ -112,6 +114,7 @@ function backup_cron_control(button) {
                         "⚫",
                         "⚫",
                         "⚫",
+                        "-",
                         "bg-gif-noise-1",
                     );
                 }

@@ -3,7 +3,7 @@ import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
 import { flex_Element_Add_Device, flex_Element_Update_Device, flex_Element_Clear_Devices } from './flex_container.js';
 import { showNotification } from './notification.js';
-import { button_disable_by_element } from './tools.js';
+import { button_disable_by_element, checkResponses_restore } from './tools.js';
 
 
 
@@ -45,39 +45,25 @@ function restore_control(button = null) {
             // background_class: str
             console.log(key, value);
 
-            if (value.check === "True") {
-                value["backup_information"]
+            let connection_status = checkResponses_restore(value);
+            let backup_id = value["responses_backup_id"]["check"] === "False" ? "🔴" : "🟢";
+            let backup_cron = value["responses_backup_cron"]["check"] === "False" ? "🔴" : "🟢";
+            let backup_script = value["responses_backup_script"]["check"] === "False" ? "🔴" : "🟢";
+            let restore_script = value["responses_restore_script"]["check"] === "False" ? "🔴" : "🟢";
+            let backups_status = value["responses_backups"]["message"].length > 0 ? value["responses_backups"]["message"].length - 1 + " 🟢" : " 🔴";
+            let background_class = connection_status === "🟢" ? "bg-gif-ok-green" : connection_status === "🔴" ? "bg-gif-alert-red-4": "bg-gif-noise-1";
 
-                // TODO: Check if statuses are correct
-                flex_Element_Update_Device(
-                    device_elements[key],
-                    key,
-                    "🟢",
-                    "🟢",
-                    "🟢",
-                    "bg-gif-ok-green",
-                );
-
-            } else if (value.check === "False") {
-                flex_Element_Update_Device(
-                    device_elements[key],
-                    key,
-                    "🔴",
-                    "🔴",
-                    "🔴",
-                    "bg-gif-alert-red-4",
-                );
-            } else {
-                console.warn(`Unexpected value for ${key} => value.check: ${value.check}`);
-                flex_Element_Update_Device(
-                    device_elements[key],
-                    key,
-                    "⚫",
-                    "⚫",
-                    "⚫",
-                    "bg-gif-noise-1",
-                );
-            }
+            flex_Element_Update_Device(
+                device_elements[key],
+                key,
+                connection_status,
+                backup_id,
+                backup_cron,
+                backup_script,
+                restore_script,
+                backups_status,
+                background_class
+            );
         }
 
         // showNotification(notification, "info");

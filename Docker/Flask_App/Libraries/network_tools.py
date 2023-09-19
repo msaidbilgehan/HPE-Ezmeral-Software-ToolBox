@@ -282,8 +282,8 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
         client_stdout = stdout.read().decode()
         client_stderr = stderr.read().decode()
 
-        local_logger.info(f"client_stdout: {client_stdout}")
-        local_logger.info(f"client_stderr: {client_stderr}")
+        # local_logger.info(f"client_stdout: {client_stdout}")
+        # local_logger.info(f"client_stderr: {client_stderr}")
         
         exit_status = stdout.channel.recv_exit_status() # Blocking call
         if exit_status==0:

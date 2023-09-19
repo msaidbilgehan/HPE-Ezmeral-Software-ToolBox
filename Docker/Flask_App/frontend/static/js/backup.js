@@ -66,28 +66,15 @@ function backup_cron_control(button) {
 
         if (Array.isArray(data.message)){
             data.message.forEach(item => {
-                // let notification = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
+                // data.message = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
 
-                // devices.forEach(device => {
-                //     if (device.name === item.ip_address) {
-
-                //         let deviceElement = document.getElementById(device.element.id);
-                //         let propertyName = "status";
-
-                //         let propertyValue;
-                //         if (item.check === "True") {
-                //             propertyValue = "completed";
-                //         } else if (item.check === "False") {
-                //             propertyValue = "error";
-                //         } else {
-                //             console.warn(`Unexpected value for item.check: ${item.check}`);
-                //         }
-
-                //         set_Device_Property(deviceElement, propertyName, propertyValue);
-                //     }
-                // })
-
-                // "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
+                // flex_Element_Update_Device:
+                // element: str,
+                // ip_list: str,
+                // connection_status: str,
+                // cron_job_status: str,
+                // backup_script_status: str,
+                // background_class: str
 
                 let ip_list_connected = [];
                 let ip_list_not_connected = [];
@@ -96,60 +83,41 @@ function backup_cron_control(button) {
 
                     // TODO: Check if statuses are correct
 
-                    ip_list_connected.push({
-                        "ip": item.ip_address,
-                        "connection_status": "🟢",
-                        "backup_script_status": "🟢",
-                        "cron_job_status": "🟢",
-                        "background_class": "bg-gif-ok-green",
-                    });
+                    // Connected Flex Container Update
+                    flex_Element_Update_Device(
+                        device_elements[item.ip_address],
+                        item.ip_address,
+                        "🟢",
+                        "🟢",
+                        "🟢",
+                        "bg-gif-ok-green",
+                    );
 
                 } else if (item.check === "False") {
-
-                    ip_list_not_connected.push({
-                        "ip": item.ip_address,
-                        "connection_status": "🔴",
-                        "backup_script_status": "🔴",
-                        "cron_job_status": "🔴",
-                        "background_class": "bg-gif-alert-red-4",
-                    });
+                    
+                    // Connected Flex Container Update
+                    flex_Element_Update_Device(
+                        device_elements[item.ip_address],
+                        item.ip_address,
+                        "🔴",
+                        "🔴",
+                        "🔴",
+                        "bg-gif-alert-red-4",
+                    );
                 } else {
 
                     console.warn(`Unexpected value for item.check: ${item.check}`);
-                    ip_list_not_connected.push({
-                        "ip": item.ip_address,
-                        "connection_status": "⚫",
-                        "backup_script_status": "⚫",
-                        "cron_job_status": "⚫",
-                        "background_class": "bg-gif-noise-1",
-                    });
+
+                    // Connected Flex Container Update
+                    flex_Element_Update_Device(
+                        device_elements[item.ip_address],
+                        item.ip_address,
+                        "⚫",
+                        "⚫",
+                        "⚫",
+                        "bg-gif-noise-1",
+                    );
                 }
-
-                // elements: any[] | undefined,
-                // ip_list: any[] | undefined,
-                // connection_status: any,
-                // cron_job_status: any,
-                // backup_script_status: any,
-                // background_class: any
-
-                // Connected Flex Container Update
-                flex_Element_Update_Device(
-                    device_elements,
-                    ip_list_connected.map(item => item.ip),
-                    ip_list_connected.map(item => item.connection_status),
-                    ip_list_connected.map(item => item.cron_job_status),
-                    ip_list_connected.map(item => item.backup_script_status),
-                    ip_list_connected.map(item => item.background_class),
-                );
-                // Not Connected Flex Container Update
-                flex_Element_Update_Device(
-                    device_elements,
-                    ip_list_not_connected.map(item => item.ip),
-                    ip_list_not_connected.map(item => item.connection_status),
-                    ip_list_not_connected.map(item => item.cron_job_status),
-                    ip_list_not_connected.map(item => item.backup_script_status),
-                    ip_list_not_connected.map(item => item.background_class),
-                );
             });
         }
         else{

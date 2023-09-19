@@ -1,6 +1,5 @@
 import { endpoint_action_2_url } from './page_specific_urls.js';
 import { get_ssh_credentials } from './ssh_credentials.js';
-// import { get_Devices, set_Device_Property } from './device_table.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
 import { flex_Element_Add_Device, flex_Element_Update_Device, flex_Element_Clear_Devices } from './flex_container.js';
 import { showNotification } from './notification.js';
@@ -34,72 +33,52 @@ function restore_control(button = null) {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
-        let ip_list_connected = [];
-        let ip_list_not_connected = [];
+        for (const [key, value] of Object.entries(data.message)) {
+            // data.message = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
 
-        data.message.forEach(item => {
-            // "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
+            // flex_Element_Update_Device:
+            // element: str,
+            // ip_list: str,
+            // connection_status: str,
+            // cron_job_status: str,
+            // backup_script_status: str,
+            // background_class: str
+            console.log(key, value);
 
-            if (item.check === "True") {
-                
+            if (value.check === "True") {
+                value["backup_information"]
+
                 // TODO: Check if statuses are correct
+                flex_Element_Update_Device(
+                    device_elements[key],
+                    key,
+                    "🟢",
+                    "🟢",
+                    "🟢",
+                    "bg-gif-ok-green",
+                );
 
-                ip_list_connected.push({
-                    "ip": item.ip_address,
-                    "connection_status": "🟢",
-                    "backup_script_status": "🟢",
-                    "cron_job_status": "🟢",
-                    "background_class": "bg-gif-ok-green",
-                });
-
-            } else if (item.check === "False") {
-
-                ip_list_not_connected.push({
-                    "ip": item.ip_address,
-                    "connection_status": "🔴",
-                    "backup_script_status": "🔴",
-                    "cron_job_status": "🔴",
-                    "background_class": "bg-gif-alert-red-4",
-                });
+            } else if (value.check === "False") {
+                flex_Element_Update_Device(
+                    device_elements[key],
+                    key,
+                    "🔴",
+                    "🔴",
+                    "🔴",
+                    "bg-gif-alert-red-4",
+                );
             } else {
-
-                console.warn(`Unexpected value for item.check: ${item.check}`);
-                ip_list_not_connected.push({
-                    "ip": item.ip_address,
-                    "connection_status": "⚫",
-                    "backup_script_status": "⚫",
-                    "cron_job_status": "⚫",
-                    "background_class": "bg-gif-noise-1",
-                });
+                console.warn(`Unexpected value for ${key} => value.check: ${value.check}`);
+                flex_Element_Update_Device(
+                    device_elements[key],
+                    key,
+                    "⚫",
+                    "⚫",
+                    "⚫",
+                    "bg-gif-noise-1",
+                );
             }
-
-            // elements: any[] | undefined,
-            // ip_list: any[] | undefined,
-            // connection_status: any,
-            // cron_job_status: any,
-            // backup_script_status: any,
-            // background_class: any
-
-            // Connected Flex Container Update
-            flex_Element_Update_Device(
-                device_elements,
-                ip_list_connected.map(item => item.ip),
-                ip_list_connected.map(item => item.connection_status),
-                ip_list_connected.map(item => item.cron_job_status),
-                ip_list_connected.map(item => item.backup_script_status),
-                ip_list_connected.map(item => item.background_class),
-            );
-            // Not Connected Flex Container Update
-            flex_Element_Update_Device(
-                device_elements,
-                ip_list_not_connected.map(item => item.ip),
-                ip_list_not_connected.map(item => item.connection_status),
-                ip_list_not_connected.map(item => item.cron_job_status),
-                ip_list_not_connected.map(item => item.backup_script_status),
-                ip_list_not_connected.map(item => item.background_class),
-            );
-            // showNotification(notification, "info");
-        });
+        }
 
         // showNotification(notification, "info");
 

@@ -46,7 +46,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
             # Delete file if exists
             local_logger.info(f"Deleting file {remote_tmp_path}...")
             # print(f"Deleting file {remote_tmp_path}...")
-            response_command, _ = ssh_execute_command(
+            connection, response_command, _ = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
@@ -54,10 +54,10 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 port=port, 
                 reboot=False
             )
-            if response_command == False:
+            if not response_command or not connection:
                 local_logger.warn(f"Can not deleting file 'sudo rm -f {remote_tmp_path}'")
                 
-            response_command, _ = ssh_execute_command(
+            connection, response_command, _ = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
@@ -65,7 +65,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                 port=port, 
                 reboot=False
             )
-            if response_command == False:
+            if not response_command or not connection:
                 local_logger.warn(f"Can not deleting file 'sudo rm -f {remote_file_path}'")
         
         transport.connect(username=username, password=password)
@@ -84,7 +84,7 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         if remote_tmp_path != uploaded_location:
             if overwrite:
                 local_logger.info(f"Deleting file {uploaded_location}...")
-                response_command, response_command = ssh_execute_command(
+                connection, response_command, response_command = ssh_execute_command(
                     ssh_client=ssh_client, 
                     username=username, 
                     password=password, 
@@ -93,8 +93,9 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
                     reboot=False
                 )
             local_logger.info(f"Copying file to {uploaded_location}...")
+            
             # Move file to the desired location
-            response_command, _ = ssh_execute_command(
+            connection, response_command, _ = ssh_execute_command(
                 ssh_client=ssh_client, 
                 username=username, 
                 password=password, 
@@ -110,9 +111,9 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
         uploaded_location = ""
     except Exception as e:
         local_logger.error(f"Exception: {e}")
-        if response_upload == False and response_command == False:
+        if not response_upload and not response_command:
             uploaded_location = ""
-        elif response_upload == True and response_command == False:
+        elif response_upload and not response_command:
             uploaded_location = uploaded_location
     finally:
         transport.close()
@@ -121,7 +122,11 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
 
 
 
-def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str, local_folder_path:str="./received_files", port:int=22, timeout=5, sleep_time=0, logger_hook=None) -> str:
+def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str, local_folder_path:str="./received_files", port:int=22, timeout=5, sleep_time=0, logger_hook=None) -> tuple[bool, bool, str]:
+    
+    connection = False
+    file_transfer = False
+    last_download_path = ""
     
     if logger_hook is not None:
         local_logger = logger_hook
@@ -137,16 +142,12 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
     if sleep_time:
         time.sleep(sleep_time)
     
-    last_download_path = ""
-    response_download = False
-    
-    
     try:
         transport = paramiko.Transport((ssh_client, port))
         transport.settimeout(timeout) # type: ignore
     except Exception as error:
         local_logger.error(f"Can not creating Transport: {error}")
-        return ""
+        return connection, file_transfer, ""
     
     try:
         transport.connect(username=username, password=password)
@@ -198,7 +199,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
                                 local_logger.warn(f"Trying to change permissions of file '{last_download_path}'")
                                 if sleep_time:
                                     time.sleep(sleep_time)
-                                status, _ = ssh_execute_command(
+                                connection, status, _ = ssh_execute_command(
                                     ssh_client=ssh_client,
                                     username=username,
                                     password=password,
@@ -207,7 +208,7 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
                                     port=port,
                                     reboot=False
                                 )
-                                if status == False:
+                                if not status or not connection:
                                     local_logger.error(f"Can not changing permissions of file '{last_download_path}'")
                                 else:
                                     local_logger.info(f"Permissions changed to 777 of file '{last_download_path}'")
@@ -215,45 +216,54 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
                                     if sleep_time:
                                         time.sleep(sleep_time)
                                     sftp.get(
-                                        remote_path_cache, 
+                                        last_download_path, 
                                         local_folder_path + remote_path_cache[1:]
                                     )
+                                    file_transfer = True
             else:
                 local_logger.info(f"Downloading file from {remote_path} to {local_folder_path}...")
                 last_download_path = remote_path
                 if sleep_time:
                     time.sleep(sleep_time)
                 sftp.get(last_download_path, local_folder_path)
+                connection = True
+                file_transfer = True
+                
         except FileNotFoundError:
             local_logger.error(f"[Errno 2] No such file: '{remote_path}'")
+            connection = True
+            file_transfer = False
         finally:
             sftp.close()
 
         local_folder_path += os.path.basename(remote_path)
-        response_download = True
 
     except paramiko.AuthenticationException:
         local_logger.error("Authentication failed")
         local_folder_path = ""
+        connection = False
+        file_transfer = False
     except Exception as e:
         local_logger.error(f"Last Download Dir: {last_download_path}")
         local_logger.error(f"Exception: {e}")
 
-        if response_download == False:
+        if not file_transfer:
             local_folder_path = ""
-        elif response_download == True:
+        else:
             local_folder_path = local_folder_path
     finally:
         transport.close()
 
-    return local_folder_path
+    return connection, file_transfer, local_folder_path
 
 
 
-def ssh_execute_command(ssh_client:str, username:str, password:str, command:str, port:int=22, timeout=5, is_sudo=False, reboot:bool=False, logger_hook=None) -> tuple[bool, str]:
+def ssh_execute_command(ssh_client:str, username:str, password:str, command:str, port:int=22, timeout=5, is_sudo=False, reboot:bool=False, logger_hook=None) -> tuple[bool, bool, str]:
+    status_command = False
+    status_connection = False
+
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    status = False
     client_stdout = ""
     
     
@@ -288,7 +298,8 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
         exit_status = stdout.channel.recv_exit_status() # Blocking call
         if exit_status==0:
             local_logger.info("Command successfully executed!")
-            status = True
+            status_command = True
+            status_connection = True
             
             if reboot:
                 client.exec_command('echo {password} | sudo -S reboot -h now')
@@ -297,18 +308,21 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
         else:
             local_logger.error(f"STDOUT Detail: {client_stdout}")
             local_logger.error(f"STDERR Detail [Exit Status {exit_status}]: {client_stderr}")
-            status = False
+            status_command = False
+            status_connection = True
         
     except paramiko.AuthenticationException:
         local_logger.info("Authentication failed")
-        status = False
+        status_command = False
+        status_connection = False
     except Exception as e:
         local_logger.error(f"Exception: {e}")
-        status = False
+        status_command = False
+        status_connection = False
     finally:
         client.close()
         
-    return status, client_stdout
+    return status_connection, status_command, client_stdout
     
 
 

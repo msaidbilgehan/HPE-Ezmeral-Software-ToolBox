@@ -62,7 +62,7 @@ class Log_Collection_Class(Task_Handler_Class):
                 
                 self.logger.info("Connecting to " + ip_address + " ...")
                 
-                status, client_stdout = ssh_execute_command(
+                connection, status, client_stdout = ssh_execute_command(
                     ssh_client=ip_address, 
                     username=ssh_username, 
                     password=ssh_password, 
@@ -70,7 +70,7 @@ class Log_Collection_Class(Task_Handler_Class):
                     reboot=False,
                     logger_hook=self.logger
                 )
-                if not status:
+                if not status or not connection:
                     failed_ip_addresses.append(ip_address)
                     self.logger.error(f"Failed to run command in client: '{ip_address}''")
                     continue
@@ -79,7 +79,7 @@ class Log_Collection_Class(Task_Handler_Class):
                 log_folders = [log_folder for log_folder in log_folders if log_folder != ""]
                 
                 for log_folder in log_folders:
-                    remote_file_path = ssh_receive_file(
+                    connection, file_transfer, remote_file_path = ssh_receive_file(
                         ssh_client=ip_address,
                         username=ssh_username,
                         password=ssh_password,
@@ -95,8 +95,8 @@ class Log_Collection_Class(Task_Handler_Class):
                         self.logger.warn("Thread Task Forced to Stop. Some actions may have done before stop, be carefully continue.")
                         return -1
                     
-                    if remote_file_path == "":
-                        self.logger.error(f"File transfer failed! Remote '{ip_address}' Path is '{log_folder}'")
+                    if not file_transfer:
+                        self.logger.error(f"File transfer failed! Remote '{ip_address}' Path is '{log_folder}'. Response: {remote_file_path}")
                         failed_ip_addresses.append(ip_address)
                         continue
                     

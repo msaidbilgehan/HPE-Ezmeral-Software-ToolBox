@@ -111,7 +111,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                         # If cron exist, remove first
                         ssh_command = f"sudo crontab -l | grep -v '{remote_file_path}' | sudo crontab -"
                         
-                        response, stout = ssh_execute_command(
+                        connection, response, stout = ssh_execute_command(
                             ssh_client=ip_address, 
                             username=ssh_username, 
                             password=ssh_password, 
@@ -119,7 +119,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                             reboot=False,
                             logger_hook=self.logger
                         )
-                        if not response:
+                        if not response or not connection:
                             self.logger.warn(f"Cron remove failed -> {ip_address}")
                             self.logger.warn(f"{ip_address} :: {stout}")
                             failed_ip_addresses.append(ip_address)
@@ -133,7 +133,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                         # Add new cron job
                         ssh_command = f"echo \"$(sudo crontab -l; echo '{hour} {minute} {month} {day_of_month} {day_of_week} {remote_file_path}')\" | sudo crontab -"
 
-                        response, stout = ssh_execute_command(
+                        connection, response, stout = ssh_execute_command(
                             ssh_client=ip_address, 
                             username=ssh_username, 
                             password=ssh_password, 
@@ -146,7 +146,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                         ssh_command = f"echo \"{self.parameters['id']}\" > {remote_file_path}.id"
                         # echo "string" | sudo tee file.id
 
-                        response, stout = ssh_execute_command(
+                        connection, response, stout = ssh_execute_command(
                             ssh_client=ip_address, 
                             username=ssh_username, 
                             password=ssh_password, 
@@ -154,7 +154,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                             reboot=False,
                             logger_hook=self.logger
                         )
-                        if not response:
+                        if not response or not connection:
                             self.logger.warn(f"Cron adding failed -> {ip_address}")
                             self.logger.warn(f"{ip_address} :: {stout}")
                             failed_ip_addresses.append(ip_address)
@@ -195,7 +195,7 @@ class Backup_Restore_Class(Task_Handler_Class):
             # If run command given, execute it
             ssh_command = f"sudo crontab -l | awk '/{script_name}.*\\.sh/" + " {print $1, $2, $3, $4, $5}'"
 
-            response, stout = ssh_execute_command(
+            connection, response, stout = ssh_execute_command(
                 ssh_client=ip_address, 
                 username=ssh_username, 
                 password=ssh_password, 
@@ -204,14 +204,14 @@ class Backup_Restore_Class(Task_Handler_Class):
                 reboot=False,
                 logger_hook=self.logger
             )
-            if not response:
+            if not response or not connection:
                 self.logger.warn(f"Backup Cron Information Fetch failed -> {ip_address}")
                 self.logger.warn(f"{ip_address} :: {stout}")
                 failed_ip_addresses.append(ip_address)
             
             responses[ip_address] = dict()
-            responses[ip_address]["response"] = str(response)
-            responses[ip_address]["check"] = str(True if stout else False)
+            responses[ip_address]["connection"] = connection
+            responses[ip_address]["response"] = response
             responses[ip_address]["message"] = stout
             
             # Check Thread State
@@ -242,7 +242,7 @@ class Backup_Restore_Class(Task_Handler_Class):
             # If run command given, execute it
             ssh_command = 'find {} -maxdepth 1 -type d -exec stat --format="%n %y %s" {} \\; | sort'.format(backup_dir, '{}')
 
-            response, stout = ssh_execute_command(
+            connection, response, stout = ssh_execute_command(
                 ssh_client=ip_address, 
                 username=ssh_username, 
                 password=ssh_password, 
@@ -251,7 +251,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                 reboot=False,
                 logger_hook=self.logger
             )
-            if not response:
+            if not response or not connection:
                 self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
                 self.logger.warn(f"{ip_address} :: {stout}")
                 failed_ip_addresses.append(ip_address)
@@ -260,8 +260,8 @@ class Backup_Restore_Class(Task_Handler_Class):
             time.sleep(0.1)
             
             responses[ip_address] = dict()
-            responses[ip_address]["response"] = str(response)
-            responses[ip_address]["check"] = str(True if stout else False)
+            responses[ip_address]["connection"] = connection
+            responses[ip_address]["response"] = response
             responses[ip_address]["message"] = stout
             
             # Check Thread State
@@ -291,7 +291,7 @@ class Backup_Restore_Class(Task_Handler_Class):
             # If run command given, execute it
             ssh_command = 'find {}'.format(file_dir)
 
-            response, stout = ssh_execute_command(
+            connection, response, stout = ssh_execute_command(
                 ssh_client=ip_address, 
                 username=ssh_username, 
                 password=ssh_password, 
@@ -300,14 +300,14 @@ class Backup_Restore_Class(Task_Handler_Class):
                 reboot=False,
                 logger_hook=self.logger
             )
-            if not response:
+            if not response or not connection:
                 self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
                 self.logger.warn(f"{ip_address} :: {stout}")
                 failed_ip_addresses.append(ip_address)
             
             responses[ip_address] = dict()
-            responses[ip_address]["response"] = str(response)
-            responses[ip_address]["check"] = str(True if stout else False)
+            responses[ip_address]["connection"] = connection
+            responses[ip_address]["response"] = response
             responses[ip_address]["message"] = stout
             
             # Check Thread State

@@ -325,7 +325,7 @@ def backup_control_endpoint():
         if not backup_restore_thread.safe_task_lock.locked():
             with backup_restore_thread.safe_task_lock:
                 
-                response = backup_restore_thread.backup_cron_control(
+                response = backup_restore_thread.get_backup_cron_control(
                     ssh_username=ssh_username,
                     ssh_password=ssh_password,
                     ip_addresses=ip_address_hostnames,

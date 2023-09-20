@@ -82,8 +82,14 @@ def cleanup():
     return 0
 
 
-def log_collection(ssh_username, ssh_password, ip_addresses):
+def log_collection(ssh_username, ssh_password, ip_addresses) -> dict[str, dict[str, bool]]:
     log_collection_logger.info(f"Collecting Logs of {ip_addresses} ...")
+    
+    response_ip_addresses: dict[str, dict[str, bool]] = dict()
+    structure = {
+        "connection": False,
+        "file_transfer": False
+    }
     
     try:
 
@@ -100,7 +106,7 @@ def log_collection(ssh_username, ssh_password, ip_addresses):
         for ip_address in ip_addresses:
             log_collection_logger.info("Connecting to " + ip_address + " ...")
             
-            status, client_stdout = ssh_execute_command(
+            connection, status, client_stdout = ssh_execute_command(
                 ssh_client=ip_address, 
                 username=ssh_username, 
                 password=ssh_password, 
@@ -110,11 +116,15 @@ def log_collection(ssh_username, ssh_password, ip_addresses):
             )
             time.sleep(1)  # Wait for new content
             
+            if not status or not connection:
+                log_collection_logger.error(f"Failed to run command in client: '{ip_address}''")
+                continue
+            
             log_folders =  client_stdout.split("\n")
             log_folders = [log_folder for log_folder in log_folders if log_folder != ""]
             
             for log_folder in log_folders:
-                remote_file_path = ssh_receive_file(
+                connection, file_transfer, remote_file_path = ssh_receive_file(
                     ssh_client=ip_address,
                     username=ssh_username,
                     password=ssh_password,
@@ -124,9 +134,22 @@ def log_collection(ssh_username, ssh_password, ip_addresses):
                     logger_hook=log_collection_logger
                 )
                 time.sleep(1)  # Wait for new content
-                if remote_file_path == "":
-                    log_collection_logger.info(f"File transfer failed! Remote '{ip_address}' Path is '{log_folder}'")
+                
+                response_ip_addresses[ip_address] = structure.copy()
+                
+                if not file_transfer:
+                    log_collection_logger.info(f"File transfer failed! Remote '{ip_address}' Path is '{log_folder}'. Response: {remote_file_path}")
+                    
+                    response_ip_addresses[ip_address]["connection"] = True
+                    response_ip_addresses[ip_address]["file_transfer"] = False
+                    
+                response_ip_addresses[ip_address]["connection"] = True
+                response_ip_addresses[ip_address]["file_transfer"] = True
+                
+                
     except Exception as e:
         log_collection_logger.error(f"An error occurred: {e}")
     
     log_collection_logger.info(f"Log Connection Finished for IP Addresses: {ip_addresses}")
+    
+    return response_ip_addresses

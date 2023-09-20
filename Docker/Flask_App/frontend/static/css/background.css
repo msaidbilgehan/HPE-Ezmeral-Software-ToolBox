@@ -418,13 +418,6 @@
     background-position: center;
 }
 
-.bg-gif-404-3 {
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZGxhZ3BnM2NtZHJkNWM1cWNpc3hsMmVkdDBtNXFncGhjZXA0MnhoMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/0Dxuk20eU0bDYaxRR8/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
 .bg-gif-error-1 {
     background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjJkbXdzbWh0NTJ6MHhjbHF0d28xNnQxZGpsaTMxMm51b2x2MnI3MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Rkis28kMJd1aE/giphy.gif");
     background-repeat: no-repeat;
@@ -524,7 +517,21 @@
 }
 
 .bg-gif-alert-red-3 {
-    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGtqdXphcWdmMm44NGJoN3BiMG9zNXViMG1scmpic3d1amI1aXFjbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3og0IOa1X349KZ8E1i/giphy.gif");
+    background-image: url("https://media.giphy.com/media/YO7P8VC7nlQlO/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-red-4 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdXd1bmh3YXBtZmcwOHN1eGoxajN2Y20wc2JqbmJhc3R2ZmF2OHk3dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/cl7sAq7d8IrihKOaW1/giphy.gif");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.bg-gif-alert-green-1 {
+    background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaW5meHV3d2c0ODJzODJocThod3c0eXpzNTNtenFwMzBiaDhvdnhuZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/J47crA9L0GpTBsLMVK/giphy.gif");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -532,13 +539,6 @@
 
 .bg-gif-alert-yellow-1 {
     background-image: url("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTdycm5nMnptZm05NWNpd254cW9yMmxjbGh6czdzYmZ5emNpZjdpMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/HMGdYjz17uaUvp1nco/giphy.gif");
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
-
-.bg-gif-alert-red-4 {
-    background-image: url("https://media.giphy.com/media/YO7P8VC7nlQlO/giphy.gif");
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;

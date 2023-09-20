@@ -62,7 +62,7 @@ function restore_control(button = null) {
                 let backup_script = value["responses_backup_script"]["check"] === "False" ? "🔴" : "🟢";
                 let restore_script = value["responses_restore_script"]["check"] === "False" ? "🔴" : "🟢";
                 let backups_status = backup_number > 0 ? backup_number - 1 + " 🟢" : " 🔴";
-                let background_class = connection_status === "🟢" ? "bg-gif-ok-green" : connection_status === "🔴" ? "bg-gif-alert-red-4" : "bg-gif-alert-yellow-1";
+                let background_class = connection_status === "🟢" ? "bg-gif-alert-green-1" : connection_status === "🔴" ? "bg-gif-alert-red-4" : "bg-gif-alert-yellow-1";
 
                 flex_Element_Update_Device(
                     device_elements[key],

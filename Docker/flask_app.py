@@ -172,6 +172,15 @@ def restore_control_endpoint():
                     file_dir=backup_id_path.format(ssh_username=ssh_username),
                 )
                 
+                # Skip Connection or ID Fetch Failed IP Addresses
+                ip_addresses_fail = list()
+                
+                for ip_address in ip_address_hostnames:
+                    if responses_backup_id[ip_address]["response"] == "False":
+                        ip_addresses_fail.append(ip_address)
+                
+                ip_address_hostnames = [ip_address for ip_address in ip_address_hostnames if ip_address not in ip_addresses_fail]
+                
                 # Backup Cron Control
                 responses_backup_cron = backup_restore_thread.get_backup_cron_control(
                     ssh_username=ssh_username,
@@ -204,12 +213,6 @@ def restore_control_endpoint():
                     backup_dir=backup_path,
                 )
                 
-                print("responses_backup_id", responses_backup_id)
-                print("responses_backup_cron", responses_backup_cron)
-                print("responses_backup_script", responses_backup_script)
-                print("responses_restore_script", responses_restore_script)
-                print("responses_backups", responses_backups)
-                
                 response_to_client: dict[str, dict] = dict()
                 
                 for ip_address in ip_address_hostnames:
@@ -219,31 +222,21 @@ def restore_control_endpoint():
                     response_to_client[ip_address]["responses_backup_script"] = responses_backup_script[ip_address]
                     response_to_client[ip_address]["responses_backups"] = responses_backups[ip_address]
                     response_to_client[ip_address]["responses_restore_script"] = responses_restore_script[ip_address]
+                
+                for ip_address in ip_addresses_fail:
+                    responses_fail = dict()
+                    responses_fail[ip_address] = {
+                        "response": str(False),
+                        "check": str(False),
+                        "message": "",
+                    }
                     
-                    # lines = response_to_client[ip_address]["responses_backup_cron"]["message"].split("\n")
-                    # if "" in lines:
-                    #     lines.remove("")
-
-                    # for line in lines:
-                    #     parts = line.rsplit(' ')
-                    #     if "" in parts:
-                    #         parts.remove("")
-                            
-                    #     if len(parts) == 5:
-                    #         path, date, timestamp, ownership, size = parts
-                    #         response_to_client[ip_address]["backup_information"].append(
-                    #             {
-                    #                 "path": path,
-                    #                 "date": date,
-                    #                 "timestamp": timestamp,
-                    #                 "ownership": ownership,
-                    #                 "size": size
-                    #             }
-                    #         )
-                    #     else:
-                    #         response_to_client[ip_address]["backup_information"].append(parts)
-                    #         response_to_client[ip_address]["responses_backup_cron"]["message"]
-                    
+                    response_to_client[ip_address] = dict()
+                    response_to_client[ip_address]["responses_backup_id"] = responses_backup_id[ip_address]
+                    response_to_client[ip_address]["responses_backup_cron"] = responses_fail[ip_address]
+                    response_to_client[ip_address]["responses_backup_script"] = responses_fail[ip_address]
+                    response_to_client[ip_address]["responses_backups"] = responses_fail[ip_address]
+                    response_to_client[ip_address]["responses_restore_script"] = responses_fail[ip_address]
 
                 notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
                 return jsonify(

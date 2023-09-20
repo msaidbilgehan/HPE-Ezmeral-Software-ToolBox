@@ -4,7 +4,7 @@ import { get_ssh_credentials } from './ssh_credentials.js';
 import { get_Flex_Container_Devices, flex_Element_Update_Device, flex_Element_Clear_Devices, flex_Element_Add_Device } from './flex_container.js';
 import { get_ip_host_addresses } from './ip_hostname_table.js';
 import { showNotification } from './notification.js';
-import { button_disable_by_element } from './tools.js';
+import { button_disable_by_element, checkResponses_restore } from './tools.js';
 
 
 function backup_cron_control(button) {
@@ -43,7 +43,7 @@ function backup_cron_control(button) {
     
     // let ipAddressesJson = JSON.stringify(ipAddresses);
 
-    let device_elements = flex_Element_Add_Device(ip_table_input.map(device => device.ip));
+    let device_elements = flex_Element_Add_Device(ip_table_input.map(device => device.ip), true, true, true, false, false);
     // get_Flex_Container_Devices();
 
     let ipAddressesJson = JSON.stringify(ip_table_input);
@@ -60,13 +60,12 @@ function backup_cron_control(button) {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
-        // console.log(typeof data.message[Symbol.iterator]);
-        // console.log(typeof data.message instanceof Array);
-        // console.log(Array.isArray(data.message));
-
-        if (Array.isArray(data.message)){
-            data.message.forEach(item => {
-                // data.message = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
+        console.log(data)
+        if (typeof data.message === "string") {
+            showNotification(data.message, "error");
+        }
+        else {
+            for (const [key, value] of Object.entries(data.message)) {
 
                 // flex_Element_Update_Device:
                 // element: str,
@@ -76,52 +75,28 @@ function backup_cron_control(button) {
                 // backup_script_status: str,
                 // background_class: str
 
-                if (item.check === "True") {
+                let connection_Response = checkResponses_restore(value);
+                let connection_status = connection_Response[0];
+                let connection = connection_Response[1];
 
-                    // TODO: Check if statuses are correct
+                let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : "🟢";
+                let backup_cron = value["responses_backup_cron"]["response"] === false ? "🔴" : "🟢";
+                let backup_script = value["responses_backup_script"]["response"] === false ? "🔴" : "🟢";
 
-                    // Connected Flex Container Update
-                    flex_Element_Update_Device(
-                        device_elements[item.ip_address],
-                        item.ip_address,
-                        "🟢",
-                        "🟢",
-                        "🟢",
-                        "-",
-                        "bg-gif-ok-green",
-                    );
+                let background_class = connection_status === true ? "bg-gif-alert-green-1" : connection_status === false ? "bg-gif-alert-red-4" : "bg-gif-alert-yellow-1";
 
-                } else if (item.check === "False") {
-                    
-                    // Connected Flex Container Update
-                    flex_Element_Update_Device(
-                        device_elements[item.ip_address],
-                        item.ip_address,
-                        "🔴",
-                        "🔴",
-                        "🔴",
-                        "-",
-                        "bg-gif-alert-red-4",
-                    );
-                } else {
-
-                    console.warn(`Unexpected value for item.check: ${item.check}`);
-
-                    // Connected Flex Container Update
-                    flex_Element_Update_Device(
-                        device_elements[item.ip_address],
-                        item.ip_address,
-                        "⚫",
-                        "⚫",
-                        "⚫",
-                        "-",
-                        "bg-gif-noise-1",
-                    );
-                }
-            });
-        }
-        else{
-            showNotification("Server: " + data.message, "info");
+                flex_Element_Update_Device(
+                    device_elements[key],
+                    key,
+                    connection,
+                    backup_id,
+                    backup_cron,
+                    backup_script,
+                    "",
+                    "",
+                    background_class
+                );
+            }
         }
         
 

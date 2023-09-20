@@ -238,7 +238,6 @@ def restore_control_endpoint():
                     response_to_client[ip_address]["responses_backups"] = responses_fail[ip_address]
                     response_to_client[ip_address]["responses_restore_script"] = responses_fail[ip_address]
 
-                print("response_to_client", response_to_client)
                 notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
                 return jsonify(
                     message=response_to_client,
@@ -326,16 +325,41 @@ def backup_control_endpoint():
         if not backup_restore_thread.safe_task_lock.locked():
             with backup_restore_thread.safe_task_lock:
                 
-                response = backup_restore_thread.get_backup_cron_control(
+                # Backup ID Control
+                responses_backup_id = backup_restore_thread.get_file_information(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    file_dir=backup_id_path.format(ssh_username=ssh_username),
+                )
+                
+                # Backup Cron Control
+                responses_backup_cron = backup_restore_thread.get_backup_cron_control(
                     ssh_username=ssh_username,
                     ssh_password=ssh_password,
                     ip_addresses=ip_address_hostnames,
                     script_name=backup_script.split(".")[0],
                 )
+                
+                # Backup Script Control
+                responses_backup_script = backup_restore_thread.get_file_information(
+                    ssh_username=ssh_username,
+                    ssh_password=ssh_password,
+                    ip_addresses=ip_address_hostnames,
+                    file_dir=backup_script_upload_path.format(ssh_username=ssh_username) + backup_script,
+                )
+                
                 notification_thread.queue_add("Backup Control Finished", Notification_Status.INFO)
                     
+                response_to_client: dict[str, dict] = dict()
+                for ip_address in ip_address_hostnames:
+                    response_to_client[ip_address] = dict()
+                    response_to_client[ip_address]["responses_backup_id"] = responses_backup_id[ip_address]
+                    response_to_client[ip_address]["responses_backup_cron"] = responses_backup_cron[ip_address]
+                    response_to_client[ip_address]["responses_backup_script"] = responses_backup_script[ip_address]
+                    
                 return jsonify(
-                    message=response,
+                    message=response_to_client,
                 )
         else:
             return jsonify(

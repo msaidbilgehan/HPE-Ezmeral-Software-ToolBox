@@ -304,9 +304,6 @@ class Backup_Restore_Class(Task_Handler_Class):
                 self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
                 self.logger.warn(f"{ip_address} :: {stout}")
                 failed_ip_addresses.append(ip_address)
-                
-            # Sync Thread
-            time.sleep(0.1)
             
             responses[ip_address] = dict()
             responses[ip_address]["response"] = str(response)

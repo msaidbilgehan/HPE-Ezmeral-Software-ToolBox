@@ -33,38 +33,52 @@ function restore_control(button = null) {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
-        for (const [key, value] of Object.entries(data.message)) {
-            // data.message = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
-
-            // flex_Element_Update_Device:
-            // element: str,
-            // ip_list: str,
-            // connection_status: str,
-            // cron_job_status: str,
-            // backup_script_status: str,
-            // background_class: str
-            console.log(key, value);
-
-            let connection_status = checkResponses_restore(value);
-            let backup_id = value["responses_backup_id"]["check"] === "False" ? "🔴" : "🟢";
-            let backup_cron = value["responses_backup_cron"]["check"] === "False" ? "🔴" : "🟢";
-            let backup_script = value["responses_backup_script"]["check"] === "False" ? "🔴" : "🟢";
-            let restore_script = value["responses_restore_script"]["check"] === "False" ? "🔴" : "🟢";
-            let backups_status = value["responses_backups"]["message"].length > 0 ? value["responses_backups"]["message"].length - 1 + " 🟢" : " 🔴";
-            let background_class = connection_status === "🟢" ? "bg-gif-ok-green" : connection_status === "🔴" ? "bg-gif-alert-red-4": "bg-gif-noise-1";
-
-            flex_Element_Update_Device(
-                device_elements[key],
-                key,
-                connection_status,
-                backup_id,
-                backup_cron,
-                backup_script,
-                restore_script,
-                backups_status,
-                background_class
-            );
+        console.log("data:", data)
+        if (typeof data.message === "string") {
+            showNotification(data.message, "error");
         }
+        else{
+            for (const [key, value] of Object.entries(data.message)) {
+                // data.message = "IP: " + item.ip_address + " | " + "Response: " + item.response + " | " + "Message: " + item.message;
+
+                // flex_Element_Update_Device:
+                // element: str,
+                // ip: str,
+                // connection_status: str,
+                // cron_job_status: str,
+                // backup_script_status: str,
+                // background_class: str
+
+                let backups = value["responses_backups"]["message"].split("\n");
+                let index = backups.indexOf("");
+                if (index > -1) { // only splice array when item is found
+                    backups.splice(index, 1); // 2nd parameter means remove one item only
+                }
+
+                let backup_number = backups.length;
+
+                let connection_status = checkResponses_restore(value);
+                let backup_id = value["responses_backup_id"]["check"] === "False" ? "🔴" : "🟢";
+                let backup_cron = value["responses_backup_cron"]["check"] === "False" ? "🔴" : "🟢";
+                let backup_script = value["responses_backup_script"]["check"] === "False" ? "🔴" : "🟢";
+                let restore_script = value["responses_restore_script"]["check"] === "False" ? "🔴" : "🟢";
+                let backups_status = backup_number > 0 ? backup_number - 1 + " 🟢" : " 🔴";
+                let background_class = connection_status === "🟢" ? "bg-gif-ok-green" : connection_status === "🔴" ? "bg-gif-alert-red-4" : "bg-gif-alert-yellow-1";
+
+                flex_Element_Update_Device(
+                    device_elements[key],
+                    key,
+                    connection_status,
+                    backup_id,
+                    backup_cron,
+                    backup_script,
+                    restore_script,
+                    backups_status,
+                    background_class
+                );
+            }
+        }
+        
 
         // showNotification(notification, "info");
 

@@ -194,20 +194,23 @@ window.flex_Element_Clear_Devices = flex_Element_Clear_Devices;
 
 
 // Draggable Enable
-document.addEventListener('DOMContentLoaded', () => {
-    let container_submenu = get_Flex_Container_Element(true);
-    var sortable = new Draggable.Sortable(container_submenu, {
-        draggable: ".submenu",
-        handle: ".submenu_handle",
-        swapAnimation: {
-            duration: 200,
-            easingFunction: "linear",
-            horizontal: true
-        },
-        plugins: [Draggable.Plugins.SwapAnimation]
+export function draggable_activate() {
+    document.addEventListener('DOMContentLoaded', () => {
+        let container_submenu = get_Flex_Container_Element(true);
+        var sortable = new Draggable.Sortable(container_submenu, {
+            draggable: ".submenu",
+            handle: ".submenu_handle",
+            swapAnimation: {
+                duration: 200,
+                easingFunction: "linear",
+                horizontal: true
+            },
+            plugins: [Draggable.Plugins.SwapAnimation]
+        });
     });
-});
+}
 
 $(function () {
     $('[data-toggle="tooltip"]').tooltip();
 });
+draggable_activate();

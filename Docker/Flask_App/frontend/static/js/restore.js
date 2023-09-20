@@ -56,9 +56,10 @@ function restore_control(button = null) {
 
                 let backup_number = backups.length;
 
-                let connection_Response = checkResponses_restore(value);
-                let connection_status = connection_Response[0];
-                let connection = connection_Response[1];
+                let connection_check_status = checkResponses_restore(value, "connection");
+                let response_check_status = checkResponses_restore(value, "response");
+                let connection_status = connection_check_status[0];
+                let connection = connection_check_status[1];
 
                 let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : value["responses_backup_id"]["message"] + " 🟢";
                 let backup_cron = value["responses_backup_cron"]["response"] === false ? "🔴" : "🟢";
@@ -66,7 +67,19 @@ function restore_control(button = null) {
                 let restore_script = value["responses_restore_script"]["response"] === false ? "🔴" : "🟢";
                 let backups_status = backup_number > 0 ? backup_number - 1 + " 🟢" : " 🔴";
 
-                let background_class = connection_status === true ? "bg-gif-alert-green-1" : connection_status === false ? "bg-gif-alert-red-4" : "bg-gif-alert-yellow-1";
+                let background_class = "";
+                if (connection_status && response_check_status){
+                    background_class = "bg-gif-alert-green-1";
+                }
+                else if (connection_status && !response_check_status) {
+                    background_class = "bg-gif-alert-yellow-1";
+                }
+                else if (!connection_status) {
+                    background_class = "bg-gif-noise-1";
+                }
+                else {
+                    background_class = "bg-gif-simpsons-hide-1";
+                }
 
                 flex_Element_Update_Device(
                     device_elements[key],

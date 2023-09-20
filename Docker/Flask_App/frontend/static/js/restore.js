@@ -56,18 +56,22 @@ function restore_control(button = null) {
 
                 let backup_number = backups.length;
 
-                let connection_status = checkResponses_restore(value);
-                let backup_id = value["responses_backup_id"]["check"] === "False" ? "🔴" : "🟢";
-                let backup_cron = value["responses_backup_cron"]["check"] === "False" ? "🔴" : "🟢";
-                let backup_script = value["responses_backup_script"]["check"] === "False" ? "🔴" : "🟢";
-                let restore_script = value["responses_restore_script"]["check"] === "False" ? "🔴" : "🟢";
+                let connection_Response = checkResponses_restore(value);
+                let connection_status = connection_Response[0];
+                let connection = connection_Response[1];
+
+                let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : "🟢";
+                let backup_cron = value["responses_backup_cron"]["response"] === false ? "🔴" : "🟢";
+                let backup_script = value["responses_backup_script"]["response"] === false ? "🔴" : "🟢";
+                let restore_script = value["responses_restore_script"]["response"] === false ? "🔴" : "🟢";
                 let backups_status = backup_number > 0 ? backup_number - 1 + " 🟢" : " 🔴";
-                let background_class = connection_status === "🟢" ? "bg-gif-alert-green-1" : connection_status === "🔴" ? "bg-gif-alert-red-4" : "bg-gif-alert-yellow-1";
+
+                let background_class = connection_status === true ? "bg-gif-alert-green-1" : connection_status === false ? "bg-gif-alert-red-4" : "bg-gif-alert-yellow-1";
 
                 flex_Element_Update_Device(
                     device_elements[key],
                     key,
-                    connection_status,
+                    connection,
                     backup_id,
                     backup_cron,
                     backup_script,

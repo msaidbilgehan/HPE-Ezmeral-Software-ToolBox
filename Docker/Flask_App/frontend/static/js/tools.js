@@ -18,7 +18,7 @@ export function checkResponses_restore(responses) {
     let allFalse = true;
 
     for (let key in responses) {
-        if (responses[key].response === "False") {
+        if (responses[key].connection === false) {
             allTrue = false;
         } else {
             allFalse = false;
@@ -26,10 +26,10 @@ export function checkResponses_restore(responses) {
     }
 
     if (allTrue) {
-        return "🟢";
+        return [true, "🟢"];
     } else if (allFalse) {
-        return "🔴";
+        return [false, "🔴"];
     } else {
-        return "🟡";
+        return [null, "🟡"];
     }
 }

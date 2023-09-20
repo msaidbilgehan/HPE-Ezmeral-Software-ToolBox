@@ -45,7 +45,7 @@ endpoint_directory_paths = {
     "restore": "",
 }
 
-backup_id_path = "/home/{ssh_username}/backup.id"
+backup_id_path = "/home/{ssh_username}/{filename}.id"
 backup_path = "/root/snapshot"
 backup_script = "daily_rotation_mapr_snapshot.sh"
 backup_script_upload_path="/home/{ssh_username}/"
@@ -165,11 +165,11 @@ def restore_control_endpoint():
             with backup_restore_thread.safe_task_lock:
                 
                 # Backup ID Control
-                responses_backup_id = backup_restore_thread.get_file_information(
+                responses_backup_id = backup_restore_thread.get_file_context(
                     ssh_username=ssh_username,
                     ssh_password=ssh_password,
                     ip_addresses=ip_address_hostnames,
-                    file_dir=backup_id_path.format(ssh_username=ssh_username),
+                    file_dir=backup_id_path.format(ssh_username=ssh_username, filename=backup_script.split(".")[0]),
                 )
                 
                 # Skip Connection or ID Fetch Failed IP Addresses
@@ -326,11 +326,11 @@ def backup_control_endpoint():
             with backup_restore_thread.safe_task_lock:
                 
                 # Backup ID Control
-                responses_backup_id = backup_restore_thread.get_file_information(
+                responses_backup_id = backup_restore_thread.get_file_context(
                     ssh_username=ssh_username,
                     ssh_password=ssh_password,
                     ip_addresses=ip_address_hostnames,
-                    file_dir=backup_id_path.format(ssh_username=ssh_username),
+                    file_dir=backup_id_path.format(ssh_username=ssh_username, filename=backup_script.split(".")[0]),
                 )
                 
                 # Backup Cron Control

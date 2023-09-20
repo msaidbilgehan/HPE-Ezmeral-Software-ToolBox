@@ -28,7 +28,6 @@ def ssh_send_file(ssh_client:str, username:str, password:str, local_file_path:st
     
     try:
         transport = paramiko.Transport((ssh_client, port))
-        transport.settimeout(timeout) # type: ignore
     except Exception as error:
         local_logger.error(f"Can not creating Transport: {error}")
         return ""
@@ -144,7 +143,6 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
     
     try:
         transport = paramiko.Transport((ssh_client, port))
-        transport.settimeout(timeout) # type: ignore
     except Exception as error:
         local_logger.error(f"Can not creating Transport: {error}")
         return connection, file_transfer, ""
@@ -261,17 +259,15 @@ def ssh_receive_file(ssh_client:str, username:str, password:str, remote_path:str
 def ssh_execute_command(ssh_client:str, username:str, password:str, command:str, port:int=22, timeout=5, is_sudo=False, reboot:bool=False, logger_hook=None) -> tuple[bool, bool, str]:
     status_command = False
     status_connection = False
+    response_stdout = ""
 
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client_stdout = ""
-    
     
     if logger_hook is not None:
         local_logger = logger_hook
     else:
         local_logger = logger
-    
     
     local_logger.info(f"Connecting to {ssh_client}!")
     try:
@@ -290,6 +286,7 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
         # local_logger.info(f"stdout: {stdout}")
         
         client_stdout = stdout.read().decode()
+        response_stdout = client_stdout
         client_stderr = stderr.read().decode()
 
         # local_logger.info(f"client_stdout: {client_stdout}")
@@ -300,6 +297,7 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
             local_logger.info("Command successfully executed!")
             status_command = True
             status_connection = True
+            response_stdout = client_stdout
             
             if reboot:
                 client.exec_command('echo {password} | sudo -S reboot -h now')
@@ -310,6 +308,7 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
             local_logger.error(f"STDERR Detail [Exit Status {exit_status}]: {client_stderr}")
             status_command = False
             status_connection = True
+            response_stdout = client_stderr
         
     except paramiko.AuthenticationException:
         local_logger.info("Authentication failed")
@@ -322,7 +321,7 @@ def ssh_execute_command(ssh_client:str, username:str, password:str, command:str,
     finally:
         client.close()
         
-    return status_connection, status_command, client_stdout
+    return status_connection, status_command, response_stdout
     
 
 

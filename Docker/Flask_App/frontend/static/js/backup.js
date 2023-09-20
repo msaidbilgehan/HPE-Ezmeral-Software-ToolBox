@@ -60,7 +60,6 @@ function backup_cron_control(button) {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
-        console.log(data)
         if (typeof data.message === "string") {
             showNotification(data.message, "error");
         }
@@ -78,8 +77,8 @@ function backup_cron_control(button) {
                 let connection_Response = checkResponses_restore(value);
                 let connection_status = connection_Response[0];
                 let connection = connection_Response[1];
-
-                let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : "🟢";
+                
+                let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : value["responses_backup_id"]["message"] + " 🟢";
                 let backup_cron = value["responses_backup_cron"]["response"] === false ? "🔴" : "🟢";
                 let backup_script = value["responses_backup_script"]["response"] === false ? "🔴" : "🟢";
 

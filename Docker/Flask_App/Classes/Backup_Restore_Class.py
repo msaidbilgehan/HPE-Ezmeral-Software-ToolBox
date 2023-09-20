@@ -143,9 +143,15 @@ class Backup_Restore_Class(Task_Handler_Class):
                         )
                         
                         # Create unique id for each client
-                        ssh_command = f"echo \"{self.parameters['id']}\" > {remote_file_path}.id"
-                        # echo "string" | sudo tee file.id
-
+                        print("sadads", remote_file_path.split(".sh")[0])
+                        self.create_backup_id(
+                            id=self.parameters['id'], 
+                            create_id=False, 
+                            file_dir=remote_file_path.split(".sh")[0], 
+                            ssh_username=ssh_username, 
+                            ssh_password=ssh_password, 
+                            ip_addresses=[ip_address]
+                        )
                         connection, response, stout = ssh_execute_command(
                             ssh_client=ip_address, 
                             username=ssh_username, 
@@ -216,13 +222,50 @@ class Backup_Restore_Class(Task_Handler_Class):
             
             # Check Thread State
             time.sleep(1)
-                
         
         if len(failed_ip_addresses) > 0:
             self.logger.info(f"Backup Cron Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
         self.logger.info(f"Backup Cron Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
         
         return responses
+    
+    
+    
+    def create_backup_id(self, id:str, create_id:bool, file_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> dict:
+        self.logger.info(f"Backup ID create command running on {ip_addresses} ...")
+        
+        failed_ip_addresses:list[str] = list()
+        responses: dict = dict()
+        
+        if create_id or id == "":
+            id = generate_unique_id(12, False)
+        
+        # Create unique id for each client
+        for ip_address in ip_addresses:
+            ssh_command = f"echo \"{id}\" > {file_dir}.id"
+            # echo "string" | sudo tee file.id
+
+            connection, response, stout = ssh_execute_command(
+                ssh_client=ip_address, 
+                username=ssh_username, 
+                password=ssh_password, 
+                command=ssh_command,
+                reboot=False,
+                logger_hook=self.logger
+            )
+            if not response or not connection:
+                self.logger.warn(f"Backup ID create failed -> {ip_address}")
+                self.logger.warn(f"{ip_address} :: {stout}")
+                failed_ip_addresses.append(ip_address)
+            
+            responses[ip_address] = dict()
+            responses[ip_address]["connection"] = connection
+            responses[ip_address]["response"] = response
+            responses[ip_address]["message"] = stout
+            responses[ip_address]["id"] = id
+        
+        return responses
+    
     
     
     def get_backup_information(self, backup_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> dict:
@@ -255,9 +298,6 @@ class Backup_Restore_Class(Task_Handler_Class):
                 self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
                 self.logger.warn(f"{ip_address} :: {stout}")
                 failed_ip_addresses.append(ip_address)
-                
-            # Sync Thread
-            time.sleep(0.1)
             
             responses[ip_address] = dict()
             responses[ip_address]["connection"] = connection
@@ -275,13 +315,13 @@ class Backup_Restore_Class(Task_Handler_Class):
     
     
     def get_file_information(self, file_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> dict:
-        self.logger.info(f"Backup Information Fetch command running on {ip_addresses} ...")
+        self.logger.info(f"File Information Fetch command running on {ip_addresses} ...")
         
         failed_ip_addresses:list[str] = list()
         responses: dict = dict()
 
         if file_dir == "":
-            self.logger.error(f"Backup Script Directory Parameter is empty")
+            self.logger.error(f"File Information Directory Parameter is empty")
             return responses
         
         # Send command to remote devices
@@ -301,7 +341,7 @@ class Backup_Restore_Class(Task_Handler_Class):
                 logger_hook=self.logger
             )
             if not response or not connection:
-                self.logger.warn(f"Backup Information Fetch failed -> {ip_address}")
+                self.logger.warn(f"File Information Fetch failed -> {ip_address}")
                 self.logger.warn(f"{ip_address} :: {stout}")
                 failed_ip_addresses.append(ip_address)
             
@@ -314,7 +354,53 @@ class Backup_Restore_Class(Task_Handler_Class):
             time.sleep(1)
         
         if len(failed_ip_addresses) > 0:
-            self.logger.info(f"Backup Script Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
-        self.logger.info(f"Backup Script Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
+            self.logger.info(f"File Information Fetch Failed for IP Addresses: {failed_ip_addresses}")
+        self.logger.info(f"File Information Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
+        
+        return responses
+    
+    
+    def get_file_context(self, file_dir:str, ssh_username:str, ssh_password:str, ip_addresses:list[str]) -> dict:
+        self.logger.info(f"File Context Fetch command running on {ip_addresses} ...")
+        
+        failed_ip_addresses:list[str] = list()
+        responses: dict = dict()
+
+        if file_dir == "":
+            self.logger.error(f"File Context Directory Parameter is empty")
+            return responses
+        
+        # Send command to remote devices
+        for ip_address in ip_addresses:
+            self.logger.info("Connecting to " + ip_address + " ...")
+            
+            # If run command given, execute it
+            ssh_command = f'cat {file_dir}'
+
+            connection, response, stout = ssh_execute_command(
+                ssh_client=ip_address, 
+                username=ssh_username, 
+                password=ssh_password, 
+                command=ssh_command,
+                is_sudo=False,
+                reboot=False,
+                logger_hook=self.logger
+            )
+            if not response or not connection:
+                self.logger.warn(f"File Context Fetch failed -> {ip_address}")
+                self.logger.warn(f"{ip_address} :: {stout}")
+                failed_ip_addresses.append(ip_address)
+            
+            responses[ip_address] = dict()
+            responses[ip_address]["connection"] = connection
+            responses[ip_address]["response"] = response
+            responses[ip_address]["message"] = stout
+            
+            # Check Thread State
+            time.sleep(1)
+        
+        if len(failed_ip_addresses) > 0:
+            self.logger.info(f"File Context Fetch Failed for IP Addresses: {failed_ip_addresses}")
+        self.logger.info(f"File Context Fetch Finished for IP Addresses: {[ip for ip in ip_addresses if ip not in failed_ip_addresses]}")
         
         return responses

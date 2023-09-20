@@ -60,7 +60,7 @@ function restore_control(button = null) {
                 let connection_status = connection_Response[0];
                 let connection = connection_Response[1];
 
-                let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : "🟢";
+                let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : value["responses_backup_id"]["message"] + " 🟢";
                 let backup_cron = value["responses_backup_cron"]["response"] === false ? "🔴" : "🟢";
                 let backup_script = value["responses_backup_script"]["response"] === false ? "🔴" : "🟢";
                 let restore_script = value["responses_restore_script"]["response"] === false ? "🔴" : "🟢";

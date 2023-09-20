@@ -176,7 +176,7 @@ def restore_control_endpoint():
                 ip_addresses_fail = list()
                 
                 for ip_address in ip_address_hostnames:
-                    if responses_backup_id[ip_address]["response"] == "False":
+                    if not responses_backup_id[ip_address]["response"]:
                         ip_addresses_fail.append(ip_address)
                 
                 ip_address_hostnames = [ip_address for ip_address in ip_address_hostnames if ip_address not in ip_addresses_fail]
@@ -226,8 +226,8 @@ def restore_control_endpoint():
                 for ip_address in ip_addresses_fail:
                     responses_fail = dict()
                     responses_fail[ip_address] = {
-                        "response": str(False),
-                        "check": str(False),
+                        "connection": False,
+                        "response": False,
                         "message": "",
                     }
                     
@@ -238,6 +238,7 @@ def restore_control_endpoint():
                     response_to_client[ip_address]["responses_backups"] = responses_fail[ip_address]
                     response_to_client[ip_address]["responses_restore_script"] = responses_fail[ip_address]
 
+                print("response_to_client", response_to_client)
                 notification_thread.queue_add("Restore Control Finished", Notification_Status.INFO)
                 return jsonify(
                     message=response_to_client,

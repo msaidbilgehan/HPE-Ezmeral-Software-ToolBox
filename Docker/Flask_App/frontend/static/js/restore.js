@@ -33,7 +33,6 @@ function restore_control(button = null) {
 
     // Call Endpoint
     fetch(url).then(response => response.json()).then(data => {
-        console.log("data:", data)
         if (typeof data.message === "string") {
             showNotification(data.message, "error");
         }
@@ -78,8 +77,6 @@ function restore_control(button = null) {
                 );
             }
         }
-        
-
         // showNotification(notification, "info");
 
         if (button !== null || button !== undefined) {

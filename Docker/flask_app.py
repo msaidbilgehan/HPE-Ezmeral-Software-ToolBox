@@ -222,6 +222,7 @@ def restore_control_endpoint():
                     response_to_client[ip_address]["responses_backup_script"] = responses_backup_script[ip_address]
                     response_to_client[ip_address]["responses_backups"] = responses_backups[ip_address]
                     response_to_client[ip_address]["responses_restore_script"] = responses_restore_script[ip_address]
+                    # response_to_client[ip_address]["connection"] = 0 if all(connection[ip_address]["connection"] for connection in responses_backups[ip_address].value()) else 1
                 
                 for ip_address in ip_addresses_fail:
                     responses_fail = dict()

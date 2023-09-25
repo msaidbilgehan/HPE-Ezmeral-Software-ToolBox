@@ -57,27 +57,37 @@ function restore_control(button = null) {
                 let backup_number = backups.length;
 
                 let connection_check_status = checkResponses_restore(value, "connection");
-                let response_check_status = checkResponses_restore(value, "response");
                 let connection_status = connection_check_status[0];
                 let connection = connection_check_status[1];
+
+                let response_check_status = checkResponses_restore(value, "response");
+                let response_status = response_check_status[0];
+                // let response = connection_check_status[1];
 
                 let backup_id = value["responses_backup_id"]["response"] === false ? "🔴" : value["responses_backup_id"]["message"] + " 🟢";
                 let backup_cron = value["responses_backup_cron"]["response"] === false ? "🔴" : "🟢";
                 let backup_script = value["responses_backup_script"]["response"] === false ? "🔴" : "🟢";
                 let restore_script = value["responses_restore_script"]["response"] === false ? "🔴" : "🟢";
                 let backups_status = backup_number > 0 ? backup_number - 1 + " 🟢" : " 🔴";
-
+                
                 let background_class = "";
-                if (connection_status && response_check_status){
+                if (connection_status === true && response_status === true){
+                    // console.log(connection_status === true, response_status === true, connection_status === true && response_status === true);
                     background_class = "bg-gif-alert-green-1";
                 }
-                else if (connection_status && !response_check_status) {
+                else if ((connection_status === true && response_status === false) || (response_status === null)) {
+                    // console.log(connection_status === true, response_status === false, connection_status === true && response_status === false);
                     background_class = "bg-gif-alert-yellow-1";
                 }
-                else if (!connection_status) {
+                else if ((connection_status === false && response_status === false) || (connection_status === null)) {
+                    console.log(key);
+                    console.log(connection_status, response_status, connection_status);
+                    console.log(connection_status === false, response_status === false, connection_status === false && response_status === false);
                     background_class = "bg-gif-noise-1";
                 }
                 else {
+                    // console.log(connection_status, response_status, connection_status);
+                    // console.log(connection_status === false, response_status === true, connection_status === false && response_status === true);
                     background_class = "bg-gif-simpsons-hide-1";
                 }
 

@@ -20,6 +20,9 @@ def cleanup():
     commands = [
         "for servis in $(systemctl list-units --type=service --no-legend | grep mapr- | awk '{{print $1}}'); do {} systemctl stop $servis && systemctl disable $servis; done",
         "for paket in $(dpkg -l | grep mapr- | awk '{{print $2}}'); do {} apt-get remove --purge -y $paket; done",
+        "rm -f /etc/apt/auth.conf.d/data_fabric.conf",
+        "rm -f /etc/apt/sources.list.d/*ezmeral_hpe*",
+        "sudo apt-key list | grep -B 1 'MapR Technologies' | grep -v 'MapR Technologies' | awk '{print $(NF-1) $NF}' | xargs -n 1 sudo apt-key del",
         "{} apt --fix-broken install",
         "{} docker stop $(sudo docker ps -a -q)",
         # "{} docker rmi $(sudo docker images -a -q) -f",

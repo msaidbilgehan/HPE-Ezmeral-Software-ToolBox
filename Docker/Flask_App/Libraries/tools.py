@@ -3,8 +3,8 @@ import os
 import time
 import shutil
 import zipfile
-import random
 import string
+import secrets
 
 
 def read_log_file(path, wait_thread=None):
@@ -114,5 +114,5 @@ def generate_unique_id(length:int=8, is_upper: bool=True) -> str:
     else:
         ascii_letters = string.ascii_letters
     characters = ascii_letters + string.digits  # Merge letters and digits
-    unique_id = ''.join(random.choice(characters) for i in range(length))
+    unique_id = ''.join(secrets.SystemRandom().choice(characters) for i in range(length))
     return unique_id

@@ -75,7 +75,7 @@ class File_Content_Streamer_Thread(Task_Handler_Class):
             
         with open(self.path, 'r') as file:
             while not self._flag_stop:
-                raw_line = file.readline()
+                raw_line = file.readline(5_000_000)
                 if raw_line == '':
                     current_sleep_time = new_sleep_time
                     
